@@ -1,0 +1,92 @@
+RunTime saves the state of program, so it cannot have multiple instaces(object).
+So its constructor is private, it is a singleton class.
+
+https://www.geeksforgeeks.org/understanding-outofmemoryerror-exception-java/
+
+starting heap size 
+-----------
+threads
+
+3 ways to start:
+runnable
+callable
+tread
+
+5 states of thread:
+start
+runnable
+running
+blocked
+dead
+
+ExecutorServices methods:
+submit(Callable<T> Task)
+submit(Runnable task)
+invokeAll(Collection <? extends Callable><T>> tasks)
+
+threads dont return a value
+executor submit returns a future object
+use executor.shutdown after the work is done.
+
+atomic reference - making thread safe or locks
+make method synchronised
+make a code block synchronised
+
+make method static synchronised to 
+
+final Object - the content can be changed inside the onject but not the object reference
+
+cannot over write a static method
+cannot access parent class' static method using child class' reference.
+
+Atomic Primitives like AtomicInteger, AtomicFloat
+
+wrapper class adds a overhead - the size of Integer(12+ bytes) is more than the primitive int(4 bytes).
+
+different lvl of caches - l1,l2,l3
+
+volatile variable - the value is picked from the memory (used only for primitives)
+---------------------------
+
+QPS - query per second (1000)
+responsiveness(10) - time taken by process
+
+marking
+
+a counter of references is maintained in python by gc
+
+in java, a tree is maintained, 
+as long as path to root is present, object reference is reachable and not marked by gc
+
+roots:
+local variables - these are in stack
+active java threads
+static variables
+
+deletion with compacting
+
+memory allocators - holds reference to start of empty memory fragment
+
+divide heap into 2 parts- short and tenure duration
+run gc for short part frequently
+stop the world process - 
+
+minor and 
+major gc - takes the program through a long pause
+
+jvm geenrations - 
+permanent - is restricted to specific size, classes is stored in this, only when it is full and new class is encountered to put in it
+gc is run
+
+old - 
+
+young - gc is run more frequently
+increment the age of variable
+
+eden - 
+
+s0&s1 - swapping is done
+------------------------------
+
+Funcitonal Interfaces
+

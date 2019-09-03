@@ -1,0 +1,8 @@
+z score
+standard deviation
+variance
+
+sample mean - x
+true mean Ux
+
+correlation r = zx * zy (z score)

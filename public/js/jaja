@@ -1,0 +1,13 @@
+$.ajax({
+         url     : "/project/21/title",
+         type    :"PATCH",
+         data: {'title': "title", "_token": "eyJpdiI6IkpTbjhJem5FXC8rNEZ3K1NsN0U1ZnNBPT0iLCJ2YWx1ZSI6ImVzWlFQTDIxRDRMNU1JYVJWZWVTRGJaRmpnRGR0eklBWmxIdVRVbEFCNkhhMUtzUm1NK3NudnFCd0NQVmNWbFIiLCJtYWMiOiI4NzE4Mjc5NWZkNzA5YTk0MDFmNjQzNGY2Zjg4YWE2OTEwY2Y3ZTRmZWEyODIyZGE0ZDY2NDI1YjQ0ZDlhMzM3In0%3D; expires=Tue, 03-Sep-2019 13:55:45 GMT; Max-Age=7200; path=/"},
+
+
+         success: function (response) {
+             console.log("success");
+         },
+         error: function (response) {
+            console.log("fai;les");
+         }
+     });
