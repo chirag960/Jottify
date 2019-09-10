@@ -40,7 +40,8 @@ return [
     */
 
     'debug' => env('APP_DEBUG', false),
-
+    //keep it to false in produnction env
+    
     /*
     |--------------------------------------------------------------------------
     | Application URL

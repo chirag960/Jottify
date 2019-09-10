@@ -23,9 +23,7 @@ class checkTaskAdmin
         
         //not an admin
         if(!$exists){
-            return response()->json([
-                'message' => "Only admins are authorized to access this functionality."
-            ], 401);
+            return response()->view('errors.401');
         }
         else{
             return $next($request);    

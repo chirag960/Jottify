@@ -44,10 +44,10 @@
     <style>
 
     html,body{
-        background-color: #0288d1;
+        background-color: #f3f3f3;
         display: flex;
-    min-height: 100vh;
-    flex-direction: column;
+        min-height: 100vh;
+        flex-direction: column;
     }
 
     main {
@@ -58,15 +58,15 @@
     }
 
     .nav-wrapper {
-    background-color: #0288d1  !important;
-    font-size: 14px;
-    font-weight: bold;
+        background-color: #0288d1  !important;
+        font-size: 14px;
+        font-weight: bold;
     }
 
     .navbar-brand{
        position: absolute;
-        left: 50%;
-        margin-left: -50px !important;
+        left: 1%;
+        margin-left: -1px !important;
         display: block;
         font-size: 2.4rem;
     }
@@ -86,10 +86,24 @@
         color:white;
     }
 
-    .nav-search-div{
-        float:left; 
-        margin-left:5px;
+    @media only screen and (max-width: 600px) {
+        #searchBar{
+            padding:0px 5px !important;
+            background-color:white !important;
+            border-radius:5px 5px !important;
+            width:200px !important;
+        }
     }
+
+    /* Large devices (laptops/desktops, 992px and up) */
+    @media only screen and (min-width: 600px) {
+        #searchBar {
+            padding:0px 5px !important;
+            background-color:white !important;
+            border-radius:5px 5px !important;
+            width:400px !important;
+        }
+} 
 
     .nav-menu{
         display: inline-block;
@@ -102,9 +116,10 @@
         margin:0;
         padding:0;
         height:100%;
+        margin-top:20px;
     }
     .auth-bg{
-        background:#0288d1;
+        background:#f3f3f3;
         width:100%;
     }
 
@@ -112,20 +127,27 @@
         color:#0288d1 !important;
     }
 
+    #description:focus{
+        border-bottom-color:#0288d1 !important;
+    }
+
     .input-field input:focus {
         border-bottom: 1px solid #0288d1 !important;
         box-shadow: 0 1px 0 0 #0288d1 !important;
    }
-
+/*
    input[type=checkbox]
     {
         -webkit-appearance:checkbox !important;
     }
-
+*/
+/* 
     .switch label input[type=checkbox]:checked+.lever {
         background-color: #0288d1 !important;
-    }
+    } */
 
+    .full-content{
+    }
     .inspire{
         padding-top:2%;
     }
@@ -141,7 +163,18 @@
     .title-list{
         float:none;
     }
-
+    .results{
+        height: 400px !important; 
+        overflow: auto !important; 
+    }
+    .profileDrop{
+        color:black !important;
+        text-decoration:none !important;
+    }
+    #dropTaskList{
+        height: 400px !important; 
+        overflow: auto !important; 
+    }
     @media only screen and (max-width: 600px) {
         .avatar-image{
             width:30px;
@@ -171,28 +204,11 @@
                 <a class="navbar-brand appName" href="{{ url('/home') }}">
                     {{ config('app.name', 'Jottify') }}
                 </a>
-                <!-- Left Side Of Navbar -->
-                <ul class="left">
-                    @guest
-                    <li></li>
-                    @else
-                    <li class="nav-search-div col s2 m2 l2 xl2">
-                        <form>
-                            <div class="input-field">
-                                <input type="search" id="searchBar" name="search" data-target="dropTaskList" >
-                                <label class="label-icon" for="search"><i class="material-icons">search</i></label>
-                                <div id="results"></div>
-                            </div>
-                        </form>
-                    </li>
-                    @endguest
-                </ul>
 
                 <!-- Right Side Of Navbar -->
                 <ul class="right">
                     @guest
                         <!-- Authentication Links -->
-                        <div class="right-align row s4 m4 l4 xl4">
                         <li>
                             <a class="white-text" href="{{ route('login') }}">{{ __('Login') }}</a>
                         </li>
@@ -202,24 +218,32 @@
                             </li>
                         @endif
                     @else
-                        <div class="right-align stick row s3 m3 l3 xl3">
-                        <li class="right-align  s1 m1 l2 xl2">
-                            <a href="/profile">
+                        <li>
+                            <form>
+                                    <input type="text" id="searchBar" name="search" data-target="dropTaskList" autocomplete="off" placeholder="Search projects or tasks..." onblur="removeSearchPattern()">
+                                    <label class="label-icon" for="search"></label>
+                                    <div id="results" style="display: block;"></div>
+                            </form>
+                        </li>
+                        <li>
+                            <a class='dropdown-trigger' href='#' data-target='profileOptions'>
                                 <!--img src="{{asset("media/user_profile_photo/default.jpg")}}" alt="" class="circle avatar-image responsive-img"--> <!-- notice the "circle" class -->
                             <img id="navbarProfile" src="{{Auth::user()->photo_location}}" alt="" class="circle avatar-image responsive-img"> <!-- notice the "circle" class -->
                             </a>
+                            <ul id='profileOptions' class='dropdown-content'>
+                                <li><a href="/profile" class="profileDrop">Profile Settings</a></li>
+                                <li>
+                                        <a href="{{ route('logout') }}"
+                                        onclick="event.preventDefault();
+                                                        document.getElementById('logout-form').submit();" class="profileDrop">
+                                        {{ __('Logout') }} 
+                                    </a>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
+                                </li>
+                            </ul>
                         </li>
-                        <li class="right-align hide-on-med-and-down">
-                            <a href="{{ route('logout') }}"
-                                onclick="event.preventDefault();
-                                                document.getElementById('logout-form').submit();">
-                                {{ __('Logout') }}
-                            </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                @csrf
-                            </form>
-                        </li>
-                    </div>
                     @endguest
                 </ul>
             </div>
@@ -229,12 +253,25 @@
     @yield('full-content')
 </div>
 <script type="text/javascript" src="{{ asset('js/navbar.js') }}"></script>
+<script>
+function removeSearchPattern(){
+    document.getElementById("searchBar").value = "";
+}
 
-<footer class="page-footer light-blue darken-2">
+$(document).on("click", function(event){
+            var $trigger = $("#results");
+            if($trigger !== event.target && !$trigger.has(event.target).length){
+                $("#results").removeAttr("style").hide();
+                $("#searchBar").html("");
+            }            
+        });
+</script>
+
+{{-- <footer class="page-footer light-blue darken-2">
 <div class="inspire col s10 offset-s1 m10 offset-m1 l8 offset-l2 center-align">
     <span class="text-white"><h6><i>{{ \Illuminate\Foundation\Inspiring::quote() }}</i></h6></span>
 </div>
-</footer>
+</footer> --}}
 
 </body>
 </html>

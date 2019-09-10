@@ -84,7 +84,7 @@
             <!-- Left Side Of Navbar -->
             <ul class="navbar-nav mr-auto text-white nav-menu">
                 <li class="nav-item go-inline text-body">
-                    <div class="backLink" onclick="backToProject();"><h6><!-- Add back icon -->< Go back to Project</h3></div>
+                    <div class="backLink" onclick="backToProject();"><h6><!-- Add back icon -->< Go back to Project</h6></div>
                     <div><h3>{{ $task->title }}  <!-- Make this remanable --></h3></div>
                 </li>
 
@@ -101,7 +101,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <button type="button" class="btn btn-primary">Invite</button>
+                    <button type="button" class="btn btn-primary dropdown-trigger" data-target='inviteDrop'>Invite</button>
                 </li>
 
             </ul>
@@ -122,7 +122,7 @@
     <div class="task-detail-container">
         <div class="left-side">
         <div class="description-container" id="description">
-            <h3>Description</h3>
+            <h5>Description</h5>
             @if (isset($task->description))
                 <p id="taskDescription">{{$task->description}}</p>
                 <button type="button" class="btn btn-primary" data-toggle='modal' data-target='#addDescriptionModal'>Change Description</button>
@@ -133,10 +133,10 @@
         </div>
         <hr/>
         <div class="checklist-container" id="checklist">
-            <h3>CheckList</h3>
+            <h5>CheckList</h5>
             @if($task->checklist_item_count != null)
             <div class="progress">
-                <div id="progressBarDiv" class="progress-bar bg-success progress-bar-striped" role="progressbar"
+                <div id="progressBarDiv" class="determinate" role="progressbar"
                 style="width: {{ ceil(($task->checklist_done/$task->checklist_item_count)*100).'%'}}" >
                 </div>
             </div>
@@ -146,16 +146,16 @@
         </div>
         <hr/>
         <div class="attachments-header" id="attachments">
-            <h3 data-toggle="collapse" data-target="#attachment-list" class="pointer">Attachments</h3>
+            <h5 data-toggle="collapse" data-target="#attachment-list" class="pointer">Attachments</h5>
             
             <button id="attachment-dropdown" type="button" class="btn btn-primary" data-toggle='modal' data-target='#addAttachmentModal'>Add Attachment</button>
             <div id="attachment-list" class="collapse">
-                adgfhsfggdafgshadgadfhdgadfhasdhsf
+                
             </div>
         </div>
         <hr/>
         <div class="comments-header" id="comments">
-            <h3 data-toggle="collapse" data-target="#comment-list" class="pointer">Comments</h3>
+            <h5 data-toggle="collapse" data-target="#comment-list" class="pointer">Comments</h5>
             
             <form method="POST">
                 <textarea class="form-control" id="comment-message" placeholder="Add a comment"></textarea>
@@ -166,7 +166,7 @@
         </div>
         <hr/>
     </div>
-    <div class="right-side">
+    <!--div class="right-side">
         <p>Move to another status</p>
         <form method="POST">
             @csrf
@@ -177,10 +177,12 @@
             </div>
             <button type="button" class="btn btn-primary" onclick="validateStatus();">Submit</button>
         </form>
-    </div>
+    </div-->
     </div>
 
 </div>
+
+@include('inviteDrop')
 
 @include('dueDateModal')
 
@@ -196,6 +198,7 @@
     
         $(document).ready(function(){
             $('.datepicker').datepicker();
+            $('.dropdown-trigger').dropdown();
         });
 
         var checklist_item_count = {!! ($task->checklist_item_count==null)?"null":$task->checklist_item_count !!} ;
@@ -223,7 +226,7 @@
         function validateStatus(){
             var value = document.getElementById("statusList").value;
             var id_json = JSON.stringify({"id":value});
-            loadDoc("PATCH","/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/status",id_json,updateStatus);
+            makePatchRequest("/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/status",id_json,updateStatus);
         }
 
         function displayChecklist(xhttp) {
@@ -233,13 +236,13 @@
             listText.forEach(function addToDiv(key,index){
                  newDiv += "<div class='form-check'>";
                  if(key.completed == "0"){
-                        newDiv += "<input type='checkbox' onclick='handleCheck(this,"+ key.id +")' class='form-check-input' id='checklist-"+key.id+"' name='checklist-"+key.id+"'><span>";
+                        newDiv += "<label for='checklist-"+key.id+"'><input type='checkbox' onclick='handleCheck(this,"+ key.id +")'  id='checklist-"+key.id+"' name='checklist-"+key.id+"'><span>";
                     }
                     else{
-                        newDiv += "<input type='checkbox' onclick='handleCheck(this,"+ key.id +")' class='form-check-input' id='checklist-"+key.id+"' name='checklist-"+key.id+"' checked><span>";
+                        newDiv += "<label for='checklist-"+key.id+"'><input type='checkbox' onclick='handleCheck(this,"+ key.id +")'  id='checklist-"+key.id+"' name='checklist-"+key.id+"' checked><span>";
                     }
                  newDiv += key.item; 
-                 newDiv += "</span></div>";
+                 newDiv += "</span></label></div>";
              });
              document.getElementById("checklist-items").innerHTML = newDiv;
              
@@ -332,7 +335,7 @@
         function sendComment(){
             var message = document.getElementById("comment-message").value;
             var message_json = JSON.stringify({"message":message});
-            loadDoc("POST","/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/comment",message_json,updateComment);
+            makePostRequest("/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/comment",message_json,updateComment);
             document.getElementById("comment-message").value = null;
         }
 
@@ -365,15 +368,15 @@
             console.log(response['message']);
         }
 
-        loadDoc("GET","/project/"+ {!! $task->project_id !!} + "/statuses",null,displayStatus);
+        makeGetRequest("/project/"+ {!! $task->project_id !!} + "/statuses",displayStatus);
 
-        loadDoc("GET","/project/"+ {!! $task->project_id !!} + "/task/" + {!! $task->id !!} +"/members",null,displayMembers);
+        makeGetRequest("/project/"+ {!! $task->project_id !!} + "/task/" + {!! $task->id !!} +"/members",displayMembers);
 
-        loadDoc("GET","/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/checklist",null,displayChecklist);
+        makeGetRequest("/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/checklist",displayChecklist);
 
-        //loadDoc("GET","/project/" + {!! $task->project_id !!} + "/task/" + {!! $task->id !!} + "/attachments",displayAttachments);
+        //makeGetRequest("/project/" + {!! $task->project_id !!} + "/task/" + {!! $task->id !!} + "/attachments",displayAttachments);
 
-        loadDoc("GET","/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/comments",null,displayComments);
+        makeGetRequest("/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/comments",displayComments);
             
         function sendID(id){
             var inputTag = document.getElementById("input_status_id");
@@ -413,14 +416,14 @@
                 checklist_done++;
                 var data = JSON.stringify({"completed":completed,"checklist_done":checklist_done,"id":{{ $task->id }},"project_id":{{ $task->project_id}}});
                 //console.log("this is json : " + data);
-                loadDoc("PATCH","/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/checklist/"+ id, data, patchChecklist)
+                makePatchRequest("/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/checklist/"+ id, data, patchChecklist)
             }
             else if(checked === false){
                 var completed = "0";
                 checklist_done--;
                 //var checklist_progress = checklist_progress - Math.ceil(100/ {!! $task->checklist_item_count !!});
                 var data = JSON.stringify({"completed":completed,"checklist_done":checklist_done,"id":{{ $task->id }},"project_id":{{ $task->project_id}}});
-                loadDoc("PATCH","/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/checklist/"+ id, data, patchChecklist)
+                makePatchRequest("/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/checklist/"+ id, data, patchChecklist)
             }
             console.log(checked);
 

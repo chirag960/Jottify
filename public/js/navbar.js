@@ -1,4 +1,11 @@
-document.getElementById("searchBar").addEventListener("keyup", throttleSearchTask(showTasks, 500));
+    if(document.getElementById("searchBar")){
+        console.log("inside if");
+        document.getElementById("searchBar").addEventListener("keyup", throttleSearchTask(showTasks, 500));
+    }
+
+    function removeSearchPattern(){
+        document.getElementById("searchBar").value = "";
+    }
 
     function throttleSearchTask(fn, threshhold) {
         console.log("hey");
@@ -23,7 +30,7 @@ document.getElementById("searchBar").addEventListener("keyup", throttleSearchTas
 
     function showTasks(pattern){
         if(pattern.length > 2){
-            loadDoc("GET","/projectAndTask?pattern="+pattern,null,showResultDropDown);
+            makeGetRequest("/projectAndTask?pattern="+pattern,showResultDropDown);
         }
         else{
             if($('#dropTaskList')){
@@ -42,8 +49,9 @@ document.getElementById("searchBar").addEventListener("keyup", throttleSearchTas
         if(titleList.length == 0){
             var ulist = $("<ul></ul>");
             ulist.attr('id','dropTaskList');
+            ulist.addClass('dropdown-content')
             var lList = $("<li></li>").addClass("black-text white");
-            var heading = $("<p></p>").text("No results found");
+            var heading = $("<a></a>").text("No results found");
             lList.append(heading);
             ulist.append(lList);
             $('#results').append(ulist);
@@ -53,6 +61,7 @@ document.getElementById("searchBar").addEventListener("keyup", throttleSearchTas
 
             var ulist = $("<ul></ul>");
             ulist.attr('id','dropTaskList');
+            ulist.addClass('dropdown-content')
             if(titleList.projects){
 
                 var lList = $("<li></li>").addClass("black-text title-list white");
@@ -100,14 +109,14 @@ document.getElementById("searchBar").addEventListener("keyup", throttleSearchTas
             }
 
             $('#results').append(ulist);
-            document.getElementById("results").style.display = "block";
+            $('#results').show();
         }
 
-        document.getElementById("results").onmouseleave = function(){
+        // document.getElementById("results").onmouseleave = function(){
 
-            document.getElementById("results").style.display = "none";
-            document.getElementById("searchBar").innerHTML = "";
+        //     document.getElementById("results").style.display = "none";
+        //     document.getElementById("searchBar").innerHTML = "";
 
-        };
+        // };
         
     }

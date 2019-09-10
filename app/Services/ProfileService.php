@@ -38,15 +38,15 @@ class ProfileService{
         $image_resize->crop($min_size,$min_size);
         $image_resize->save($path);
 
-        /*
+        
         $currImage = User::where('id',auth()->id())->select('photo_location')->first();
         $currLocation = $currImage->photo_location;
-        dd(File::exists($currLocation)." ".$currLocation);
-        if(($currLocation != "//media//user_profile_photo//default.png") && (File::exists($currLocation))){
-            dd("inside delete func");
+        //dd(File::exists($currLocation)." ".$currLocation);
+        if(($currLocation != "/media/user_profile_photo/default.png") && (File::exists($currLocation))){
+            //dd("inside delete func");
             File::delete($currLocation);
         }
-        */
+        
 
         $update = User::find(auth()->id())->update(['photo_location' => $relative_path]);
         return $relative_path;

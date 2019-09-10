@@ -15,7 +15,12 @@ class CreateStatusesTable extends Migration
     {
         Schema::create('statuses', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->unsignedBigInteger('project_id');
+            $table->string('title',30);
+            $table->unsignedInteger('order');
+            $table->boolean('archived')->default(false);
+
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
         });
     }
 

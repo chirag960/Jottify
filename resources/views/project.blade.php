@@ -77,12 +77,12 @@ body{
             <i class="material-icons" onclick="toggleStar(this)">star_border</i>
             @endif
             -->
-            <a class="waves-effect waves-light btn">Invite</a>
+            <a class="waves-effect waves-light btn dropdown-trigger" data-target='inviteDrop'>Invite</a>
     </div>
     <!-- Right Side Of Navbar -->
     <div class="col s12 m6 l6 xl6">
         <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large right" ><i class="material-icons text-white">menu</i></a>
-        <i class="material-icons right">file_download</i>
+        <!--i class="material-icons right">file_download</i-->
         <a class="waves-effect waves-light btn right" onclick="filterTask()">Filter</a>
         <!--button type="buttton" class="btn btn-primary" onclick="resetTask()">Reset Tasks</button-->  
     </div>
@@ -105,13 +105,13 @@ body{
             <li class="collection-item avatar col s12">
                 <img src="{{$member->photo_location}}" alt="" class="circle">
                 <span class="title">{{$member->name}}</span>
-                <p>{{$member->email}}</p>
+                <!--p>{{$member->email}}</p>
                 @if($member->role == 0)
                 <a href="#!" class="secondary-content"><i class="material-icons admin-icons" onclick="addAdmin({{ $member->id}},this)">group_add</i></a>
                 @else
                 <a href="#!" class="secondary-content"><i class="material-icons admin-icons" onclick="removeAdmin({{ $member->id}},this)">remove_circle</i></a>
                 @endif
-                <a href="#!" class=""><i class="material-icons" onclick="deleteMember({{ $member->id}},this)">delete</i></a>
+                <a href="#!" class=""><i class="material-icons" onclick="deleteMember({{ $member->id}},this)">delete</i></a-->
             </li>    
         @endforeach   
     </ul>
@@ -127,7 +127,6 @@ body{
               <p class="text-center">Create new Task</p>
           <form method="POST" action="/project/{{$project['id']}}/task">
                 @csrf
-
                     <input type="hidden" name="status_id" id="input_status_id">
                 <div class="form-group">
                     <label for="title">Title</label>
@@ -137,11 +136,8 @@ body{
                     <label for="description">Description</label>
                     <input id="sideDesc" type="textarea" class="form-control" name="description" placeholder="Description (optional)">
                 </div>
-                <div class="form-group">
-                        <label for="due-date">Due Date</label>
-                        <!-- Due Date Input-->
-                </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
           </div>
         </div>
       </div>
@@ -165,10 +161,6 @@ body{
                 <label for="description">Description</label>
                 <input type="textarea" class="form-control" name="description" placeholder="Description (optional)">
             </div>
-            <div class="form-group">
-                    <label for="due-date">Due Date</label>
-                    <!-- Due Date Input-->
-            </div>
             <button type="button" class="btn btn-primary" onclick="createStatus()">Submit</button>
       </div>
       
@@ -180,10 +172,17 @@ body{
 
 @include('inviteMember')
 
+@include('inviteDrop')
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     var elems = document.querySelectorAll('.sidenav');
     var instances = M.Sidenav.init(elems, {edge: 'right',draggable: true,});
+    $('.dropdown-trigger').dropdown();
+    $('.chips-placeholder').chips({
+    placeholder: 'Enter a tag',
+    secondaryPlaceholder: '+Tag',
+  });
   });
         var project_id = "{!! $project['id'] !!}";
         console.log(project_id);
@@ -225,7 +224,7 @@ body{
             }
             else{
                 var message = JSON.stringify({"_token":document.getElementsByTagName("META")[2].content, "title":element.value});
-                loadDoc("PATCH","/project/{!!$project['id']!!}/title",message,showTitleChange);
+                makePatchRequest("/project/{!!$project['id']!!}/title",message,showTitleChange);
             }
         }
 
@@ -238,7 +237,7 @@ body{
             }
             else{
                 var message = JSON.stringify({"title":element.value});
-                loadDoc("PATCH","/project/{{ $project['id']}}/description",message,showDescChange);
+                makePatchRequest("/project/{{ $project['id']}}/description",message,showDescChange);
             }
         }
 
@@ -250,7 +249,7 @@ body{
             var message = JSON.stringify({"admin":"1"});
             element.innerHTML = "remove_circle";
             element.onclick = function () { removeAdmin(id,element);};
-            loadDoc("PATCH","/project/{{ $project['id']}}/member/"+id,message,showAdminAdd);
+            makePatchRequest("/project/{{ $project['id']}}/member/"+id,message,showAdminAdd);
         }
 
         function showAdminRemove(xhttp){
@@ -261,7 +260,7 @@ body{
             var message = JSON.stringify({"admin":"0"});
             element.innerHTML = "group_add";
             element.onclick = function () { addAdmin(id,element);};
-            loadDoc("PATCH","/project/{{ $project['id']}}/member/"+id,message,showAdminRemove);
+            makePatchRequest("/project/{{ $project['id']}}/member/"+id,message,showAdminRemove);
         }
 
         function showAdminRemove(xhttp){
@@ -274,7 +273,7 @@ body{
 
         function deleteMember(id,element){
             element.parentNode.removeChild(element);
-            loadDoc("DELETE","/project/{{ $project['id']}}/member/"+id,null,showDeleteMember);
+            //loadDoc("DELETE","/project/{{ $project['id']}}/member/"+id,null,showDeleteMember);
         }
 
         function displayStatus(xhttp) {
@@ -289,7 +288,7 @@ body{
              });
              newDiv += "<div class='card status-div text-center task-card' data-toggle='modal' data-target='#addStatusModal'>+</div>";
              document.getElementById("status-list").innerHTML = newDiv;
-             loadDoc("GET","/project/{{ $project['id'] }}/tasks",displayTasks);
+             makeGetRequest("/project/{{ $project['id'] }}/tasks",displayTasks);
         }
 
         function displayTasks(xhttp) {
@@ -314,7 +313,7 @@ body{
                     var progress = document.createElement("DIV");
                     progress.classList.add("progress");
                     var progressbar = document.createElement("DIV");
-                    progressbar.classList.add("progress-bar","bg-success","progress-bar-striped");
+                    progressbar.classList.add("determinate");
                     progressbar.style.width = Math.ceil((key.checklist_done/key.checklist_item_count)*100) + "%";
                     console.log(progressbar.style.width);
                     progress.appendChild(progressbar);
@@ -329,20 +328,9 @@ body{
                 console.log("Phew!! Done.")
              });
         }
-        
-        function loadDoc(method,url,callFunction) {
-            var xhttp;
-            xhttp=new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    callFunction(this);
-                }
-            };
-            xhttp.open(method, url, true);
-            xhttp.send();
-        }
 
-        loadDoc("GET","/project/{!! $project['id'] !!}/statuses",displayStatus);
+
+        makeGetRequest("/project/{!! $project['id'] !!}/statuses",displayStatus);
             
         function filterTask(){
             var startDate = new Date(2019,07,15,00,00,00);
@@ -437,6 +425,10 @@ body{
             var inputTag = document.getElementById("input_status_id");
             //console.log(id);
             inputTag.value = id;
+        }
+
+        function stopClosingDropDown(event){
+            event.preventDefault()
         }
     </script>
 

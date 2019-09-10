@@ -64,17 +64,25 @@ i{
     border-bottom:0;
     background-color:#fff !important;
 }
+#responseMessage{
+    display:none;
+}
+#toast-container {
+  top: auto !important;
+  right: auto !important;
+  bottom: 10%;
+  left:7%;  
+}
 @endsection
 
 @section('full-content')
 
 <div class="container">
     <div>
-        @if (session('status'))
-            <div class="alert alert-success" role="alert">
-                {{ session('status') }}
-            </div>
-        @endif
+        <div class="alert alert-success" role="alert" id="responseMessage">
+                <span id="responseContent"></span>
+                <i class="material-icons right" onclick="closeResponseMessage()">close</i>
+        </div>
     </div>
     <div class="row text-center create-form">
     <ul class="collapsible collHead col s6 m6 l6 xl6" data-collapsible="expandable">
@@ -86,26 +94,18 @@ i{
                             @csrf
                             
                                 <div class="input-field col s12">
-                                <input id="name" type="text" class="form-control" name="title" required>
-                                <label for="title">Title</label>
-                                    @error('title')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
+                                    <input id="title" type="text" class="form-control" name="title" required autocomplete="off">
+                                    <label for="title">Title</label>
+                                        <span class="invalid-feedback" id="invalidTitle" role="alert"></span>
                                 </div>
                             
                                 <div class="input-field col s12">
-                                <textarea id="description" class="materialize-textarea" name="description"></textarea>
-                                <label for="description">Description (optional)</label>
-                                    @error('description')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
+                                    <textarea id="description" class="materialize-textarea" name="description" autocomplete="off"></textarea>
+                                    <label for="description">Description (optional)</label>
+                                        <span class="invalid-feedback" id="invalidDesc" role="alert"></span>
                                 </div>
                             
-                                <button type="submit" class="btn waves-effect waves-light light-blue">Create</button>
+                                <button type="button" class="btn waves-effect waves-light light-blue" onclick="validateProject()">Create</button>
                             
                     </form>
 
@@ -114,15 +114,15 @@ i{
     </ul>
     </div>
     <div class="row">
-        <h5 class="text-white star-head"><i class="material-icons yellow-text">star</i>Starred Projects</h5>
+        <h5 class="text-black star-head">Starred Projects</h5>
         <div class="align-center" id="star-list">
-            <h6 class="text-white" id="star-text">Star your important projects to find them here!</h6>
+            <h6 class="text-black" id="star-text">Star your important projects to find them here!</h6>
         </div>
     </div>
     <div class="row">
-        <h5 class="text-white">All Projects</h5>    
+        <h5 class="text-black">All Projects</h5>    
         <div id="project">
-            Once you create a project, it will show up here! 
+            <h6 class="text-black" id="star-text">Once you create a project, it will show up here!</h6>
         </div>
     </div>
 </div>
@@ -154,6 +154,13 @@ i{
 
 </div>
 
+@if (session('status'))
+    <script>
+        M.toast({html: {{ session('warning') }},classes: 'rounded'});
+    </script>
+@endif
+
+
 <script>
     var newDiv="",projectsText;
     $(document).ready(function(){
@@ -162,12 +169,111 @@ i{
         $('.collapsible').collapsible();
     });
 
-    function myFunction(xhttp) {
+    function closeValidationMessage(){
+        document.getElementById("alertMessage").style.display = "none";
+    }
+
+    function closeResponseMessage(){
+        document.getElementById("responseMessage").style.display = "none";
+    }
+
+    function showNewProject(xhttp){
+        var key = JSON.parse(xhttp.responseText);
+        if(key.message == "success"){
+            document.getElementById("title").value = null;
+            document.getElementById("description").value = null;
+            $('.collapsible').collapsible('close', 0);
+            var text = '<div class="col s12 m6 l3 xl3" onclick="redirect('+key.id+')" id="project-'+key.id+'"><div class="card" onmouseover="showOps(this)" onmouseout="hideOps(this)">';
+            text+='<div class="card-image">';
+            text+='<img src="'+key.background+'">';
+            text+='<div class="card-title projectTitle">';
+            text+='<span class="projectName truncate">'+key.title+'</span>';
+            text+='<div class="projectOps"><i class="material-icons right none" id="unstar-'+key.id+'" onclick="starProject(event)">star_border</i>';
+            text+='<i class="material-icons right none" id="report-'+key.id+'" onclick="reportProject(event)">file_download</i>';
+            //text+='<i class="material-icons right none" id="delete-'+key.id+'" onclick="deleteProject(event)">delete</i></div>';
+            text+='</div></div></div></div></div>';
+            htmlElement = $.parseHTML(text);
+            $("#projectList").prepend(htmlElement);
+        }
+        else if(key.message == "errors"){
+            var titleError = key.errors.title;
+            var descError = key.errors.description;
+            if(titleError){
+                var ele = document.getElementById("invalidTitle");
+                titleError.forEach(function(key,index){
+                    console.log(titleError[index]);
+                    ele.innerHTML += "<p><strong>"+titleError[index]+"</strong></p>";
+                });
+                ele.style.display = "block";
+            }
+            if(descError){
+                var ele = document.getElementById("invalidDesc");
+                descError.forEach(function(key,index){
+                    console.log(descError[index]);
+                    ele.innerHTML += "<p><strong>"+descError[index]+"</strong></p>";
+                });
+                ele.style.display = "block";
+            }
+        }
+        else{
+            M.toast({html: response.message, classes: 'rounded'});
+        }
+    }
+
+    function validateTitle(){
+        var title = document.getElementById("title").value;
+        var ele = document.getElementById("invalidTitle");
+        if(title.length >= 30){
+            ele.innerHTML = "<strong>The title should not be more than 30 letters.</strong>";
+            ele.style.display = "block";
+            return false;
+        }
+        else {
+            ele.innerHTML = "";
+            ele.style.display = "none";
+            return true;
+        }
+        return true;
+    }
+
+    function validateDesc(){
+        var desc = document.getElementById("description").value;
+        var ele = document.getElementById("invalidDesc");
+        if(desc.length != 0 && desc.length > 255){
+            ele.innerHTML = "<strong>The description should not be more than 255 letters.</strong>";
+            ele.style.display = "block";
+            return false;
+        }
+        else {
+            ele.innerHTML = "";
+            ele.style.display = "none";
+            return true;
+        }
+    }
+
+    function validateProject(){
+        var title = validateTitle();
+        var desc = validateDesc();
+        if(title && desc){
+            var title = document.getElementById("title").value;
+            var desc = document.getElementById("description").value;
+            var message;
+            if(desc.length != 0){
+                message = JSON.stringify({"title":title,"description":desc});
+            }
+            else{
+                message = JSON.stringify({"title":title});
+            }
+            makePostRequest("/projects",message,showNewProject);
+        }
+    }
+    
+    function displayProjects(xhttp) {
         
          var projectsText = JSON.parse(xhttp.responseText);
 
          if(projectsText['projects'].length !=0 ){
-            var rowDiv = '<div class="projectRow row">';
+            var rowDiv = '<div class="projectRow row" id="projectList">';
             projectsText['projects'].forEach(function(key,index){  
                 var text = '<div class="col s12 m6 l3 xl3" onclick="redirect('+key.id+')" id="project-'+key.id+'"><div class="card" onmouseover="showOps(this)" onmouseout="hideOps(this)">';
                 text+='<div class="card-image">';
@@ -176,8 +282,8 @@ i{
                 text+='<span class="projectName truncate">'+key.title+'</span>';
                 text+='<div class="projectOps"><i class="material-icons right none" id="unstar-'+key.id+'" onclick="starProject(event)">star_border</i>';
                 text+='<i class="material-icons right none" id="report-'+key.id+'" onclick="reportProject(event)">file_download</i>';
-                text+='<i class="material-icons right none" id="delete-'+key.id+'" onclick="deleteProject(event)">delete</i></div>';
-                text+='</div></div></div></div>';
+                //text+='<i class="material-icons right none" id="delete-'+key.id+'" onclick="deleteProject(event)">delete</i></div>';
+                text+='</div></div></div></div></div>';
 
                 rowDiv = rowDiv + text;
             });
@@ -203,7 +309,45 @@ i{
     }
 
         function checkStar(xhttp){
-            //console.log(JSON.parse(xhttp.responseText));
+            var response = JSON.parse(xhttp.responseText);
+            if (response.message == "success"){
+                if(response.star == 1){
+                star = document.getElementById("unstar-"+response.id);
+                star.innerHTML = "star";
+                star.classList.remove("none");
+                star.classList.add("yellow-text");
+                star.style.display = "block";
+                var pid = "project-"+response.id;
+                var project = document.getElementById(pid);
+                var project = project.cloneNode(true);
+                var starredStar = project.querySelector("#unstar-"+response.id);
+                starredStar.id = "starred-"+response.id;
+                project.id = "starProject-"+response.id;
+                document.getElementById("star-list").appendChild(project);
+                document.getElementById("star-text").style.display = "none";
+                }
+                else{
+                    star = document.getElementById("unstar-"+response.id);
+                    var sid = "unstar-"+response.id;
+                    star = document.getElementById(sid);
+                    star.innerHTML = "star_border";
+                    star.classList.add("none");
+                    star.classList.remove("yellow-text");
+                    star.style.display = "none";
+                    var spid = "starProject-"+response.id;
+                    var starProject = document.getElementById(spid);
+                    starProject.parentNode.removeChild(starProject);
+                    console.log(document.getElementById("star-list").childElementCount);
+                    if(document.getElementById("star-list").childElementCount == 1){
+                        document.getElementById("star-text").style.display = "block";
+                }
+            }
+            }
+            else{
+                // document.getElementById("responseContent").innerHTML += response.message;
+                // document.getElementById("responseMessage").style.display = "block";
+                M.toast({html: response.message, classes: 'rounded'});
+            }
         }
 
         function starProject(event){
@@ -216,39 +360,17 @@ i{
 
             //starring the project
             if(star.innerHTML == "star_border"){        
-                star.innerHTML = "star";
-                star.classList.remove("none");
-                star.classList.add("yellow-text");
-                star.style.display = "block";
-                var pid = "project-"+id;
-                var project = document.getElementById(pid);
-                var project = project.cloneNode(true);
-                var starredStar = project.querySelector("#unstar-"+id);
-                starredStar.id = "starred-"+id;
-                project.id = "starProject-"+id;
-                document.getElementById("star-list").appendChild(project);
-                document.getElementById("star-text").style.display = "none";
+                
                 message = JSON.stringify({"star":1});
             }
 
             //unstarring the project
             else{
-                var sid = "unstar-"+id;
-                star = document.getElementById(sid);
-                star.innerHTML = "star_border";
-                star.classList.add("none");
-                star.classList.remove("yellow-text");
-                star.style.display = "none";
-                var spid = "starProject-"+id;
-                var starProject = document.getElementById(spid);
-                starProject.parentNode.removeChild(starProject);
-                console.log(document.getElementById("star-list").childElementCount);
-                if(document.getElementById("star-list").childElementCount == 1){
-                    document.getElementById("star-text").style.display = "block";
-                }
+                
+                
                 message = JSON.stringify({"star":0});
             }
-            loadDoc("PATCH","/project/"+id+"/star",message,checkStar);
+            makePatchRequest("/project/"+id+"/star",message,checkStar);
         }
 
         function updateReport(xhttp){
@@ -267,7 +389,7 @@ i{
             var div = event.target;
             var did = div.id.split("-");
             var id = did[1];
-            loadDoc("GETPDF","/project/"+id+"/report",null,updateReport);
+            makeGetRequestForPDF("/project/"+id+"/report",updateReport);
         }
 
         function deleteProject(event){
@@ -289,7 +411,7 @@ i{
             }
         }
 
-    loadDoc("GET","/projects",null,myFunction);
+    makeGetRequest("/projects",displayProjects);
         
     function redirect(id){
         window.location.href = "/project/"+id;

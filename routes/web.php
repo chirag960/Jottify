@@ -10,7 +10,9 @@
 |
 */
 
-Auth::routes(['verify' => true]);
+Auth::routes();
+
+Route::get('/user/verify/{token}', 'Auth\RegisterController@verifyUser');
 
 Route::get('/project/{id}/sendmembers','ProjectController@invite');
 
@@ -34,25 +36,25 @@ Route::get('/', function () {
 
 Route::get('/profile',function(){
     return view('profile');
-});
+})->middleware('auth');
 
-Route::patch('/profile','ProfileController@update');
+Route::patch('/profile','ProfileController@update')->middleware('auth');
 
 Route::get('/projectAndTask','TaskController@titlesList');
 
-Route::get('/home', 'HomeController@index')->middleware('verified')->name('home');
+Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
 
 Route::patch('/user', 'ProfileController@update');
 
 Route::post('/user/Image', 'ProfileController@updateImage');
 
-Route::get('/projects', 'ProjectController@index')->middleware('verified');
+Route::get('/projects', 'ProjectController@index')->middleware('auth');
 
-Route::post('/projects', 'ProjectController@create')->middleware('verified');
+Route::post('/projects', 'ProjectController@create')->middleware('auth');
 
 //Route::get('/project/{id}','ProjectController@sendMail');
 
-Route::middleware('verified','checkProject')->group(function(){
+Route::middleware('auth','checkProject')->group(function(){
 
     Route::get('/project/{id}','ProjectController@getProjectDetails');
 
@@ -82,7 +84,7 @@ Route::middleware('verified','checkProject')->group(function(){
 
 });
 
-Route::middleware('verified','checkProject','checkProjectAdmin')->group(function(){
+Route::middleware('auth','checkProject','checkProjectAdmin')->group(function(){
 
     Route::post('/project/{id}/task','TaskController@create');
 
@@ -96,7 +98,7 @@ Route::middleware('verified','checkProject','checkProjectAdmin')->group(function
 
 });
 
-Route::middleware('verified','checkTask')->group(function(){
+Route::middleware('auth','checkTask')->group(function(){
 
 Route::get('/project/{project_id}/task/{id}','TaskController@getTaskDetails');
 
@@ -119,7 +121,7 @@ Route::post('/project/{project_id}/task/{id}/checklist','ChecklistController@cre
 });
 
 
-Route::middleware('verified','checkTask','checkTaskAdmin')->group(function(){
+Route::middleware('auth','checkTask','checkTaskAdmin')->group(function(){
 
     Route::post('/project/{project_id}/task/{id}/duedate','TaskController@createduedate');
 

@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Task extends Model
 {
     //
-    protected $table = 'task';
-    public $timestamps = false;
+    protected $table = 'tasks';
+    public $timestamps = true;
     
     protected $fillable = [
-        'status_id','description','due_date','checklist_done','checklist_item_count'
+        'status_id','description','due_date','attachment_count','comment_count','checklist_done','checklist_item_count'
     ];
     
     public function users(){

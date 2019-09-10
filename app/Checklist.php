@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Checklist extends Model
 {
     //
-    protected $table = 'checklist';
+    protected $table = 'checklists';
     protected $fillable = ['completed'];
     public $timestamps = false;
 

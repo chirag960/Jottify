@@ -34,9 +34,9 @@ else if(item_text.length < 1){
 else{
     var item_text_json = JSON.stringify({"message":item_text});
     console.log(item_text_json);
-    loadDoc("POST","/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/checklist",item_text_json,displayaddedItem);
+    makePostRequest("/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/checklist",item_text_json,displayaddedItem);
     document.getElementById("item_name").value = null;
-    $('#addItemModal').modal('hide');
+    //$('#addItemModal').modal('hide');
 }
 
 }

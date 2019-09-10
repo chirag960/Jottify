@@ -4,6 +4,12 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Mail;
+use Symfony\Component\Debug\Exception\FlattenException;
+use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
+use App\Mail\ExceptionMail;
 
 class Handler extends ExceptionHandler
 {
@@ -14,6 +20,12 @@ class Handler extends ExceptionHandler
      */
     protected $dontReport = [
         //
+        \Illuminate\Auth\AuthenticationException::class,
+        \Illuminate\Auth\Access\AuthorizationException::class,
+        \Symfony\Component\HttpKernel\Exception\HttpException::class,
+        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
+        \Illuminate\Session\TokenMismatchException::class,
+        \Illuminate\Validation\ValidationException::class,
     ];
 
     /**
@@ -34,6 +46,9 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        if ($this->shouldReport($exception)) {
+            $this->sendEmail($exception); // sends an email
+        }
         parent::report($exception);
     }
 
@@ -46,6 +61,36 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if($this->shouldReport($exception)){
+            $url = $request->url();
+            if ($url == "http://site.test/login" || $url == "http://site.test/register" || $url == "http://site.test/home"){
+                return response()->view('errors.500');
+            }
+            return response()->json(['message' => 'Something went wrong'],200);
+        }
+
         return parent::render($request, $exception);
+    }
+
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+ 
+        return redirect()->guest(route('login'));
+    }
+
+    public function sendEmail(Exception $exception)
+    {
+        try{
+        $e = FlattenException::create($exception);
+        $handler = new SymfonyExceptionHandler();
+        $html = $handler->getHtml($e);
+        Mail::to('tellodotcom@gmail.com')->send(new ExceptionMail($html));
+        }
+        catch(Exception $e){
+
+        }
     }
 }

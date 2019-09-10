@@ -15,7 +15,14 @@ class CreateAttachmentsTable extends Migration
     {
         Schema::create('attachments', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->unsignedBigInteger('task_id');
+            $table->unsignedBigInteger('user_id');
+            $table->string('type',10);
+            $table->string('location');
+            $table->timestamp('created_at')->useCurrent();
+
+            $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

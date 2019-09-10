@@ -21,7 +21,7 @@ class CheckProject
                     ->where([['member_id','=',auth()->id()],['project_id','=',$request->id]])
                     ->first();
         if(!$exists){
-            return redirect('notFound');
+            return response()->view('errors.404');
         }
         else{
             return $next($request);    

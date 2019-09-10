@@ -27,7 +27,7 @@ class checkTask
         ->first();
         //dd($existsTask == null);
         if(!$existsMember || !$existsTask){
-            return redirect('notFound');
+            return response()->view('errors.404');
         }
         else{
             return $next($request);    

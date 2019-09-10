@@ -10,6 +10,7 @@ use App\Status;
 use App\User;
 use App\Jobs\SendEmails;
 use PDF;
+use Validator;
 
 class ProjectService{
 
@@ -34,8 +35,19 @@ class ProjectService{
 
     public function create(Request $request){
 
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:3|max:30|required',
+            'description' => 'sometimes|max:255',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(array(
+                'message' => "errors",
+                'errors' => $validator->getMessageBag()->toArray()), 400);
+        }
+        else{
         $project = new Project;
-        $project-> user_id = auth()->id();
+        $project->user_id = auth()->id();
         $project->title = $request->title;
         if(isset($request->description)){
             $project->description = $request->description;
@@ -46,6 +58,7 @@ class ProjectService{
         SendEmails::dispatch($user,"inviteToProject",$project);
 
         $project_id = $project->id;
+
         $projectHasMember = new ProjectHasMember;
         $projectHasMember->project_id = $project_id;
         $projectHasMember->member_id = auth()->id();
@@ -75,9 +88,11 @@ class ProjectService{
         $status->title = "Completed";
         $status->order = 3;
         $status->save();
-            
-        return $project_id;
+        
+        $background = "/media/project_background/default.jpg";
 
+        return response()->json(["message"=>"success","id"=>$project_id,"title"=>$project->title,"background"=>$background],201);
+    }
 
     }
 
@@ -137,7 +152,11 @@ class ProjectService{
         $update = ProjectHasMember::where('project_id',$id)
                                     ->where('member_id',auth()->id())
                                     ->update(['star' =>$change]);
-        return "success";
+        $response = array();
+        $response['message'] = "success";
+        $response['star'] = $request->star;
+        $response['id'] = $id;
+        return $response;
     }
 
     public function updateTitle(Request $request,$id){

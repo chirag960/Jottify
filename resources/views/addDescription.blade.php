@@ -51,8 +51,14 @@ else if(description_text.length < 1){
 else{
     var description_text_json = JSON.stringify({"message":description_text});
     console.log(description_text_json);
-    loadDoc(method,"/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/description",description_text_json,updateDescription);
-    $('#addDescriptionModal').modal('hide');
+    if(method=='patch'){
+        makePatchRequest("/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/description",description_text_json,updateDescription);
+    }
+    else{
+        makePostRequest("/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/description",description_text_json,updateDescription);
+    }
+    
+    //$('#addDescriptionModal').modal('hide');
 }
 
 }

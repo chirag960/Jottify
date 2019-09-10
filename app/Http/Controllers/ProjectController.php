@@ -29,9 +29,10 @@ class ProjectController extends Controller
     }
 
     public function create(Request $request){
-        $project_id = $this->projectService->create($request);
+        $response = $this->projectService->create($request);
+            return $response;
         //return redirect()->action('ProjectController@sendMail',['email' => Auth::user()->email]);
-        return response()->redirectToAction('ProjectController@getProjectDetails',['id' => $project_id]);
+        //return response()->redirectToAction('ProjectController@getProjectDetails',['id' => $project_id]);
 
     }
 

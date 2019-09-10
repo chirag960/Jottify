@@ -68,7 +68,7 @@
             console.log("the filename inside for loop is : " + file);
         });
         console.log("the formdata is : " + formData);
-        loadDoc("POST2","/user/Image",formData,updateImage);
+        makePostRequestForImages("/user/Image",formData,updateImage);
     }
 
     function updateImage(xhttp){
@@ -85,7 +85,7 @@
         else{
             console.log("not same");
             var message = JSON.stringify({"name":element.value});
-            loadDoc("PATCH","/profile",message,showNameChange);
+            makePatchRequest("/profile",message,showNameChange);
         }
     }
 

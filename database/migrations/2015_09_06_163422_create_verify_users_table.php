@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProjectHasMembersTable extends Migration
+class CreateVerifyUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class CreateProjectHasMembersTable extends Migration
      */
     public function up()
     {
-        Schema::create('project_has_members', function (Blueprint $table) {
-            $table->bigIncrements('id');
+        Schema::create('verify_users', function (Blueprint $table) {
+            $table->integer('user_id');
+            $table->string('token');
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ class CreateProjectHasMembersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('project_has_members');
+        Schema::dropIfExists('verify_users');
     }
 }

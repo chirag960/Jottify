@@ -36,8 +36,8 @@
 
             .navbar-brand{
                 position: absolute;
-                left: 50%;
-                margin-left: -50px !important;
+                left: 5%;
+                margin-left: -5px !important;
                 display: block;
                 font-size: 2.4rem;
             }
@@ -138,7 +138,7 @@
             <div class="navbar-fixed">
             <nav>
             <div class="nav-wrapper">
-                <a href="/" class="navbar-brand appName left-align">Jottify</a>
+                <a href="/" class="navbar-brand appName">Jottify</a>
                 <ul id="nav-mobile" class="right ">
                         @if (Route::has('login'))
                             @auth
