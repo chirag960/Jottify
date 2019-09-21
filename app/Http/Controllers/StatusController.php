@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Status;
+use App\Models\Status;
 use Illuminate\Support\Facades\DB;
 use App\Services\StatusService;
+use Validator;
 
 class StatusController extends Controller
 {
@@ -16,13 +17,24 @@ class StatusController extends Controller
   }
    
     public function index($id){
-      $status = DB::table('status')->where('project_id',$id)->where('delete',false)->get();
+      $status = $this->statusService->index($id);
       return $status;
     }
 
     public function create(Request $request, $id){
-      $status= $this->statusService->create($request, $id);
-      return $status;
+        $validator = Validator::make($request->all(), [
+          'title' => 'required|min:3|max:30|required',
+      ]);
+
+      if($validator->fails()){
+          return response()->json(array(
+              'message' => "errors",
+              'errors' => $validator->getMessageBag()->toArray()), 400);
+      }
+      else{
+        $status= $this->statusService->create($request, $id);
+        return $status;
+      }
 
     }
 

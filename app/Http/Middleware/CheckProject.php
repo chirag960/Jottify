@@ -17,7 +17,7 @@ class CheckProject
     public function handle($request, Closure $next)
     {
         //dd($request);
-        $exists = DB::table('project_has_member')
+        $exists = DB::table('project_has_members')
                     ->where([['member_id','=',auth()->id()],['project_id','=',$request->id]])
                     ->first();
         if(!$exists){

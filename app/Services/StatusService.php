@@ -4,10 +4,9 @@ namespace App\Services;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Project;
-use App\Status;
-use App\User;
-
+use App\Models\Project;
+use App\Models\Status;
+use App\Models\User;
 
 class StatusService{
 
@@ -17,26 +16,42 @@ class StatusService{
         $this->status = $status;
     }
 
+    public function index($id){
+      $status = Status::where('project_id',$id)->where('archived',false)->orderBy('order')->get();
+      return $status;
+    }
+
     public function create(Request $request, $id){
-        $statuses = DB::table('status')->where('project_id',$id)->get();
+        $statuses = Status::where('project_id',$id)->get();
         $count = count($statuses);
-        
+        $order;
+        if($request->status_id == "new"){
+            $order = 0;
+            $beforeStatusId = -1;
+        }
+        else{
+            $beforeStatus = Status::where('id',$request->status_id)->first();
+            $order = $beforeStatus->order;
+            $beforeStatusId = $beforeStatus->id;
+            $order+=1;
+        }
         $status = new Status;
         $status->project_id = $id;
         $status->title = $request->title;
-        $status->order = $request->order;
+        $status->order = $order;
         
-        if($count == $request->order){
+        if($count == $order){
             $status->save();
-            return $status;
         }
-        else if($count > $request->order){
+        else if($count > $order){
             $update = Status::where('project_id',$id)
-                    ->where('order','>=',$request->order)
+                    ->where('order','>=',$order)
                     ->increment('order');
             $status->save();
-            return $status;
         }
+        return response()->json(
+            ['message'=>'success','id'=>$status->id,'beforeStatusId'=>$beforeStatusId,'title'=>$request->title,'order'=>$order]
+            ,201);
     }
 
     public function update(Request $request, $project_id, $id){

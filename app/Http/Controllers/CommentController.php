@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Task;
-use App\User;
+use App\Models\Task;
+use App\Models\User;
 use App\Services\CommentService;
+use Validator;
 
 class CommentController extends Controller
 {
@@ -22,7 +23,19 @@ class CommentController extends Controller
     }
 
     public function create(Request $request,$project_id, $id){
-        $values = $this->commentService->create($request,$project_id, $id);
-        return $values;
+        $validator = Validator::make($request->all(), [
+            'comment' => 'required|max:255|required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(array(
+                'message' => "errors",
+                'errors' => $validator->getMessageBag()->toArray()), 400);
+        }
+        else{
+            $values = $this->commentService->create($request,$project_id, $id);
+            return $values;
+        }
+        
     }
 }

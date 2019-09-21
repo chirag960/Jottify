@@ -1,16 +1,7 @@
 @extends('layouts.app')
 
-@section('styles')
-.hideMessage{
-    display:none;
-}
-
-#toast-container {
-    top: auto !important;
-    right: auto !important;
-    bottom: 10%;
-    left:7%;  
-  }
+@section('style-link')
+<link href="{{ asset('css/auth.css') }}" rel="stylesheet">
 @endsection
 
 @section('full-content')
@@ -79,12 +70,12 @@
 </div>
 @if (session('status'))
 <script>
-     M.toast({html: {{ session('status') }}, classes: 'rounded'});
+     M.toast({html:"{{ session('status') }}", classes: 'rounded'});
 </script>
 @endif
 @if (session('warning'))
     <script>
-        M.toast({html: {{ session('warning') }},classes: 'rounded'});
+        M.toast({html:"{{ session('warning') }}",classes: 'rounded'});
     </script>
 @endif
 

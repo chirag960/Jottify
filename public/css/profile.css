@@ -1,0 +1,13 @@
+.row{
+    display:block;
+}
+.profile-image{
+    float:none;
+}
+.edit-image{
+    float:right;
+}
+.edit-button{
+    position:relative;
+    top:10px;
+}

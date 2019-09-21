@@ -1,0 +1,15 @@
+.hideMessage{
+    display:none;
+}
+.centro{
+    text-align:center;
+}
+.not-allowed{
+    cursor:not-allowed;
+}
+#toast-container {
+    top: auto !important;
+    left: auto !important;
+    bottom: 10%;
+    right: 7%;
+}

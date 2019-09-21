@@ -1,75 +1,29 @@
 @extends('layouts.app')
 
-@section('styles')
+@section('style-link')
+<link href="{{ asset('css/project.css') }}" rel="stylesheet">
 
-body{
-    min-height:auto;
-}
-
-.project-bar{
-    height:50px;
-    width:100%;
-    position:fixed;
-    margin-top:20px;
-}
-
-.go-inline{
-    float:left;
-}
-.status-card-container{
-    margin-top:60px;
-    display:flex;
-  	flex-direction: row;
-  	flex-wrap: nowrap;
-  	white-space:nowrap;
-}
-.status-div{
-    flex: 0 0 272px;
-    min-height:30px;
-    height:auto !important;
-    margin:10px;
-}
-.status-name{
-    width:272px;
-    padding:0;
-    margin-left:10px;
-    margin-right:10px;
-}
-.card-header{
-    text-overflow:ellipses;
-}
-.secondary-content{
-    right:0px !important;
-}
-.admin-icons{
-    margin-right:0px;
-}
-.btn-primary-outline{
-    float:right;
-}
-.btn-primary-outline:hover{
-    background:#afafaf;
-}
-#members-list{
-    position:relative;
-    z-index:2;
-}
-.task-card:hover{
-    background:#afafaf;
-    cursor:pointer;
-}
-
-.addTask:hover{
-    cursor:pointer;
-    text-decoration: underline;
-}
 @endsection
 
 @section('full-content')
-<div class="project-bar row white-text">
+
+<div class="fixed-action-btn">
+    <a class="btn-floating btn-large red">
+        <i class="large material-icons">mode_edit</i>
+    </a>
+    <ul>
+        <li><a class="btn-floating red tooltipped" data-position="left" data-tooltip="project settings"><i href="#" data-target="slide-out" class="material-icons sidenav-trigger show-on-large right">settings</i></a></li>
+        @if($project['role']==1)
+        <li><a class="btn-floating yellow darken-1 tooltipped" data-position="left" data-tooltip="invite members"><i class="material-icons modal-trigger" href="#addInviteProjectModal" >person_add</i></a></li>
+        @endif
+        <li><a class="btn-floating green tooltipped" data-position="left" data-tooltip="add task" ><i class="material-icons" onclick="openTaskModal()">playlist_add</i></a></li>
+        <li><a class="btn-floating blue tooltipped" data-position="left" data-tooltip="add status"><i class="material-icons modal-trigger" href="#addStatusModal">label_outline</i></a></li>
+    </ul>
+</div>
+<div class="project-bar row">
     <!-- Left Side Of Navbar -->
     <div class="col s12 m6 l6 xl6">
-            <span id="nav-title">{{ $project['title'] }}</span>  <!-- Make this remanable -->
+            <span class="project-title">{{ $project['title'] }}</span>  <!-- Make this remanable -->
             <!--
             @if ($project['star'] == 1)
             <i class="material-icons yellow-text" onclick="toggleStar(this)">star</i>
@@ -77,13 +31,11 @@ body{
             <i class="material-icons" onclick="toggleStar(this)">star_border</i>
             @endif
             -->
-            <a class="waves-effect waves-light btn dropdown-trigger" data-target='inviteDrop'>Invite</a>
     </div>
     <!-- Right Side Of Navbar -->
     <div class="col s12 m6 l6 xl6">
-        <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large right" ><i class="material-icons text-white">menu</i></a>
         <!--i class="material-icons right">file_download</i-->
-        <a class="waves-effect waves-light btn right" onclick="filterTask()">Filter</a>
+        <!--a class="waves-effect waves-light btn right" onclick="filterTask()">Filter</a-->
         <!--button type="buttton" class="btn btn-primary" onclick="resetTask()">Reset Tasks</button-->  
     </div>
 </div>
@@ -94,342 +46,401 @@ body{
 
 <ul id="slide-out" class="sidenav">
     <li>
-        <input value="{{$project['title']}}" type="Text" class="form-control" name="title" onblur="changeTitle(this)" placeholder="Title" required>
+        <div class="user-view">
+            <div class="background">
+                <img src="{{$project['background']}}">
+            </div>
+            <a class="center-align"><span class="white-text project-title">{{$project['title']}}</span></a>
+        </div>
+                <!--input value="{{$project['title']}}" type="Text" class="form-control" name="title" onblur="changeTitle(this)" placeholder="Title" required-->
     </li>
-    <li><textarea id="description" class="materialize-textarea" name="description" onblur="changeDescription(this)">{{$project['description']}}</textarea></li>
-    <li><a href="#">Created at {{ $project['timestamp']}}</a></li>
+    <li><a><i class="material-icons">access_time</i>Created on {{ $project['created_at'] }}</a></li>
+    @isset($project['description'])
+    <li><a>{{$project['description']}}</a></li>
+    @endisset
     <li><div class="divider"></div></li>
-    <li><a class="subheader">Members</a></li>
-    <ul class="collection">
-        @foreach ($project['members'] as $member)
-            <li class="collection-item avatar col s12">
-                <img src="{{$member->photo_location}}" alt="" class="circle">
-                <span class="title">{{$member->name}}</span>
-                <!--p>{{$member->email}}</p>
-                @if($member->role == 0)
-                <a href="#!" class="secondary-content"><i class="material-icons admin-icons" onclick="addAdmin({{ $member->id}},this)">group_add</i></a>
-                @else
-                <a href="#!" class="secondary-content"><i class="material-icons admin-icons" onclick="removeAdmin({{ $member->id}},this)">remove_circle</i></a>
-                @endif
-                <a href="#!" class=""><i class="material-icons" onclick="deleteMember({{ $member->id}},this)">delete</i></a-->
-            </li>    
-        @endforeach   
-    </ul>
+    <li id="members-heading">All Members</li>
+    
+        @if(count($project['members']) != 0)
+            <ul class="collection" id="members-list">
+            @foreach ($project['members'] as $member)
+            <li class="collection-item avatar min-height-auto" id="member-{{$member->id}}" onmouseover="showOps(this)" onmouseout="hideOps(this)">
+                    @if($member->id == auth()->user()->id)
+        
+                            <img src="{{$member->photo_location}}" alt="" class="circle">
+                        
+                        <span class="title">You</span>
+                        <p>{{$member->email}}</p>
+                    @else
+                        
+                        <img src="{{$member->photo_location}}" alt="" class="circle">
+                        
+                        <span class="title">{{$member->name}}</span>
+                        <p>{{$member->email}}</p>
+                        @if($project['role']==1)
+                            <div class="overlay-options">
+                        @if($member->role == 0)
+                            <i title="make admin" class="material-icons member-options" id="admin-{{$member->id}}" onclick="addAdmin({{ $member->id}},this)">group_add</i>
+                        @else
+                            <i title="remove as admin" class="material-icons member-options" id="admin-{{$member->id}}" onclick="removeAdmin({{ $member->id}},this)">remove_circle</i>
+                        @endif
+                        <i title="remove from project" class="material-icons member-options" id="delete-{{$member->id}}" onclick="deleteMember({{ $member->id}},this)">delete</i>
+                            </div>
+                        @endif
+                    @endif
+                </li>    
+            @endforeach
+            </ul>
+        @else 
+            <li><a>Invite members to the project</a></li>
+        @endif
   </ul>
 
-<div class="modal fade" id="newTaskForm" role="dialog">
-        <div class="modal-dialog">
-        
-          <!-- Modal content-->
-          <div class="modal-content">
-          <div class="modal-body">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <p class="text-center">Create new Task</p>
-          <form method="POST" action="/project/{{$project['id']}}/task">
-                @csrf
-                    <input type="hidden" name="status_id" id="input_status_id">
-                <div class="form-group">
-                    <label for="title">Title</label>
-                    <input id="sideTitle" type="Text" class="form-control" name="title" placeholder="Title" required >
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <input id="sideDesc" type="textarea" class="form-control" name="description" placeholder="Description (optional)">
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-          </form>
-          </div>
-        </div>
-      </div>
-</div>
+@include('inviteProjectModal')
 
-<div class="modal fade" id="addStatusModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-      <div class="modal-body">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <p class="text-center">Create new Status</p>
-      <form method="POST" action="/project/{{$project['id']}}/status">
-            @csrf
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="Text" class="form-control" name="title" placeholder="Title" required >
-            </div>
-            <div class="form-group">
-                <label for="description">Description</label>
-                <input type="textarea" class="form-control" name="description" placeholder="Description (optional)">
-            </div>
-            <button type="button" class="btn btn-primary" onclick="createStatus()">Submit</button>
-      </div>
-      
-    </div>
-  </div>
+@include('statusModal')
 
+@include('taskModal')
 
-</div>
+@endsection
 
-@include('inviteMember')
-
-@include('inviteDrop')
+@section('links')
+<script type="text/javascript" src="{{ asset('js/project/sidenav.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/project/validation.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/project/inviteProject.js') }}"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('.sidenav');
-    var instances = M.Sidenav.init(elems, {edge: 'right',draggable: true,});
-    $('.dropdown-trigger').dropdown();
-    $('.chips-placeholder').chips({
-    placeholder: 'Enter a tag',
-    secondaryPlaceholder: '+Tag',
-  });
-  });
-        var project_id = "{!! $project['id'] !!}";
-        console.log(project_id);
-        var projectsText;
-        var membersText;
-        var tasksText;
-        var hiddenTasks = [];
 
-        /*
-        function checkStar(xhttp){
-            console.log(xhttp.responseText);
-        }
-
-        function toggleStar(element){
-            if(element.innerHTML == "star_border"){
-                element.innerHTML = "star";
-                element.classList.add("yellow-text");
-                var message = JSON.stringify({"star":"1"});
-                loadDoc("PATCH","/project/{!!$project['id']!!}/star",message,checkStar);
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("searchBar").addEventListener("keyup", throttleSearchTask(showTasks, 500));
+            var elems = document.querySelectorAll('.fixed-action-btn');
+            var instances = M.FloatingActionButton.init(elems,{});
+            $('.modal').modal();
+            if($('#addInviteProjectModal').length){
+                $('#addInviteProjectModal').modal();
             }
-            else{
-                element.innerHTML = "star_border";
-                element.classList.remove("yellow-text");
-                var message = JSON.stringify({"star":"0"});
-                loadDoc("PATCH","/project/{{ $project['id']}}/star",message,checkStar);
+            $('.tooltipped').tooltip({'outDuration':0});
+            var elems = document.querySelectorAll('.sidenav');
+            var instances = M.Sidenav.init(elems, {edge: 'right',draggable: true,});
+            $('.dropdown-trigger').dropdown();
+            var elems = document.querySelectorAll('.chips-placeholder');
+            var instances = M.Chips.init(elems,{});
+            var elems = document.querySelectorAll('select');
+            var instances = M.FormSelect.init(elems, {});
+            // $('.chips-placeholder').chips({
+            //     placeholder: 'Enter a tag',
+            //     secondaryPlaceholder: '+Tag',
+            // });
+    
+        });
+
+        jQuery(document).bind("keydown", function(e){
+            if(e.ctrlKey && e.keyCode == 70){
+                e.preventDefault();
+                $('#searchBar').focus();
             }
-            console.log(message);
-        }
-        */
-
-        function showTitleChange(xhttp){
-            document.getElementById("navTitle").innerHTML = xhttp.response;
-            document.getElementById("sideTitle").innerHTML = xhttp.response;
-        }
-
-        function changeTitle(element){
-            if(element.value == "{{ $project['title'] }}"){
-
-            }
-            else{
-                var message = JSON.stringify({"_token":document.getElementsByTagName("META")[2].content, "title":element.value});
-                makePatchRequest("/project/{!!$project['id']!!}/title",message,showTitleChange);
-            }
-        }
-
-        function showDescChange(xhttp){
-            document.getElementById("sideDesc").innerHTML = xhttp.response;
-        }
-
-        function changeDescription(element){
-            if(element.value == "{{ $project['description'] }}"){
-            }
-            else{
-                var message = JSON.stringify({"title":element.value});
-                makePatchRequest("/project/{{ $project['id']}}/description",message,showDescChange);
-            }
-        }
-
-        function showAdminAdd(xhttp){
-            console.log(xhttp.responseText);
-        }
-
-        function addAdmin(id,element){
-            var message = JSON.stringify({"admin":"1"});
-            element.innerHTML = "remove_circle";
-            element.onclick = function () { removeAdmin(id,element);};
-            makePatchRequest("/project/{{ $project['id']}}/member/"+id,message,showAdminAdd);
-        }
-
-        function showAdminRemove(xhttp){
-            console.log(xhttp.responseText);
-        }
-
-        function removeAdmin(id,element){
-            var message = JSON.stringify({"admin":"0"});
-            element.innerHTML = "group_add";
-            element.onclick = function () { addAdmin(id,element);};
-            makePatchRequest("/project/{{ $project['id']}}/member/"+id,message,showAdminRemove);
-        }
-
-        function showAdminRemove(xhttp){
-            console.log(xhttp.responseText);
-        }
-
-        function showDeleteMember(xhttp){
-            console.log("deleted");
-        }
-
-        function deleteMember(id,element){
-            element.parentNode.removeChild(element);
-            //loadDoc("DELETE","/project/{{ $project['id']}}/member/"+id,null,showDeleteMember);
-        }
-
-        function displayStatus(xhttp) {
-            var statusText = JSON.parse(xhttp.responseText);
-            console.log(xhttp.responseText);
-            var newDiv = "";
-            statusText.forEach(function addToDiv(key,index){
-                newDiv += "<div class='card-panel status-name grey lighten-4'><div class='card-header'>";
-                newDiv += key.title + "<i class='material-icons dropdown-toggle right' data-toggle='dropdown'></i><ul class='dropdown-menu'><li><p href='#'>Add another status right to it</p></li><li><p href='#'>Delete status</p></li><li><p href='#'>Add task</p></li></ul></div>";
-                newDiv += "<div class='card-body' id='status-"+key.id+"'><p class='text-center addTask' data-toggle='modal' data-target='#newTaskForm'  onclick='sendID("+key.id+")'>+ Add task</p></div>";
-                newDiv += "</div>";
-             });
-             newDiv += "<div class='card status-div text-center task-card' data-toggle='modal' data-target='#addStatusModal'>+</div>";
-             document.getElementById("status-list").innerHTML = newDiv;
-             makeGetRequest("/project/{{ $project['id'] }}/tasks",displayTasks);
-        }
-
-        function displayTasks(xhttp) {
-            tasksText = JSON.parse(xhttp.responseText);
-            console.log(xhttp.responseText);
-            var taskDiv = "";
-            tasksText.forEach(function addToDiv(key,index){
-                var id = "status-"+key.status_id;
-                console.log(id);
-                var status_div = document.getElementById(id);
-                var len = status.length;
-                var taskDiv = document.createElement("DIV");
-                taskDiv.id = "task-"+key.id;
-                taskDiv.classList.add("card","task-card");
-                var card_body = document.createElement("DIV");
-                taskDiv.classList.add("card-body");
-                var title_para = document.createElement("P");
-                var textnode = document.createTextNode(key.title);
-                title_para.appendChild(textnode);
-                card_body.appendChild(title_para);
-                if(key.checklist_item_count != null){
-                    var progress = document.createElement("DIV");
-                    progress.classList.add("progress");
-                    var progressbar = document.createElement("DIV");
-                    progressbar.classList.add("determinate");
-                    progressbar.style.width = Math.ceil((key.checklist_done/key.checklist_item_count)*100) + "%";
-                    console.log(progressbar.style.width);
-                    progress.appendChild(progressbar);
-                    card_body.appendChild(progress);
-                }
-                taskDiv.appendChild(card_body);
-                taskDiv.addEventListener("click", function(){
-                    window.location.href = "/project/"+key.project_id+"/task/"+key.id;
-                }); 
-                status_div.insertBefore(taskDiv,status_div[0]);
-                //hiddenTasks.push(taskDiv);
-                console.log("Phew!! Done.")
-             });
-        }
-
-
-        makeGetRequest("/project/{!! $project['id'] !!}/statuses",displayStatus);
-            
-        function filterTask(){
-            var startDate = new Date(2019,07,15,00,00,00);
-            var endDate = new Date(2019,07,27,00,00,00);
-
-            var members = ["1"];
-
-            var startProgress = 50;
-            var endProgress = 80;
-
-            
-            var check1=true;
-            var check2=true;
-            var check3=true;
-            tasksText.forEach(function (key,index){
-                if(key.checklist_item_count != null){
-                    var progress = Math.ceil((key.checklist_done/key.checklist_item_count)*100);
-                    console.log("this is the progress"+progress+"for id"+key.id);
-                    if(checkParams(progress,startProgress,endProgress) == true){
-                        console.log("not removing because progress"+progress+"for id"+key.id);
-                        //return;
-                    }
-                    else{check1 = false;}
-                }
-                else{check1 = false;}
-                //else return;
-
-                if(key.due_date != null){
-                    var due = new Date(key.due_date);
-                    console.log("this is the due date"+due+"for id"+key.id);
-                    if(checkParams(due.getTime(),startDate.getTime(),endDate.getTime()) == true){
-                        console.log("not removing due "+due+"for id"+key.id);
-                        //return;
-                    }
-                    else{check2 = false;}
-                }
-                else{check2 = false;}
-                //else return;
-
-                var checkNotSubset = function(element){
-                    return members_array.indexOf(element) === -1;
-                }
-
-                /*
-                if(key.members != null){
-                    var members_array = key.members[0]['id'];
-                    console.log(key.members);
-                    if(members.some(checkNotSubset)){
-                        console.log(members_array);
-                        console.log("members is false for id"+key.id);
-                        return;
-                    }
-                }
-                //else return;
-                */
-                
-                console.log("This task will be shown" + key.id);
-                if((check1 == false) || (check2 == false)){
-                if(document.getElementById("task-"+key.id)){
-                    var element =document.getElementById("task-"+key.id);
-                    hiddenTasks.push(element)
-                    element.style.display = "none";
-                }
-                check1 = true;
-                check2 = true;
-                check3 = true;
+            if(e.ctrlKey && e.keyCode == 65){
+                e.preventDefault();
+                var opened = $('#addTaskModal').hasClass('open');
+                if(opened == true){
+                    $('#addTaskModal').modal('close');
                 }
                 else{
-                    document.getElementById("task-"+key.id).style.display = "block";
-
+                    openTaskModal();
                 }
+            }
+            if(e.ctrlKey && e.keyCode == 83){
+                e.preventDefault();
 
-            });
-            //console.log(hiddenTasks);
-        }
+                if($('#addStatusModal').hasClass('open')){
+                    $('#addStatusModal').modal('close');
+                }
+                else{
+                    $('#addStatusModal').modal('open');
+                }
+            }
 
-        function resetTask(){
-            hiddenTasks.forEach(function(element){
-                element.style.display = "block";
-            });
-            hiddenTasks = [];
-        }
+            
+        });
 
-        function checkParams(param, start, end){
-            if((start == null || param >= start) && (end == null || param <= end))
-                return true;
-            else 
-                return false;
-        }
-
-        function sendID(id){
-            var inputTag = document.getElementById("input_status_id");
-            //console.log(id);
-            inputTag.value = id;
-        }
-
-        function stopClosingDropDown(event){
-            event.preventDefault()
-        }
-    </script>
-
+            var statusList = new Array();
+            var project_id = "{!! $project['id'] !!}";
+            var projectsText;
+            var membersText;
+            var tasksText;
+            var hiddenTasks = [];
+    
+            makeGetRequest("/project/{!! $project['id'] !!}/statuses",displayStatus);
+            
+            /*
+            function checkStar(xhttp){
+                console.log(xhttp.responseText);
+            }
+    
+            function toggleStar(element){
+                if(element.innerHTML == "star_border"){
+                    element.innerHTML = "star";
+                    element.classList.add("yellow-text");
+                    var message = JSON.stringify({"star":"1"});
+                    loadDoc("PATCH","/project/{!!$project['id']!!}/star",message,checkStar);
+                }
+                else{
+                    element.innerHTML = "star_border";
+                    element.classList.remove("yellow-text");
+                    var message = JSON.stringify({"star":"0"});
+                    loadDoc("PATCH","/project/{{ $project['id']}}/star",message,checkStar);
+                }
+                console.log(message);
+            }
+            */
+    
+            function displayInviteMembers(xhttp){
+                var response = JSON.parse(xhttp.responseText);
+                if(response.message == "success"){
+                    $('#addInviteProjectModal').modal('close');
+                    M.toast({html: "Invitation mail sent to all members", classes: 'rounded'});
+                }
+                else if(response.message == "errors"){
+                    var membersError = response.errors.members;
+                    var messageError = response.errors.message;
+                    if(membersError){
+                        var ele = document.getElementById("invalidInviteMembers");
+                        titleError.forEach(function(key,index){
+                            ele.innerHTML += "<p><strong>"+titleError[index]+"</strong></p>";
+                        });
+                        ele.style.display = "block";
+                    }
+                    if(descError){
+                        var ele = document.getElementById("invalidTaskDesc");
+                        descError.forEach(function(key,index){
+                          
+                            ele.innerHTML += "<p><strong>"+descError[index]+"</strong></p>";
+                        });
+                        ele.style.display = "block";
+                    }
+                }
+                else{
+                    M.toast({html: response.message, classes: 'rounded'});
+                }
+            }
+    
+            function displayNewStatus(xhttp){
+        
+                var response = JSON.parse(xhttp.responseText);
+                if(response.message == "success"){
+                    document.getElementById("status-title").value = null;
+                    $('#addStatusModal').modal('close');
+    
+                    var newDiv = "";
+                    newDiv += "<div class='card-panel status-name grey lighten-4' id='status-panel-"+response.id+"'><div class='card-header'>";
+                    newDiv += response.title;
+                    // + "<i class='material-icons dropdownTrigger right' data-toggle='dropdown-status-"+response.id+"'>arrow_drop_down</i><ul id='dropdown-status-"+response.id+"' class='dropdown-content'><li><p href='#'>Add another status right to it</p></li><li><p href='#'>Delete status</p></li><li><p href='#'>Add task</p></li></ul>
+                    newDiv+= "</div>";
+                    newDiv += "<div class='card-content' id='status-"+response.id+"'><p class='text-center addTask' onclick='openTaskModal("+response.id+")'>+ Add task</p></div>";
+                    newDiv += "</div>";
+                    var newStatus = $.parseHTML(newDiv);
+                    if(response.beforeStatusId == -1){
+                        $("#status-list").prepend(newStatus);
+                    }
+                    else{
+                        $(newStatus).insertAfter($("#status-panel-"+response.beforeStatusId));
+                    }
+                    
+                    statusList.splice(response.order,0,response.id+"-"+response.title);
+                    M.toast({html: "New status added successfully", classes: 'rounded'});
+                    addStatusToSelectMenu()
+                    addStatusToTaskMenu();
+    
+                }
+                else if(response.message == "errors"){
+                    var titleError = response.errors.title;
+                    var ele = document.getElementById("invalidStatusTitle");
+                    titleError.forEach(function(key,index){
+                       
+                        ele.innerHTML += "<p><strong>"+titleError[index]+"</strong></p>";
+                    });
+                    ele.style.display = "block";
+                }
+                else{
+                    M.toast({html: response.message, classes: 'rounded'});
+                }
+            }
+    
+            function displayNewTask(xhttp){
+               
+                var response = JSON.parse(xhttp.responseText);
+                if(response.message == "success"){
+                    document.getElementById("task-title").value = null;
+                    //document.getElementById("task-desc").value = null;
+                    $('#addTaskModal').modal('close');
+                    var taskDiv = "";
+                    var id = "status-"+response.status_id;
+                    
+                    var status_div = document.getElementById(id);
+                    var len = status.length;
+                    var taskDiv = document.createElement("DIV");
+                    taskDiv.id = "task-"+response.id;
+                    taskDiv.classList.add("card","task-card");
+                    var card_body = document.createElement("DIV");
+                    taskDiv.classList.add("card-body");
+                    var title_para = document.createElement("P");
+                    var textnode = document.createTextNode(response.title);
+                    title_para.appendChild(textnode);
+                    card_body.appendChild(title_para);
+                    taskDiv.appendChild(card_body);
+                    taskDiv.addEventListener("click", function(){
+                        window.location.href = "/project/"+project_id+"/task/"+response.id;
+                    }); 
+                    status_div.append(taskDiv);
+                    //hiddenTasks.push(taskDiv);
+                    M.toast({html: "New task added successfully", classes: 'rounded'});
+                }
+                else if(response.message == "errors"){
+                    var titleError = response.errors.title;
+                    var descError = response.errors.description;
+                    if(titleError){
+                        var ele = document.getElementById("invalidTaskTitle");
+                        titleError.forEach(function(key,index){
+                           
+                            ele.innerHTML += "<p><strong>"+titleError[index]+"</strong></p>";
+                        });
+                        ele.style.display = "block";
+                    }
+                    // if(descError){
+                    //     var ele = document.getElementById("invalidTaskDesc");
+                    //     descError.forEach(function(key,index){
+                         
+                    //         ele.innerHTML += "<p><strong>"+descError[index]+"</strong></p>";
+                    //     });
+                    //     ele.style.display = "block";
+                    // }
+                }
+                else{
+                    M.toast({html: response.message, classes: 'rounded'});
+                }
+            }
+    
+            function displayStatus(xhttp) {
+                var statusText = JSON.parse(xhttp.responseText);
+               
+                var newDiv = "";
+                statusText.forEach(function addToDiv(key,index){
+                    newDiv += "<div class='card-panel status-name grey lighten-4' id='status-panel-"+key.id+"'><div class='card-header'>";
+                    newDiv += key.title
+                    //newDiv += + "<i class='material-icons dropdownTrigger right' data-toggle='dropdown-status-"+key.id+"'>arrow_drop_down</i><ul id='dropdown-status-"+key.id+"' class='dropdown-content'><li><p href='#'>Add another status right to it</p></li><li><p href='#'>Delete status</p></li><li><p href='#'>Add task</p></li></ul>
+                    newDiv += "</div>";
+                    newDiv += "<div class='card-content' id='status-"+key.id+"'><p class='text-center addTask' onclick='openTaskModal("+key.id+")'>+ Add task</p></div>";
+                    newDiv += "</div>";
+                    statusList.push(key.id+"-"+key.title);
+                 });
+                 document.getElementById("status-list").innerHTML = newDiv;
+                 addStatusToSelectMenu();
+                 addStatusToTaskMenu();
+                 makeGetRequest("/project/{{ $project['id'] }}/tasks",displayTasks);
+            }
+    
+            function addStatusToSelectMenu(){
+                var ele = document.getElementById("status_order");
+                if(statusList.length > 0){
+                    var text;
+                    text = '<select name="order" id="select-options">';
+                    text+='<option value="new" class="blue-text">First</option>'
+                        for(var i=0;i<statusList.length;i++){
+                            order = statusList[i].slice(0, statusList[i].indexOf('-'))    
+                            name = statusList[i].replace(order+'-',"");
+                            if(i == statusList.length-1){
+                                text+='<option value="'+order+'" class="blue-text" selected="selected">after '+name+'</option>';
+                            }
+                            else{
+                                text+='<option value="'+order+'">after '+name+'</option>';
+                            }
+                        }
+                    text+='</select>';
+                    text+='<label>Select order</label>';
+                    ele.innerHTML = text;
+                    $('select').formSelect();
+                }
+                else{
+                    var text = '<input type="hidden" name="select-options" id="select-options" value="0">';
+                    ele.innerHTML = text;
+                }
+            }
+    
+            function addStatusToTaskMenu(status_id = -1){
+                var ele = document.getElementById("status_order_in_task");
+                if(statusList.length > 0){
+                    var text = '<select name="order" id="select-task-options">';
+                        for(var i=0;i<statusList.length;i++){
+                            order = statusList[i].slice(0, statusList[i].indexOf('-'));
+                            if(status_id == order){
+                                name = statusList[i].replace(order+'-',"");
+                                text+='<option value="'+order+'" selected="selected">in '+name+'</option>';
+                            }
+                            else{
+                                name = statusList[i].replace(order+'-',"");
+                                text+='<option value="'+order+'">in '+name+'</option>';
+                            }
+                        }
+                    text+='</select>';
+                    text+='<label>Select Status</label>';
+                    ele.innerHTML = text;
+                    $('select').formSelect();
+                }
+                else{
+                    var text = '<input type="hidden" name="select-options" id="select-options" value="0">';
+                    ele.innerHTML = text;
+                }
+            }
+    
+            function openTaskModal(status_id = -1){
+                if(statusList.length == 0){
+                    M.toast({html: "First add a new status",classes: 'rounded'});
+                }
+                else{
+                    $('#addTaskModal').modal();
+                    $('#addTaskModal').modal('open');
+                    addStatusToTaskMenu(status_id);
+                }
+            }
+    
+            function displayTasks(xhttp) {
+                //$('.dropdownTrigger').dropdown();
+                tasksText = JSON.parse(xhttp.responseText);
+               
+                var taskDiv = "";
+                tasksText.forEach(function addToDiv(key,index){
+                    var id = "status-"+key.status_id;
+                 
+                    var status_div = document.getElementById(id);
+                    var len = status.length;
+                    var taskDiv = document.createElement("DIV");
+                    taskDiv.id = "task-"+key.id;
+                    taskDiv.classList.add("card","task-card");
+                    var card_body = document.createElement("DIV");
+                    taskDiv.classList.add("card-body");
+                    var title_para = document.createElement("P");
+                    var textnode = document.createTextNode(key.title);
+                    title_para.appendChild(textnode);
+                    card_body.appendChild(title_para);
+                    if(key.checklist_item_count != null){
+                        var progress = document.createElement("DIV");
+                        progress.classList.add("progress");
+                        var progressbar = document.createElement("DIV");
+                        progressbar.classList.add("determinate");
+                        progressbar.style.width = Math.ceil((key.checklist_done/key.checklist_item_count)*100) + "%";
+                      
+                        progress.appendChild(progressbar);
+                        card_body.appendChild(progress);
+                    }
+                    taskDiv.appendChild(card_body);
+                    taskDiv.addEventListener("click", function(){
+                        window.location.href = "/project/"+key.project_id+"/task/"+key.id;
+                    }); 
+                    status_div.insertBefore(taskDiv,status_div[0]);
+                    //hiddenTasks.push(taskDiv);
+                   
+                 });
+            }                
+        </script>
+        
 @endsection

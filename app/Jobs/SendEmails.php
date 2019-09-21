@@ -4,8 +4,8 @@ namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\User;
-use App\Project;
+use App\Models\User;
+use App\Models\Project;
 use App\Mail\InviteMail;
 use App\Mail\AssignMail;
 use Illuminate\Support\Facades\Mail;
@@ -43,9 +43,7 @@ class SendEmails
         $params['email'] = $this->user->email;
 
         if($this->type == "inviteToProject"){
-            $params['project_id'] = $this->entity->id;
-            $params['project_title'] = $this->entity->title;
-            Mail::to($this->user->email)->send(new InviteMail($params)); 
+            Mail::to($this->user->email)->send(new InviteMail($this->entity)); 
         }
         else if($this->type == "assignToTask"){
             $params['project_id'] = $this->entity->project_id;

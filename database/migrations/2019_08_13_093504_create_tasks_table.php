@@ -26,7 +26,7 @@ class CreateTasksTable extends Migration
             $table->unsignedInteger('checklist_done')->nullable();
             $table->timestamps();
 
-            $table->foreign('status_id')->references('id')->on('statuses');
+            $table->foreign('status_id')->references('id')->on('statuses')->onDelete('cascade');
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
         });
     }

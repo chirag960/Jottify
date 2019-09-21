@@ -1,8 +1,13 @@
-function makeGetRequest(url,callFunction){
+function makeGetRequest(url,callFunction,overlay = true){
+    if(overlay == true){
+        $("#overlay").show();
+    }
     var xhttp=new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4) {
-            
+            if(overlay == true){
+                $("#overlay").hide();
+            }
             callFunction(this);
         }
     };
@@ -11,10 +16,12 @@ function makeGetRequest(url,callFunction){
 }
 
 function makeGetRequestForPDF(url,callFunction){
+    $("#overlay").show();
     var xhttp;
     xhttp=new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4) {
+            $("#overlay").hide();
             callFunction(this);
         }
     };
@@ -24,10 +31,12 @@ function makeGetRequestForPDF(url,callFunction){
 }
 
 function makePostRequest(url,requestBody,callFunction){
+    $("#overlay").show();
     var xhttp;
     xhttp=new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4) {
+            $("#overlay").hide();
             callFunction(this);
         }
     };
@@ -39,10 +48,12 @@ function makePostRequest(url,requestBody,callFunction){
 }
 
 function makePostRequestForImages(url,requestBody,callFunction){
+    $("#overlay").show();
     var xhttp;
     xhttp=new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4) {
+            $("#overlay").hide();
             callFunction(this);
         }
     };
@@ -53,10 +64,12 @@ function makePostRequestForImages(url,requestBody,callFunction){
 }
 
 function makePatchRequest(url,requestBody,callFunction){
+    $("#overlay").show();
     var xhttp;
     xhttp=new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && (this.status == 200 || this.status == 201)) {
+            $("#overlay").hide();
             callFunction(this);
         }
     };
@@ -65,6 +78,23 @@ function makePatchRequest(url,requestBody,callFunction){
     xhttp.setRequestHeader("X-CSRF-TOKEN",t);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send(requestBody);
+}
+
+function makeDeleteRequest(url,callFunction){
+    console.log("inside ajax");
+    $("#overlay").show();
+    var xhttp=new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4) {
+            $("#overlay").hide();
+            callFunction(this);
+        }
+    };
+    xhttp.open("DELETE",url,true);
+    var t = document.getElementsByTagName("META")[2].content;
+    xhttp.setRequestHeader("X-CSRF-TOKEN",t);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send();
 }
 
 // function loadDoc(method,url,requestBody,callFunction) {

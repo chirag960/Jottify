@@ -10,127 +10,137 @@
 |
 */
 
-Auth::routes();
+Route::get('/avatar',function(){                        //still testing
+    $relative_path = '/media/user_profile_photo/asdsadas.png';
+    $path = public_path().$relative_path;
+    $avatar = new LasseRafn\InitialAvatarGenerator\InitialAvatar();
+    return $avatar->name('Lasse')
+    ->length(1)
+    ->fontSize(0.5)
+    ->size(96) // 48 * 2
+    ->background('#8BC34A')
+    ->color('#fff')
+    ->generate()
+    
+    ->save($path);
+});
 
-Route::get('/user/verify/{token}', 'Auth\RegisterController@verifyUser');
+Route::get('/test','TaskController@testApi');
 
-Route::get('/project/{id}/sendmembers','ProjectController@invite');
+Route::get('/project/{id}/sendmembers','ProjectController@invite'); //still testing
 
-Route::get('/project/{project_id}/task/{id}/members2','TaskController@assignTask2');
+Route::get('/project/{project_id}/task/{id}/members2','TaskController@assignTask2'); //still testing
 
-Route::get('/getRedis', function() {
+Route::get('/getRedis', function() {    //for testing
     print_r(app()->make('redis'));
 });
 
+Auth::routes();
 
-Route::get('/sendMail', function () {
-    Mail::to('cjain960@gmail.com')->send(new InviteMail()); 
-    return 'A message has been sent to Mailtrap!';
- 
-});
-
+Route::get('/user/verify/{token}', 'Auth\RegisterController@verifyUser');
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/profile',function(){
-    return view('profile');
-})->middleware('auth');
 
-Route::patch('/profile','ProfileController@update')->middleware('auth');
+Route::group(['middleware'=>'auth'], function(){
 
-Route::get('/projectAndTask','TaskController@titlesList');
-
-Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
-
-Route::patch('/user', 'ProfileController@update');
-
-Route::post('/user/Image', 'ProfileController@updateImage');
-
-Route::get('/projects', 'ProjectController@index')->middleware('auth');
-
-Route::post('/projects', 'ProjectController@create')->middleware('auth');
-
-//Route::get('/project/{id}','ProjectController@sendMail');
-
-Route::middleware('auth','checkProject')->group(function(){
-
-    Route::get('/project/{id}','ProjectController@getProjectDetails');
-
-    Route::get('/project/{id}/statuses','StatusController@index');
-
-    Route::get('/project/{id}/tasks','TaskController@index');
+    Route::get('/profile',function(){
+        return view('profile');
+    })->middleware('cacheControl');
     
-    Route::get('/project/{id}/allMembers','ProjectController@allUsers');
-
-    Route::get('/project/{id}/report','ProjectController@generateReport');
-
-    Route::patch('/project/{id}', 'ProjectController@update');
-
-    Route::delete('/projects/{id}', 'ProjectController@delete');
-
-    Route::patch('/project/{id}/Image','ProjectController@updateImage');
-
-    Route::patch('/project/{id}/star', 'ProjectController@updateStar');
-
-    Route::patch('/project/{id}/title','ProjectController@updateTitle');
-
-    Route::patch('/project/{id}/description','ProjectController@updateDescription');
-
-    Route::patch('/project/{id}/member/{member_id}','ProjectController@updateMember');
-
-    Route::delete('/project/{id}/member/{member_id}','ProjectController@deleteMember');
-
-});
-
-Route::middleware('auth','checkProject','checkProjectAdmin')->group(function(){
-
-    Route::post('/project/{id}/task','TaskController@create');
-
-    Route::post('/project/{id}/members','ProjectController@invite');
-
-    Route::post('project/{id}/status','StatusController@create');    
-
-    Route::patch('project/{id}/status/{status_id}', 'StatusController@update');
-
-    Route::delete('project/{id}/status/{status_id}', 'StatusController@archive');
-
-});
-
-Route::middleware('auth','checkTask')->group(function(){
-
-Route::get('/project/{project_id}/task/{id}','TaskController@getTaskDetails');
-
-Route::get('/project/{project_id}/task/{id}/members','TaskController@getTaskMembers');
-
-Route::get('/project/{project_id}/task/{id}/checklist','ChecklistController@index');
-
-Route::get('/project/{project_id}/task/{id}/attachments','AttachmentController@getTaskDetails');
-
-Route::get('/project/{project_id}/task/{id}/comments','CommentController@index');
-
-Route::patch('/project/{project_id}/task/{task_id}/checklist/{id}','ChecklistController@update');
-
-Route::post('/project/{project_id}/task/{id}/attachment','AttachmentController@create');
-
-Route::post('/project/{project_id}/task/{id}/comment','CommentController@create');
-
-Route::post('/project/{project_id}/task/{id}/checklist','ChecklistController@create');
-
-});
-
-
-Route::middleware('auth','checkTask','checkTaskAdmin')->group(function(){
-
-    Route::post('/project/{project_id}/task/{id}/duedate','TaskController@createduedate');
-
-    Route::post('/project/{project_id}/task/{id}/description','TaskController@createDescription');
-
-    Route::patch('/project/{project_id}/task/{id}/description','TaskController@createDescription');
-
-    Route::patch('/project/{project_id}/task/{id}/status','TaskController@updateStatus');
+    Route::get('/projectAndTask','TaskController@titlesList');
     
-    Route::post('/project/{project_id}/task/{id}/members','TaskController@assignTask');
+    Route::get('/home', 'HomeController@index')->name('home')->middleware('cacheControl');
+    
+    Route::patch('/profile','ProfileController@update');
+    
+    Route::post('/profile/image', 'ProfileController@updateImage');
+    
+    Route::get('/projects', 'ProjectController@index');
+    
+    Route::post('/projects', 'ProjectController@create');
+    
+    Route::get('/project/{id}/member/{member_id}','ProjectController@addMember');
+
+});
+
+
+Route::group(['prefix'=>'project/{id}','middleware'=> ['auth','checkProject']], function(){
+
+    Route::get('/','ProjectController@getProjectDetails')->middleware('cacheControl');
+
+    Route::get('statuses','StatusController@index');
+
+    Route::get('tasks','TaskController@index');
+
+    Route::get('allMembers','ProjectController@allUsers');
+
+    Route::get('report','ProjectController@generateReport');
+
+    Route::patch('/', 'ProjectController@update');
+
+    Route::patch('Image','ProjectController@updateImage');
+
+    Route::patch('star', 'ProjectController@updateStar');
+
+    Route::patch('title','ProjectController@updateTitle');
+
+    Route::patch('description','ProjectController@updateDescription');
+
+    Route::post('task','TaskController@create');
+
+    Route::post('status','StatusController@create');    
+
+    Route::patch('status/{status_id}', 'StatusController@update');
+
+    Route::delete('status/{status_id}', 'StatusController@archive');
+});
+
+Route::group(['prefix'=>'project/{id}', 'middleware' => ['auth','checkProject','checkProjectAdmin']], function(){
+    
+    Route::post('members','ProjectController@invite');
+
+    Route::patch('member/{member_id}','ProjectController@updateMember');
+
+    Route::delete('member/{member_id}','ProjectController@deleteMember');
+
+    Route::delete('/','ProjectController@delete');    
+});
+
+Route::group(['prefix'=>'project/{project_id}/task/{id}','middleware'=> ['auth','checkTask']], function(){
+
+    Route::get('/','TaskController@getTaskDetails')->middleware('cacheControl');
+
+    //Route::get('members','TaskController@getTaskMembers');
+
+    Route::get('checklist','ChecklistController@index');
+
+    Route::get('attachments','AttachmentController@index');
+
+    Route::get('comments','CommentController@index');
+
+    Route::patch('checklist/{checklist_id}','ChecklistController@update');
+
+    Route::post('attachment','AttachmentController@create');
+
+    Route::post('comment','CommentController@create');
+
+    Route::post('checklist','ChecklistController@create');
+
+    Route::post('duedate','TaskController@updateduedate');
+
+    Route::delete('/','TaskController@delete');
+
+    Route::patch('status','TaskController@updateStatus');
+
+    Route::patch('description','TaskController@updateDescription');
+    
+    Route::get('members','TaskController@getTaskMembers');
+    
+    Route::post('members','TaskController@assignTask');
+
+    Route::delete('attachment/{attachment_id}','AttachmentController@delete');
 
 });

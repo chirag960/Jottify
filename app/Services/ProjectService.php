@@ -4,13 +4,14 @@ namespace App\Services;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\ProjectHasMember;
-use App\Project;
-use App\Status;
-use App\User;
+use App\Models\ProjectHasMember;
+use App\Models\Project;
+use App\Models\Status;
+use App\Models\User;
 use App\Jobs\SendEmails;
 use PDF;
-use Validator;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Input;
 
 class ProjectService{
 
@@ -23,29 +24,18 @@ class ProjectService{
     public function index(){
         
         $id = auth()->id();
-        $projects = User::find($id)->projects;
-        $star = ProjectHasMember::where('member_id', $id)
-                                ->where('star',true)
-                                ->select('project_id')
-                                ->get();
-        $response['projects'] = $projects;
-        $response['star'] = $star;
-        return $response;
+
+        $projects = ProjectHasMember::where('member_id', $id)
+                                    ->rightJoin('projects','project_has_members.project_id','=','projects.id')
+                                    ->select('projects.id','projects.title','projects.description','projects.background',
+                                            'project_has_members.role','project_has_members.star')
+                                    ->get();
+        
+        return $projects;
     }
 
     public function create(Request $request){
 
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|min:3|max:30|required',
-            'description' => 'sometimes|max:255',
-        ]);
-
-        if($validator->fails()){
-            return response()->json(array(
-                'message' => "errors",
-                'errors' => $validator->getMessageBag()->toArray()), 400);
-        }
-        else{
         $project = new Project;
         $project->user_id = auth()->id();
         $project->title = $request->title;
@@ -55,7 +45,6 @@ class ProjectService{
         $project->save();
 
         $user = User::find(auth()->id());
-        SendEmails::dispatch($user,"inviteToProject",$project);
 
         $project_id = $project->id;
 
@@ -94,8 +83,6 @@ class ProjectService{
         return response()->json(["message"=>"success","id"=>$project_id,"title"=>$project->title,"background"=>$background],201);
     }
 
-    }
-
     public function getProjectDetails($id){
         $project = Project::find($id);
         $role = ProjectHasMember::where('project_id',$id)
@@ -104,43 +91,48 @@ class ProjectService{
                                 ->first();
         $project->star = $role->star;
 
-        $members = DB::table('project_has_member')
-                    ->rightJoin('users','project_has_member.member_id','=','users.id')
-                    ->where('project_has_member.project_id','=',$id)
-                    ->select('users.id','users.name','users.email','project_has_member.role','users.photo_location')
+        $members = DB::table('project_has_members')
+                    ->rightJoin('users','project_has_members.member_id','=','users.id')
+                    ->where('project_has_members.project_id','=',$id)
+                    ->select('users.id','users.name','users.email','project_has_members.role','users.photo_location')
+                    ->orderBy('users.name')
                     ->get();
+
+        $date = new Carbon($project->created_at);
+        $dt = $date->toFormattedDateString();
+        
         $response = array(
             "id" => $project->id,
             "title" => $project->title,
             "description" => $project->description,
-            "timestamp" => $project->timestamp,
+            "created_at" => $dt,
             "background" => $project->background,
             "star" => $role->star,
             "role" =>$role->role,
             "members" => $members
         );
 
-        //dd($response);
         return $response;
     }
 
-    public function update(Request $request, $id){
+    // public function update(Request $request, $id){
+    //     $project = Project::find($id) ;
+
+    //     if(isset($request->title)){
+    //         $project->title = $request->title;
+    //     }
+
+    //     if(isset($request->description)){
+    //         $project->description = $request->description;
+    //     }
+    //     return $project->save();
+
+    // }
+
+    public function delete($id){
         $project = Project::find($id) ;
-
-        if(isset($request->title)){
-            $project->title = $request->title;
-        }
-
-        if(isset($request->description)){
-            $project->description = $request->description;
-        }
-        return $project->save();
-
-    }
-
-    public function delete(Request $request, $id){
-        $project = Project::find($id) ;
-        return $project->delete();
+        $project->delete();
+        return response()->json(["message"=>"success","id"=>$id],200);
     }
 
     public function updateImage(){
@@ -174,20 +166,24 @@ class ProjectService{
             $add = true;
         else
             $add = false;
-        $change = ProfileHasMember::where('project_id',$id)
+        $change = ProjectHasMember::where('project_id',$id)
                                 ->where('member_id',$member_id)
                                 ->update(['role'=>$add]);
-        return "Success";
+        return response()->json(['message'=>'success','id'=>$member_id],200);
     }
 
-    public function deleteMember(Request $request,$id,$member_id){
+    public function deleteMember($id,$member_id){
 
         //Remove member from tasks also
 
-        $change = ProfileHasMember::where('project_id',$id)
+        // $update = TaskHasMember::where('project_id',$id)
+        //                         ->where('member_id',$member_id)
+        //                         ->delete();
+
+        $change = ProjectHasMember::where('project_id',$id)
                                     ->where('member_id',$member_id)
                                     ->delete();
-        return "deleted";
+        return response()->json(['message'=>'success','id'=>$member_id],200);
     }
 
 
@@ -211,8 +207,8 @@ class ProjectService{
                         
 
         */
-        $members = DB::table('project_has_member')
-        ->where('project_has_member.project_id','=',$id)
+        $members = DB::table('project_has_members')
+        ->where('project_has_members.project_id','=',$id)
         ->select('member_id')
         ->get();
 
@@ -226,20 +222,32 @@ class ProjectService{
                         ->orWhere('name', 'like', '%' . $pattern . '%')
                         ->whereNotIn('id',$ids)
                         ->select('id','name','email')
-                        ->orderBy('id')
+                        ->orderBy('name')
                         ->get();
 
-        return $allUsers;
+        return response()->json(["message"=>"success","members"=>$allUsers],200);
     }
 
-    public function invite($id){
-        $member_id = Input::get("id");
+    public function invite(Request $request, $id){
+        $ids = $request->membersList;
+        $message = $request->inviteMessage;
+        //$member_id = Input::get("id");
         $project = Project::find($id);
+        $project->message = $message;
 
-        //foreach($ids as $id){
+        foreach($ids as $member_id){
             $user = User::find($member_id);
+            $project->url = "http://site.test/project/".$id."/member/".$member_id;
             SendEmails::dispatch($user,"inviteToProject",$project);
-        //}
+        }
+    }
+
+    public function addMember($id,$member_id){
+        $projectHasMember = new ProjectHasMember;
+        $projectHasMember->project_id = $id;
+        $projectHasMember->member_id = $member_id;
+        $projectHasMember->save();
+        return "saved";
     }
 
 }

@@ -1,14 +1,5 @@
 @extends('layouts.app')
 
-@section('styles')
-
-#toast-container {
-    top: auto !important;
-    right: auto !important;
-    bottom: 10%;
-    left:7%;  
-  }
-@endsection
 @section('full-content')
 <div class="auth-bg">
         <div class="card-panel white col s10 offset-s1 m8 offset-m2 l4 offset-l4">

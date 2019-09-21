@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{{-- <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
 </head>
@@ -9,4 +9,17 @@
     to accept the invitation and see the project details.
     </div>
 </body>
-</html>
+</html> --}}
+
+
+@component('mail::message')
+
+{{ $params['message']}}
+
+@component('mail::button', ['url' => $params['url']])
+Accept Invitation
+@endcomponent
+
+Thanks,<br>
+{{ config('app.name') }}
+@endcomponent

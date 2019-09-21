@@ -63,7 +63,7 @@ class Kernel extends HttpKernel
         'checkProject' => \App\Http\Middleware\CheckProject::class,
         'checkTask' => \App\Http\Middleware\CheckTask::class,
         'checkProjectAdmin' => \App\Http\Middleware\checkProjectAdmin::class,
-        'checkTaskAdmin' => \App\Http\Middleware\checkTaskAdmin::class
+        'cacheControl' => \App\Http\Middleware\CacheControl::class
     ];
 
     /**

@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use Symfony\Component\HttpFoundation\Request;
 
 use Illuminate\Support\Facades\DB;
-use App\Status;
+use App\Models\Status;
 use App\Services\ChecklistService;
+use Validator;
 
 class ChecklistController extends Controller
 {
@@ -23,14 +24,25 @@ class ChecklistController extends Controller
     }
 
     public function create(Request $request,$project_id,$task_id){
+        $validator = Validator::make($request->all(), [
+            'message' => 'required|min:3|max:30|required',
+        ]);
 
-        $response = $this->checklistService->create($request,$project_id,$task_id);
-        return $response;
+        if($validator->fails()){
+            return response()->json(array(
+                'message' => "errors",
+                'errors' => $validator->getMessageBag()->toArray()), 400);
+        }
+        else{
+            $response = $this->checklistService->create($request,$project_id,$task_id);
+            return $response;
+        }
+        
     }
 
-    public function update(Request $request,$project_id,$task_id,$id){
+    public function update(Request $request,$project_id,$id,$checklist_id){
 
-        $response = $this->checklistService->update($request,$project_id,$task_id,$id);
+        $response = $this->checklistService->update($request,$project_id,$id,$checklist_id);
         return $response;
     }
 

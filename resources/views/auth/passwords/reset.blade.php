@@ -1,14 +1,7 @@
 @extends('layouts.app')
 
-@section('styles')
-
-.centro{
-    text-align:center;
-}
-
-#email{
-    cursor:not-allowed;
-}
+@section('style-link')
+<link href="{{ asset('css/auth.css') }}" rel="stylesheet">
 @endsection
 
 @section('full-content')
@@ -23,7 +16,7 @@
                         <div class="row">
                             <div class="input-field col s12">
                             <i class="material-icons prefix">email</i>
-                            <input readonly="readonly" id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ $email }}" autocomplete="email">
+                            <input readonly="readonly" id="email" type="email" class="form-control not-allowed @error('email') is-invalid @enderror" name="email" value="{{ $email }}" autocomplete="email">
                             <label for="email">{{ __('E-Mail Address') }}</label>
                              @error('email')
                             <span class="invalid-feedback" role="alert">

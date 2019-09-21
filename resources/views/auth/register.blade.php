@@ -1,9 +1,7 @@
 @extends('layouts.app')
 
-@section('styles')
-.hideMessage{
-    display:none;
-}
+@section('style-link')
+<link href="{{ asset('css/auth.css') }}" rel="stylesheet">
 @endsection
 
 @section('full-content')
@@ -37,7 +35,7 @@
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
-                                    {{-- <span class="invalid-feedback hideMessage" id="invalidEmail" role="alert"></span> --}}
+                                    <span class="invalid-feedback hideMessage" id="invalidEmail" role="alert"></span>
                             </div>
                         </div>
 
@@ -73,6 +71,11 @@
                 </div>
             </div>
         </div>
+@error('email')
+<script>
+M.toast({html: "{{ $message }}", classes: 'rounded'});
+</script>
+@enderror
 <script>
 
 function validateName(){

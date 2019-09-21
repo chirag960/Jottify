@@ -1,98 +1,70 @@
 @extends('layouts.app')
 
-@section('styles')
-.row{
-    display:block;
-}
-.profile-image{
-    float:none;
-}
-.edit-image{
-    float:right;
-}
+@section('style-link')
+<link href="{{ asset('css/profile.css') }}" rel="stylesheet">
 @endsection
 
 @section('full-content')
-<div class="container row">
-    <div class="card-panel white col s10 offset-s1 m8 offset-m2 l4 offset-l4">
+<div class="row">
+    <div class="card-panel white col s8 offset-s2 m6 offset-m3 l4 offset-l4 xl2 offset-xl5">
     <div class="card-body row" style="margin-left: 0px;margin-right: 0px;">
-        <div class="row">
-                <img id="profileDiv" src="{{Auth::user()->photo_location}}" alt=""  width="300" class="circle profile-image responsive-img">      
-                <form method="POST" class="col s12 center">
-                        @csrf
-                        @method('patch')
-                            <div class="btn file-field input-field">
-                                <span>Change profile Image</span>
-                                <input type="file" id="profileImage" accept=".png,.jpg,.jpeg" onchange="uploadImage()">
-                            </div>
-                        
-                    </form>
-        
-            </div>
-        <div class="row">
-            <form method="POST">
-            @csrf
-            @method('patch')
-            <div class="input-field col s12">
-                <i class="material-icons prefix">account_circle</i>
-                <input value="{{Auth::user()->name}}" id="first_name2" type="text" class="validate" onblur="changeName(this)">
-                <label class="active" for="first_name2">Name</label>
-            </div>
+            <img id="profileDiv" src="{{Auth::user()->photo_location}}" alt=""  width="300" class="circle profile-image responsive-img">      
+            <form method="POST" class="col s12 center">
+                @csrf
+                @method('patch')
+                    <div class="btn file-field input-field">
+                        <span>Change Image</span>
+                        <input type="file" id="profileImage" accept=".png,.jpg,.jpeg" onchange="uploadImage()">
+                    </div>
+                    <span class="invalid-feedback hideMessage" id="invalidImage" role="alert"></span>
             </form>
-        </div>
-        <div class="row">
-            <div class="input-field col s12">
+            <form method="POST" class="">
+                @csrf
+                @method('patch')
+                <div class="row" id="editButtonDiv">
+                <div class="input-field col s10 m10 l10 xl10 left">
+                    <i class="material-icons prefix">account_circle</i>
+                <input value="{{Auth::user()->name}}" id="name" type="text" class="validate" disabled>
+                    <label class="active" for="name">Name</label>
+                    <span class="invalid-feedback hideMessage" id="invalidName" role="alert"></span>
+                </div>
+                <a class="btn-floating btn red left s1 m1 l1 xl1 edit-button" onclick="changeName()">
+                    <i class="large material-icons" id="editButton">mode_edit</i>
+                </a>
+                </div>
+            </form>
+            <div class="input-field col s12 m12 l12 xl12 left">
                 <i class="material-icons prefix">email</i>
                 <input disabled value={{Auth::user()->email}} id="disabled" type="text" class="validate">
                 <label for="disabled">Email</label>
             </div>
-        </div>
 </div>
 </div>
 </div>
+@endsection
+
+
+@section('links')
+<script type="text/javascript" src="{{ asset('js/profile.js') }}"></script>
 
 <script>
-    var username = "{{ Auth::user()->name }}" ;
-    $(document).ready(function(){
-    $('.profile-image').materialbox();
-  });
-
-    function uploadImage(){
-        console.log("yes");
-        var image = document.getElementById("profileImage").files;
-        var fileLength =image.length;
-        var formData = new FormData();
-
-        Array.prototype.forEach.call(image, file => {
-            formData.append("image",file);
-            console.log("the filename inside for loop is : " + file);
+        var username = "{{ Auth::user()->name }}" ;
+    
+        $(document).ready(function(){
+            $('.profile-image').materialbox();
+            $('.dropdown-trigger').dropdown();
+            document.getElementById("searchBar").addEventListener("keyup", throttleSearchTask(showTasks, 500));
         });
-        console.log("the formdata is : " + formData);
-        makePostRequestForImages("/user/Image",formData,updateImage);
-    }
-
-    function updateImage(xhttp){
-        console.log(xhttp.responseText);
-        document.getElementById("profileDiv").src =  xhttp.responseText;
-        document.getElementById("navbarProfile").src =  xhttp.responseText;
-    }
-
-
-    function changeName(element){
-        if(element.value == "{{ Auth::user()->name}}" ) {
-            console.log("same same");
-        }
-        else{
-            console.log("not same");
-            var message = JSON.stringify({"name":element.value});
-            makePatchRequest("/profile",message,showNameChange);
-        }
-    }
-
-    function showNameChange(xhttp){
-        console.log("done");
-        username = xhttp.responseText;
-    }
-
+    
+        $(document).on("click", function(event){
+            var $trigger = $("#editButtonDiv");
+            if($trigger !== event.target && !$trigger.has(event.target).length){
+                $("#editButton").html("mode_edit");
+                $("#name").val(username);
+                $("#name").prop('disabled',true);
+            }            
+        });
+        
 </script>
+
 @endsection

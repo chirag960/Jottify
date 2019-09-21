@@ -18,8 +18,8 @@ class CreateTaskDetailsTable extends Migration
             $table->unsignedBigInteger('task_id');
             $table->unsignedBigInteger('status_id');
             $table->timestamp('timestamp')->useCurrent();
-
-            $table->foreign('status_id')->references('id')->on('statuses');
+            
+            $table->foreign('status_id')->references('id')->on('statuses')->onDelete('cascade');
             $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
         });
     }

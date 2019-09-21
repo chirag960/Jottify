@@ -1,0 +1,98 @@
+body{
+    min-height:auto;
+}
+
+.project-bar{
+    height:50px;
+    width:100%;
+    position:fixed;
+}
+
+.go-inline{
+    float:left;
+}
+.status-card-container{
+    margin-top:40px;
+    display:flex;
+  	flex-direction: row;
+  	flex-wrap: nowrap;
+  	white-space:nowrap;
+}
+.status-div{
+    flex: 0 0 272px;
+    min-height:30px;
+    height:auto !important;
+    margin:10px;
+}
+.status-name{
+    width:272px;
+    padding:0;
+    margin-left:10px;
+    margin-right:10px;
+}
+.card-header{
+    text-overflow:ellipses;
+}
+.secondary-content{
+    right:0px !important;
+}
+.btn-primary-outline{
+    float:right;
+}
+.btn-primary-outline:hover{
+    background:#afafaf;
+}
+#members-list{
+    position:relative;
+    z-index:2;
+}
+.task-card{
+    margin-left:10px;
+    margin-right:10px;
+    padding:10px;
+    margin:-.5rem 0 1rem 0 !important;
+}
+.task-card:hover{
+    background:#afafaf;
+    cursor:pointer;
+    
+}
+
+.addTask:hover{
+    cursor:pointer;
+    text-decoration: underline;
+}
+.hideMessage{
+    display:none;
+}
+.project-title{
+    font-size:1.5rem;
+}
+.modal-container{
+    bottom:auto;
+    width:30%;
+}
+#members-heading{
+    text-align: center;
+    line-height: 5px;
+    padding: 20px;
+    font-size: large;
+}
+#members-list{
+    margin-top:0px;
+}
+.overlay-options{
+    position:absolute;
+    top:10%;
+    right:2%;
+    opacity:0.8;
+    display:none;
+}
+.member-options{
+    margin-right:0px;
+    cursor:pointer;
+    display:inline-block;
+}
+.min-height-auto{
+    min-height:auto !important;
+}

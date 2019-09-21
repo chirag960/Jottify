@@ -3,15 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Project;
-use App\ProjectHasMember;
+use App\Models\Project;
+use App\Models\ProjectHasMember;
 use Illuminate\Support\Facades\DB;
-use App\Status;
+use App\Models\Status;
 use App\Services\ProjectService;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\InviteMail;
 use Redirect;
+use Validator;
+use Carbon\Carbon;
 
 class ProjectController extends Controller
 {
@@ -23,40 +25,47 @@ class ProjectController extends Controller
     }
 
     public function index(){
-
         $projects = $this->projectService->index();
         return $projects;
     }
 
     public function create(Request $request){
-        $response = $this->projectService->create($request);
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:3|max:30|required',
+            'description' => 'sometimes|max:255',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(array(
+                'message' => "errors",
+                'errors' => $validator->getMessageBag()->toArray()), 400);
+        }
+        else{
+            $response = $this->projectService->create($request);
             return $response;
-        //return redirect()->action('ProjectController@sendMail',['email' => Auth::user()->email]);
-        //return response()->redirectToAction('ProjectController@getProjectDetails',['id' => $project_id]);
-
+        }
     }
 
-    public function getProjectDetails($id){
+    public function getProjectDetails($id,$message="none"){
         $project = $this->projectService->getProjectDetails($id);
-        return view('project')->with('project',$project);
-    }
-
-    public function sendMail($email){
-        $comment = 'HI! testing email. The project is created.';
-        Mail::to($email)->send(new InviteMail($comment));
-        return "Email sent";
+        if($message="none"){
+            return view('project')->with('project',$project);
+        }
+        else{
+            return view('project')->with(['project'=>$project,'message'=>$message]);
+        }
+        
     }
 
     public function update(Request $request, $id){
 
         $project = $this->projectService->update($request, $id);
         return "Updated successfully";
-
     }
 
-    public function delete(Request $request, $id){
-        $project = $this->projectService->delete($request ,$id);
-        return "Deleted successfully";
+    public function delete($id){
+        $response = $this->projectService->delete($id);
+        return $response;
     }
 
     public function updateImage(){
@@ -79,16 +88,14 @@ class ProjectController extends Controller
     }
 
     public function updateMember(Request $request,$id,$member_id){
-        $project = $this->projectService->updateMember($request, $id);
+        $project = $this->projectService->updateMember($request, $id, $member_id);
         return $project;
     }
 
-    public function deleteMember(Request $request,$id,$member_id){
-        $project = $this->projectService->deleteMember($request, $id);
+    public function deleteMember($id,$member_id){
+        $project = $this->projectService->deleteMember($id, $member_id);
         return $project;
     }
-
-
 
     public function generateReport($id){
         $pdf = $this->projectService->generateReport($id);
@@ -100,20 +107,24 @@ class ProjectController extends Controller
         return $allUsers;
     }
 
-    /*
-    public function create(Request $request,$id){
-        $ids = $request->members;
-
-        foreach($ids as $id){
-            $user = User::find($id);
-            SendEmails::dispatch($user,"inviteToProject");
-        }
+    public function invite(Request $request, $id){
+        $this->projectService->invite($request, $id);
+        return "success";
     }
-    */
 
-    public function invite($id){
-        $this->projectService->invite($id);
-        //return $allUsers;
+    public function addMember($id, $member_id){
+
+        $user = ProjectHasMember::where('project_id',$id)->where('member_id',$member_id)->first();
+        if($user != null){
+            return $this->getProjectDetails($id);
+        }
+        else{
+            $addMember = $this->projectService->addMember($id, $member_id);
+            $message = "you are added in the project";
+            return $this->getProjectDetails($id,$message);
+        }
+        
+        
     }
 
 }

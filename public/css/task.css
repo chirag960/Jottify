@@ -1,0 +1,152 @@
+.task-bar{
+    height:50px;
+    width:100%;
+    background-color: rgba(255,255,255,0.5);
+    position:fixed;
+    top:60px;
+}
+.backLink:hover{
+    cursor:pointer;
+    text-decoration: underline;
+}
+
+.go-inline{
+    float:left;
+}
+
+.status-div{
+    width:400px;
+    float:left;
+    margin:10px;
+}
+.task-detail-container{
+    margin-top:70px;
+    padding-left:2%;
+    padding-right:2%;
+}
+.btn-primary-outline{
+    float:right;
+}
+.btn-primary-outline:hover{
+    background:#afafaf;
+}
+#members-list{
+    position:relative;
+    z-index:2;
+}
+.task-card:hover{
+    background:#afafaf;
+    cursor:pointer;
+}
+.pointer{
+    cursor:pointer;
+}
+.addTask:hover{
+    cursor:pointer;
+    text-decoration: underline;
+}
+.striked{
+    text-decoration: line-through;
+}
+.error{
+    color:red;
+}
+#comment-list{
+    background-color: #eee;
+    max-height: 500px;
+    overflow:auto;
+}
+.comment-option{
+    float:right;
+    margin-left:10px;
+    margin-right:10px;
+    cursor:pointer;
+}
+.comment-option:hover{
+    text-decoration: underline;
+}
+#newItemDiv{
+    margin-bottom:10px;
+}
+.pointer{
+    cursor:pointer;
+}
+.modal-container{
+    bottom:auto;
+    width:30%;
+}
+@media only screen and (min-width: 601px) {
+    #progressBar {
+      width: 50%;
+    }
+  }
+  
+  /* If the screen size is 600px or less, set the font-size of <div> to 30px */
+  @media only screen and (max-width: 600px) {
+    #progressBar {
+      width: 100%;
+    }
+  }
+  #attachment-list{
+      margin:1%;
+      background: #efefef;
+      padding:1%;
+  }
+  .attachments-image{
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size:cover;
+    border-radius:2%;
+    margin:2%;
+    width:200px;
+    height:150px;
+    cursor:pointer;
+    position: relative;
+  }
+  .image-ops{
+    position:absolute;
+    bottom:2%;
+    right:2%;
+  }
+  .modal{
+      bottom:auto !important;
+  }
+  #task-buttons{
+    margin-top:20px;
+  }
+  #quill-container{
+  max-height:200px;
+  overflow:auto;
+  }
+  #quill-container strong{
+    font-weight:bold;
+  }
+  .none{
+      display: none;
+  }
+  .download-icon{
+      color:black;
+  }
+  .download-icon:hover{
+      color:black;
+  }
+  #members-list{
+    max-height:400px;
+    overflow:auto;
+  }
+  #search-member-div{
+      float:none !important;
+  }
+  #member-avatars{
+
+  }
+  .avatar-image{
+    position:relative;
+    width: 35px;
+    height: 35px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    margin:0.05em;
+    cursor:pointer;
+  }

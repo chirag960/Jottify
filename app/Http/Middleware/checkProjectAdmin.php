@@ -17,7 +17,7 @@ class checkProjectAdmin
      */
     public function handle($request, Closure $next)
     {
-        $exists = DB::table('project_has_member')
+        $exists = DB::table('project_has_members')
                     ->where([['member_id','=',auth()->id()],['project_id','=',$request->id],['role','=',true]])
                     ->first();
 

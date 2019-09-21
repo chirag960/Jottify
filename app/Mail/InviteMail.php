@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Project;
+use App\Models\Project;
 
 class InviteMail extends Mailable
 {
@@ -35,7 +35,7 @@ class InviteMail extends Mailable
 
         return $this->from('mail@example.com', 'Mailtrap')
             ->subject('Invitation to new project '.$this->inputs['project_title'])
-            ->view('emails.invite')
+            ->markdown('emails.invite')
             ->with([
                 'params' => $this->inputs
             ]);
