@@ -1,5 +1,6 @@
 body{
     min-height:auto;
+    overflow-y:hidden;
 }
 
 .project-bar{
@@ -24,14 +25,26 @@ body{
     height:auto !important;
     margin:10px;
 }
-.status-name{
+.status-panel{
+    height:100%;
     width:272px;
     padding:0;
     margin-left:10px;
     margin-right:10px;
 }
+.status-name{
+    max-height:100%;
+    padding:0px;
+}
 .card-header{
     text-overflow:ellipses;
+}
+.status-body{
+    padding:2%;
+}
+.task-list{
+    max-height:65vh;
+    overflow-y:auto;
 }
 .secondary-content{
     right:0px !important;

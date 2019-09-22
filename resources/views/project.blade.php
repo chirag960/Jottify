@@ -17,7 +17,7 @@
         <li><a class="btn-floating yellow darken-1 tooltipped" data-position="left" data-tooltip="invite members"><i class="material-icons modal-trigger" href="#addInviteProjectModal" >person_add</i></a></li>
         @endif
         <li><a class="btn-floating green tooltipped" data-position="left" data-tooltip="add task" ><i class="material-icons" onclick="openTaskModal()">playlist_add</i></a></li>
-        <li><a class="btn-floating blue tooltipped" data-position="left" data-tooltip="add status"><i class="material-icons modal-trigger" href="#addStatusModal">label_outline</i></a></li>
+        <li><a class="btn-floating blue tooltipped" data-position="left" data-tooltip="add status"><i class="material-icons" onclick="openStatusModal()">label_outline</i></a></li>
     </ul>
 </div>
 <div class="project-bar row">
@@ -157,6 +157,7 @@
                 }
                 else{
                     $('#addStatusModal').modal('open');
+                    $('#status-title').focus();
                 }
             }
 
@@ -232,12 +233,12 @@
                     $('#addStatusModal').modal('close');
     
                     var newDiv = "";
-                    newDiv += "<div class='card-panel status-name grey lighten-4' id='status-panel-"+response.id+"'><div class='card-header'>";
+                    newDiv += "<div class='status-panel' id='status-panel-"+response.id+"'><div class='card-panel status-name grey lighten-4'><div class='card-header'>";
                     newDiv += response.title;
                     // + "<i class='material-icons dropdownTrigger right' data-toggle='dropdown-status-"+response.id+"'>arrow_drop_down</i><ul id='dropdown-status-"+response.id+"' class='dropdown-content'><li><p href='#'>Add another status right to it</p></li><li><p href='#'>Delete status</p></li><li><p href='#'>Add task</p></li></ul>
                     newDiv+= "</div>";
-                    newDiv += "<div class='card-content' id='status-"+response.id+"'><p class='text-center addTask' onclick='openTaskModal("+response.id+")'>+ Add task</p></div>";
-                    newDiv += "</div>";
+                    newDiv += "<div class='card-content status-body' id='status-"+response.id+"'><p class='text-center addTask' onclick='openTaskModal("+response.id+")'>+ Add task</p><div class='task-list' id='status-task-"+response.id+"'></div></div>";
+                    newDiv += "</div></div>";
                     var newStatus = $.parseHTML(newDiv);
                     if(response.beforeStatusId == -1){
                         $("#status-list").prepend(newStatus);
@@ -274,7 +275,7 @@
                     //document.getElementById("task-desc").value = null;
                     $('#addTaskModal').modal('close');
                     var taskDiv = "";
-                    var id = "status-"+response.status_id;
+                    var id = "status-task-"+response.status_id;
                     
                     var status_div = document.getElementById(id);
                     var len = status.length;
@@ -325,12 +326,12 @@
                
                 var newDiv = "";
                 statusText.forEach(function addToDiv(key,index){
-                    newDiv += "<div class='card-panel status-name grey lighten-4' id='status-panel-"+key.id+"'><div class='card-header'>";
+                    newDiv += "<div class='status-panel' id='status-panel-"+key.id+"'><div class='card-panel status-name grey lighten-4'><div class='card-header'>";
                     newDiv += key.title
                     //newDiv += + "<i class='material-icons dropdownTrigger right' data-toggle='dropdown-status-"+key.id+"'>arrow_drop_down</i><ul id='dropdown-status-"+key.id+"' class='dropdown-content'><li><p href='#'>Add another status right to it</p></li><li><p href='#'>Delete status</p></li><li><p href='#'>Add task</p></li></ul>
                     newDiv += "</div>";
-                    newDiv += "<div class='card-content' id='status-"+key.id+"'><p class='text-center addTask' onclick='openTaskModal("+key.id+")'>+ Add task</p></div>";
-                    newDiv += "</div>";
+                    newDiv += "<div class='card-content status-body' id='status-"+key.id+"'><p class='text-center addTask' onclick='openTaskModal("+key.id+")'>+ Add task</p><div class='task-list' id='status-task-"+key.id+"'></div></div>";
+                    newDiv += "</div></div>";
                     statusList.push(key.id+"-"+key.title);
                  });
                  document.getElementById("status-list").innerHTML = newDiv;
@@ -391,6 +392,11 @@
                     ele.innerHTML = text;
                 }
             }
+
+            function openStatusModal(){
+                $('#addStatusModal').modal('open');
+                $('#status-title').focus();
+            }
     
             function openTaskModal(status_id = -1){
                 if(statusList.length == 0){
@@ -399,6 +405,7 @@
                 else{
                     $('#addTaskModal').modal();
                     $('#addTaskModal').modal('open');
+                    $('#task-title').focus();
                     addStatusToTaskMenu(status_id);
                 }
             }
@@ -409,7 +416,7 @@
                
                 var taskDiv = "";
                 tasksText.forEach(function addToDiv(key,index){
-                    var id = "status-"+key.status_id;
+                    var id = "status-task-"+key.status_id;
                  
                     var status_div = document.getElementById(id);
                     var len = status.length;
