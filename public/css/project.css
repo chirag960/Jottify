@@ -12,6 +12,9 @@ body{
 .go-inline{
     float:left;
 }
+#status-text{
+    margin-left:10%;
+}
 .status-card-container{
     margin-top:40px;
     display:flex;
@@ -38,13 +41,90 @@ body{
 }
 .card-header{
     text-overflow:ellipses;
+    position:relative;
 }
 .status-body{
     padding:2%;
 }
+.status-ops{
+    position:absolute;
+    cursor:pointer;
+    right:2%;
+  }
+.none{
+    display: none;
+}
+#project-admin-avatars{
+    margin-left:5%;
+}
+.avatar-image{
+    position:relative;
+    width: 35px;
+    height: 35px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    margin:0.05em;
+  }
+  .all-member-icon{
+      background-color: #cecece;
+      line-height:36px;
+      text-align:center;
+      cursor:pointer;
+  }
 .task-list{
     max-height:65vh;
     overflow-y:auto;
+}
+.task-ops{
+    position:absolute;
+    right:1%;
+}
+.task-icons-info{
+    display:inline-block;
+    font-size:12px !important;
+    margin-right:3%;
+    color:grey;
+}
+.task-icons{
+    display:inline-block;
+    color:grey;
+    font-size:14px !important;
+}
+#taskMembersView{
+    margin-top:5%;
+}
+#taskMembersCount{
+    margin-top:2%;
+}
+.desc-icons{
+    display:inline-block;
+    color:grey;
+    font-size:16px !important;
+}
+.date-div{
+    background-color:yellow;
+    padding:1%;
+    border-radius:5%;
+}
+.pin-icon{
+    -ms-transform: rotate(-45deg); /* IE 9 */
+    -webkit-transform: rotate(-45deg); /* Safari 3-8 */
+    transform: rotate(-45deg);
+}
+.progress-info{
+    display:inline-block;
+}
+.progress{
+    display:inline-block;
+    width: 70%;
+    margin-bottom:0px;
+    margin-left:10px;
+    padding-top:5px;
+  }
+#users-list{
+    max-height:25vh;
+    overflow:auto;
 }
 .secondary-content{
     right:0px !important;
@@ -69,6 +149,10 @@ body{
     background:#afafaf;
     cursor:pointer;
     
+}
+.role{
+    font-size: 10px;
+    color:gray;
 }
 
 .addTask:hover{

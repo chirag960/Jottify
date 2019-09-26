@@ -6,8 +6,7 @@
             <h5 class="text-center">Create new Status</h5>
                
               
-          <form method="POST" action="/project/{{$project['id']}}/status">
-                @csrf
+          <form>
                 <div class="row">
                     <div class="input-field col s12">
                     <input id="status-title" type="text" name="title" placeholder="Title" autocomplete="off" required >

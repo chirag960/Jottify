@@ -5,7 +5,7 @@
             <h5 class="text-center">Invite members</h5>
             
             <div id="membersView"></div>    
-            <form method="POST" action="/project/{{$project['id']}}/members">
+            <form>
                 @csrf
                 <div class="row">
                     <div class="input-field col s12">
@@ -17,9 +17,7 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <textarea id="invite-message" class="materialize-textarea" required>
-                            I'm working on the project "{{ $project['title']}}" in Jottify and wanted you to join this project!
-                        </textarea>
+                        <textarea id="invite-message" class="materialize-textarea" required>You have been invited to the project '{{ $project['title']}}' in Jottify!</textarea>
                         <label for="invite-message">Invite Message</label>
                         <span class="invalid-feedback" id="invalidInviteMessage" role="alert"></span>
                     </div>

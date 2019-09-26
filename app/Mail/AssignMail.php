@@ -10,16 +10,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class AssignMail extends Mailable
 {
     use Queueable, SerializesModels;
-    protected $inputs;
+    public $id;
+    public $project_id;
+    public $title;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($inputs)
+    public function __construct($id,$project_id,$title)
     {
         //
-        $this->inputs = $inputs;
+        $this->id = $id;
+        $this->project_id = $project_id;
+        $this->title = $title;
     }
 
     /**
@@ -29,11 +33,6 @@ class AssignMail extends Mailable
      */
     public function build()
     {
-        return $this->from('mail@example.com', 'Mailtrap')
-            ->subject('A new task "'.$this->inputs['title'].'" has been assigned to you in the project "'.$this->inputs['project_title'])
-            ->view('emails.assign')
-            ->with([
-                'params' => $this->inputs
-            ]);
+        return $this->subject("A new task has been assigned to you on Jottify")->markdown('emails.assign');
     }
 }

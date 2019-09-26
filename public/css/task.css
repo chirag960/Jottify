@@ -9,7 +9,14 @@
     cursor:pointer;
     text-decoration: underline;
 }
-
+.task-container{
+    width:75%;
+    margin-left:auto;
+    margin-right:auto;
+}
+#task-title{
+    margin-top:0px;
+}
 .go-inline{
     float:left;
 }
@@ -29,6 +36,11 @@
 }
 .btn-primary-outline:hover{
     background:#afafaf;
+}
+.sticky{
+    position:sticky;
+    position:-webkit-sticky;
+    top:50px;    
 }
 #members-list{
     position:relative;
@@ -53,7 +65,7 @@
 }
 #comment-list{
     background-color: #eee;
-    max-height: 500px;
+    max-height: 50vh;
     overflow:auto;
 }
 .comment-option{
@@ -75,16 +87,27 @@
     bottom:auto;
     width:30%;
 }
+#progress-info{
+    display:inline-block;
+}
 @media only screen and (min-width: 601px) {
     #progressBar {
+      display:inline-block;
       width: 50%;
+      margin-bottom:3px;
+      margin-left:10px;
+      padding-top:10px;
     }
   }
   
   /* If the screen size is 600px or less, set the font-size of <div> to 30px */
   @media only screen and (max-width: 600px) {
     #progressBar {
+      display: inline-block;
       width: 100%;
+      margin-bottom:0px;
+      padding-top:10px;
+      margin-left:5px;
     }
   }
   #attachment-list{
@@ -138,7 +161,8 @@
       float:none !important;
   }
   #member-avatars{
-
+    max-height:25vh;
+    overflow-y:auto;
   }
   .avatar-image{
     position:relative;
@@ -149,4 +173,22 @@
     vertical-align: middle;
     margin:0.05em;
     cursor:pointer;
+  }
+  .comment-div{
+    margin: 1% 1% 2% 1%;
+    padding: 1% 2% 3% 1%;
+    background-color: white;
+    max-width: max-content;
+    border-radius: 0px 0% 30px 0%
+  }
+  .commenter-name{
+    font-size: 10px;
+    color: gray
+  }
+  .commenter-message{
+    font-size: 15px;
+  }
+  .commenter-time{
+    font-size: 10px;
+    color: gray;
   }

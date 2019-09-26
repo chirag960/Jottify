@@ -31,7 +31,9 @@
                 </div>
             </div>
 </div>
+@endsection
 
+@section('links')
 @if (session('status'))
 <script>
    M.toast({html: {{ session('status') }}, classes: 'rounded'});

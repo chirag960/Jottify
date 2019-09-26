@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Project;
 use App\Models\ProjectHasMember;
 use Illuminate\Support\Facades\DB;
 use App\Models\Status;
@@ -108,23 +107,34 @@ class ProjectController extends Controller
     }
 
     public function invite(Request $request, $id){
-        $this->projectService->invite($request, $id);
-        return "success";
-    }
+        $validator = Validator::make($request->all(), [
+            'membersList' => 'required',
+            'inviteMessage' => 'required|max:255',
+        ]);
 
-    public function addMember($id, $member_id){
-
-        $user = ProjectHasMember::where('project_id',$id)->where('member_id',$member_id)->first();
-        if($user != null){
-            return $this->getProjectDetails($id);
+        if($validator->fails()){
+            return response()->json(array(
+                'message' => "errors",
+                'errors' => $validator->getMessageBag()->toArray()), 400);
         }
         else{
-            $addMember = $this->projectService->addMember($id, $member_id);
-            $message = "you are added in the project";
-            return $this->getProjectDetails($id,$message);
+        $response = $this->projectService->invite($request, $id);
+        return $response;
         }
-        
-        
     }
+
+    // public function memberDetails($id, $member_id){
+
+    //     $member = ProjectHasMember::where('project_id',$id)->where('member_id',$member_id)->first();
+    //     if(isset($member)){
+    //         $member = $this->projectService->memberDetails($id, $member_id);
+    //         return $member;
+    //     }
+    //     else{
+    //         return response()->json(["message"=>"The user is not in this project"],200);
+    //     }
+        
+        
+    // }
 
 }

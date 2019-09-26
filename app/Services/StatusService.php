@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Project;
 use App\Models\Status;
 use App\Models\User;
+use App\Models\Task;
 
 class StatusService{
 
@@ -17,12 +18,11 @@ class StatusService{
     }
 
     public function index($id){
-      $status = Status::where('project_id',$id)->where('archived',false)->orderBy('order')->get();
-      return $status;
+        return $this->status->index($id);
     }
 
     public function create(Request $request, $id){
-        $statuses = Status::where('project_id',$id)->get();
+        $statuses = $this->status->index($id);
         $count = count($statuses);
         $order;
         if($request->status_id == "new"){
@@ -30,24 +30,18 @@ class StatusService{
             $beforeStatusId = -1;
         }
         else{
-            $beforeStatus = Status::where('id',$request->status_id)->first();
+            $beforeStatus = Status::find($request->status_id);
             $order = $beforeStatus->order;
             $beforeStatusId = $beforeStatus->id;
             $order+=1;
         }
-        $status = new Status;
-        $status->project_id = $id;
-        $status->title = $request->title;
-        $status->order = $order;
         
         if($count == $order){
-            $status->save();
+            $status = $this->status->create($id,$request->title,$order);
         }
         else if($count > $order){
-            $update = Status::where('project_id',$id)
-                    ->where('order','>=',$order)
-                    ->increment('order');
-            $status->save();
+            $this->status->incrementSingleOrder($id,$order);
+            $status = $this->status->create($id,$request->title,$order);
         }
         return response()->json(
             ['message'=>'success','id'=>$status->id,'beforeStatusId'=>$beforeStatusId,'title'=>$request->title,'order'=>$order]
@@ -61,21 +55,29 @@ class StatusService{
                 return "No changes made";
             }
             else if($prev < $new){
-                $update = Status::where('project_id',$project_id)
-                        ->whereBetween('order',array($prev+1,$new))
-                        ->decrement('order');
+                $this->status->decrementOrder($project_id,$prev+1,$new);
             }
             else if($prev > $new){
-                $update = Status::where('project_id',$project_id)
-                        ->whereBetween('order',array($new,$prev-1))
-                        ->increment('order');
+                $this->status->incrementOrder($project_id,$new,$prev-1);
             }
-            $update = Status::where('id',$id)
-                            ->update(['order'=>$new]); 
+            $this->status->setOrder($id,$new);
             return "Changes made";
     }
 
-    public function hide($project_id,$id){
-        
+    public function delete($project_id,$id){
+        (new Task)->deleteByStatus($id);
+
+        $statuses = $this->status->index($project_id);
+        $count = count($statuses);
+    
+        $status = Status::find($id);
+        $order = $status->order;
+
+        if($order+1 < $count){
+            $this->status->decrementOrder($project_id,$order+1,$count-1);
+        }
+
+        $status->archiveStatus();
+        return response()->json(["message"=>"success","id"=>$id,"title"=>$status->title],200);
     }
 }

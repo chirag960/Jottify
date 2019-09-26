@@ -63,7 +63,7 @@ class Handler extends ExceptionHandler
     {
         if($this->shouldReport($exception)){
             $url = $request->url();
-            if ($url == "http://site.test/login" || $url == "http://site.test/register" || $url == "http://site.test/home"){
+            if ($url == "http://site.test/login" || $url == "http://site.test/register" || $url == "http://site.test/home" || $url == "http://site.test/project/{id}" || $url == "http://site.test/project/{id}/task/{task_id}"){
                 return response()->view('errors.500');
             }
             return response()->json(['message' => 'Something went wrong'],200);
@@ -90,7 +90,7 @@ class Handler extends ExceptionHandler
         Mail::to('tellodotcom@gmail.com')->send(new ExceptionMail($html));
         }
         catch(Exception $e){
-
+            dd($e);
         }
     }
 }

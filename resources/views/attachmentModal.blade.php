@@ -6,8 +6,7 @@
           <div class="" >
               <p>Select from computer :</p>        
               <div id="attachFile">
-                  <form method="POST" id="fileCatcher" enctype="multipart/form-data">
-                  @csrf
+                  <form id="fileCatcher" enctype="multipart/form-data">
                   <div class="file-field input-field">
                       <div class="btn light-blue">
                         <span>File</span>

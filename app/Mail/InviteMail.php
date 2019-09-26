@@ -11,18 +11,21 @@ use App\Models\Project;
 class InviteMail extends Mailable
 {
     use Queueable, SerializesModels;
-    protected $inputs;
-
+    public $id;
+    public $title;
+    public $message;
     //public $invite;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($inputs)
+    public function __construct($id,$title,$message)
     {
         //
-        $this->inputs = $inputs;
+        $this->id = $id;
+        $this->title = $title;
+        $this->message = $message;
     }
 
     /**
@@ -32,12 +35,6 @@ class InviteMail extends Mailable
      */
     public function build()
     {
-
-        return $this->from('mail@example.com', 'Mailtrap')
-            ->subject('Invitation to new project '.$this->inputs['project_title'])
-            ->markdown('emails.invite')
-            ->with([
-                'params' => $this->inputs
-            ]);
+        return $this->subject("You've been added to a new project in Jottify ")->markdown('emails.invite');
     }
 }

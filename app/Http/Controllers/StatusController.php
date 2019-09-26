@@ -41,6 +41,10 @@ class StatusController extends Controller
     public function update(Request $request, $id, $status_id){
       $status= $this->statusService->update($request, $id, $status_id);
       return $status;
+    }
 
+    public function delete($id, $status_id){
+      $status= $this->statusService->delete($id, $status_id);
+      return $status;
     }
 }

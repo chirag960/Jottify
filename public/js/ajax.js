@@ -15,7 +15,7 @@ function makeGetRequest(url,callFunction,overlay = true){
     xhttp.send();
 }
 
-function makeGetRequestForPDF(url,callFunction){
+function makeGetRequestForCSV(url,callFunction){
     $("#overlay").show();
     var xhttp;
     xhttp=new XMLHttpRequest();
@@ -26,6 +26,7 @@ function makeGetRequestForPDF(url,callFunction){
         }
     };
     xhttp.open("GET", url, true);
+    xhttp.setRequestHeader("Content-type", "text/csv");
     xhttp.responseType="blob";
     xhttp.send();
 }

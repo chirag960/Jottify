@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Task;
 use App\Models\Comment;
 use Validator;
+use Carbon\Carbon;
 
 class CommentService{
 
@@ -18,24 +19,14 @@ class CommentService{
     }
 
     public function index($project_id,$id){
-        //$comments = Comment::where('task_id',$id)->user;
 
-        $comments = DB::table('comments')
-                    ->rightJoin('users','comments.user_id','=','users.id')
-                    ->where('comments.task_id','=',$id)
-                    ->select('comments.id','comments.task_id','comments.user_id','users.name','comments.message','comments.created_at')
-                    ->orderBy('comments.created_at','DESC')
-                    ->get();
-
-        return $comments;
+        return $this->comment->index($id);
     }
 
     public function create(Request $request, $project_id, $id){
-        $comment = new Comment;
-        $comment->task_id = $id;
-        $comment->user_id = auth()->id();
-        $comment->message = $request->comment;
-        $comment->save();
+        $comment = (new Comment)->create($id, $request->comment);
+        (new Task)->incrementCommentCount($id);
+        
         return response()->json(["message"=>"success","comment"=>$comment],201);
     }
 }

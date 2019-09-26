@@ -18,15 +18,16 @@ class checkTask
     public function handle($request, Closure $next)
     {
         
-        $existsMember = DB::table('task_has_members')
-        ->where([['member_id','=',auth()->id()],['task_id','=',$request->id]])
-        ->first();
+        // $existsMember = DB::table('task_has_members')
+        // ->where([['member_id','=',auth()->id()],['task_id','=',$request->id]])
+        // ->first();
 
         $existsTask = DB::table('tasks')
         ->where([['id','=',$request->id],['project_id','=',$request->project_id]])
         ->first();
         //dd($existsTask == null);
-        if(!$existsMember || !$existsTask){
+        //if(!$existsMember || !$existsTask){
+        if(!$existsTask){
             return response()->view('errors.404');
         }
         else{

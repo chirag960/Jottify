@@ -5,16 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta id="csrf-token" name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Jottify') }}</title>
 
     <!-- Scripts -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="{{ asset('js/materialize.min.js') }}"></script>
+    
     <!--script src="{{ asset('js/app.js') }}"></script-->
-    <script type="text/javascript" src="{{ asset('js/ajax.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('js/navbar.js') }}"></script>
     
 
     <!-- Fonts -->
@@ -136,18 +133,11 @@
     </div>
 </div>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="{{ asset('js/materialize.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/ajax.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/navbar.js') }}"></script>
 @yield('links')
-
-<script>
-
-$(document).on("click", function(event){
-            var $trigger = $("#results");
-            if($trigger !== event.target && !$trigger.has(event.target).length){
-                $("#results").removeAttr("style").hide();
-                $("#searchBar").html("");
-            }            
-        });
-</script>
 
 </body>
 </html>

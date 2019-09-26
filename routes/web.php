@@ -52,7 +52,7 @@ Route::group(['middleware'=>'auth'], function(){
     
     Route::get('/projectAndTask','TaskController@titlesList');
     
-    Route::get('/home', 'HomeController@index')->name('home')->middleware('cacheControl');
+    Route::get('/home', 'HomeController@index')->middleware('cacheControl');
     
     Route::patch('/profile','ProfileController@update');
     
@@ -61,8 +61,6 @@ Route::group(['middleware'=>'auth'], function(){
     Route::get('/projects', 'ProjectController@index');
     
     Route::post('/projects', 'ProjectController@create');
-    
-    Route::get('/project/{id}/member/{member_id}','ProjectController@addMember');
 
 });
 
@@ -77,7 +75,9 @@ Route::group(['prefix'=>'project/{id}','middleware'=> ['auth','checkProject']], 
 
     Route::get('allMembers','ProjectController@allUsers');
 
-    Route::get('report','ProjectController@generateReport');
+    //Route::get('member/{member_id}','ProjectController@memberDetails');
+
+
 
     Route::patch('/', 'ProjectController@update');
 
@@ -106,7 +106,11 @@ Route::group(['prefix'=>'project/{id}', 'middleware' => ['auth','checkProject','
 
     Route::delete('member/{member_id}','ProjectController@deleteMember');
 
-    Route::delete('/','ProjectController@delete');    
+    Route::delete('/','ProjectController@delete');  
+    
+    Route::delete('/status/{status_id}','StatusController@delete');
+
+    Route::get('report','TaskController@report'); //still testing
 });
 
 Route::group(['prefix'=>'project/{project_id}/task/{id}','middleware'=> ['auth','checkTask']], function(){
@@ -138,6 +142,8 @@ Route::group(['prefix'=>'project/{project_id}/task/{id}','middleware'=> ['auth',
     Route::patch('description','TaskController@updateDescription');
     
     Route::get('members','TaskController@getTaskMembers');
+
+    Route::get('onlyMembers','TaskController@getOnlyTaskMembers');
     
     Route::post('members','TaskController@assignTask');
 

@@ -20,6 +20,23 @@ class Project extends Model
         return $this->hasMany('App\Models\Task','project_id','id');
     }
 
-    //public function create($id,$description,)
 
+    public function create($title, $description){
+        $this->user_id = auth()->id();
+        $this->title = $title;
+        if(isset($description)){
+            $this->description = $description;
+        }
+        $this->background = "/media/project_background/default.jpg";
+        $this->save();
+        return $this;
+    }
+
+    public function getProjectTitle($project_id){
+        return Project::find($project_id)->select('title')->first()->title;
+    }
+
+    public function deleteProject($id){
+        $this::find($id)->delete();
+    }
 }

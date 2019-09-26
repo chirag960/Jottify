@@ -1,7 +1,11 @@
-    // if(document.getElementById("searchBar")){
-    //     console.log("inside if");
-        
-    // }
+$(document).on("click", function(event){
+    var $trigger = $("#results");
+    if($trigger !== event.target && !$trigger.has(event.target).length){
+        $("#results").removeAttr("style").hide();
+        $("#searchBar").html("");
+        $("#searchBar").val("");
+    }            
+});
 
     function throttleSearchTask(fn, threshhold) {
         console.log("hey");
@@ -14,10 +18,11 @@
                 clearTimeout(deferTimer);
                 deferTimer = setTimeout(function () {
                 last = now;
+                console.log(document.getElementById("searchBar").value);
                 fn(document.getElementById("searchBar").value);
                 }, threshhold);
             } else {
-                console.log("hey");
+                console.log(document.getElementById("searchBar").value);
                 last = now;
                 fn(document.getElementById("searchBar").value);
             }
@@ -25,6 +30,7 @@
     }
 
     function showTasks(pattern){
+        pattern = $.trim(pattern);
         if(pattern.length > 2){
             makeGetRequest("/projectAndTask?pattern="+pattern,showResultDropDown,false);
         }
@@ -32,7 +38,6 @@
             if($('#dropTaskList')){
                 $('#dropTaskList').empty();
             }
-            console.log("something");
         }
     }
 

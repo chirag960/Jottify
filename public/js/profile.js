@@ -67,15 +67,21 @@ function updateImage(xhttp){
 }
 
 function validateName(){
-    var name = document.getElementById("name").value;
+    var name = document.getElementById("name").value.trim();
     var ele = document.getElementById("invalidName");
-    if(name.length == 0){
+    if(name == username){
+        $("#editButton").html("mode_edit");
+        $("#name").val(username);
+        $("#name").prop('disabled',true);
+        return false;
+    }
+    else if(name.length == 0){
         ele.innerHTML = "<strong>Please enter a name</strong>";
         ele.style.display = "block";
         return false;
     }
     else if(name.length < 3 || name.length > 20){
-        ele.innerHTML = "<strong>Length should not be more less than 3 or greater than 30</strong>";
+        ele.innerHTML = "<strong>Length should not be less than 3 or greater than 20</strong>";
         ele.style.display = "block";
         return false;
     }
@@ -86,6 +92,7 @@ function validateName(){
 }
 
 function changeName(){
+
     var type = $("#editButton").html();
     if(type == "mode_edit"){
         $("#editButton").html("save");

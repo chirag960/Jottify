@@ -3,8 +3,7 @@
       <div class="modal-body">
         <i class="material-icons close modal-close">close</i>
         <h5 class="text-center">Add members</h5>
-            <form method="POST">
-            @csrf
+            <form>
             <div class="input-field col s12" id="search-member-div">
                 <input placeholder="Search Members" id="member_pattern" type="text" autocomplete="off" onkeyup="searchMembers()">
                 <label for="member_pattern">Search Members</label>

@@ -27,44 +27,16 @@ class TaskService{
     }
 
     public function index($id){
-        $tasks = Task::where('project_id','=',$id)->orderBy('status_id')->get();
-        foreach($tasks as $task){
-            $members = Task::find($task->id)->users;
-            if($members != "[]"){
-                $task->members = $members;
-            }
-            
-        }
+        $tasks = $this->task->index($id);
         return $tasks;
     }
 
     public function create(Request $request, $id){
         // $id is project id
 
-        $task = new Task;
-        $task->status_id = $request->status_id;
-        $task->project_id = $id;
-        $task->title = $request->title;
-        if(isset($request->description)){
-            $task->description = $request->description;
-        }
-        if(isset($request->due_date)){
-            $task->due_date = $request->due_date;
-        }
-        $task->save();
-
-        $task_details = DB::table('task_details')->insert(['task_id'=> $task->id, 'status_id'=> $request->status_id]);
-
-        $taskHasMember = new TaskHasMember;
-        $taskHasMember->task_id = $task->id;
-        $taskHasMember->member_id = auth()->id();
-        $taskHasMember->save();
-
-        $task_details = new TaskDetails;
-        $task_details->task_id = $task->id;
-        $task_details->status_id = $request->status_id;
-        $task_details->save();
-
+        $task = $this->task->create($request->status_id,$id,$request->title,$request->description,$request->due_date);
+        (new TaskDetails)->create($task->id,$request->status_id);
+        
         return response()->json(
             ['message'=>'success','id' => $task->id,'title'=> $request->title, 'status_id'=> $request->status_id]
         ,201);
@@ -72,8 +44,7 @@ class TaskService{
     }
 
     public function delete($project_id,$id){
-        $task = Task::find($id) ;
-        $task->delete();
+        $this->task->deleteTask($id);
         return response()->json(["message"=>"success","id"=>$id],200);
     }
 
@@ -83,24 +54,20 @@ class TaskService{
             $date = new Carbon($task->due_date);
             $task->due_date = $date->toFormattedDateString();
         }
-        $role = ProjectHasMember::where('project_id',$project_id)->where('member_id',auth()->id())->first()->role;
+        $role = (new ProjectHasMember)->getRole($project_id);
         $task->role = $role;
         return $task;
     }
 
     public function getTaskMembers($project_id,$id){
-        $projectMembers = DB::table('project_has_members')
-                    ->rightJoin('users','project_has_members.member_id','=','users.id')
-                    ->where('project_has_members.project_id','=',$project_id)
-                    ->select('users.id','users.name','users.email','project_has_members.role','users.photo_location')
-                    ->get();
-        //dd($projectMembers);
-        $members = TaskHasMember::where('task_id',$id)->pluck('member_id')->toArray();
+        $projectMembers = (new ProjectHasMember)->getMembersDetails($project_id);
+        $members = (new TaskHasMember)->getMemberIds($id);
         //dd($members);
         foreach($projectMembers as $projectMember){
             if(in_array($projectMember->id, $members) ){
                 $projectMember->present = true;
-            }else{
+            }
+            else{
                 $projectMember->present = false;
             }
         }
@@ -108,34 +75,38 @@ class TaskService{
         return $projectMembers;
     }
 
+    public function getOnlyTaskMembers($project_id,$id){
+        $members = Task::find($id)->users;
+        if(count($members) == 0){
+            return response()->json(["message"=>"error","error"=>"no members found"],200);
+        }
+
+        return response()->json(["message"=>"success","members"=>$members],200);
+    }
+
     public function updateduedate(Request $request,$project_id,$id){
        
         $format = "M j, Y";
         $timestamp = DateTime::createFromFormat($format,$request->date);
 
-        $date = Task::find($id)->update(['due_date'=>$timestamp]);
+        $this->task->setDueDate($id,$timestamp);
         return response()->json(['message'=>'success','date'=>$request->date]);
     }
 
     public function updateDescription(Request $request,$project_id,$id){ 
-            $query = Task::find($id)->update(['description'=>$request->description]);
+            $this->task->setDescription($id,$request->description);
             return response()->json(["message"=>"success","description"=>$request->description],200);
     }
     
     public function updateStatus(Request $request,$project_id,$id){
         
-        $status = Task::find($id)->update(['status_id'=>$request->status_id]);
-        $details = new TaskDetails;
-        $details->task_id = $id;
-        $details->status_id = $request->status_id;
-        $details->save();
+        $this->task->setStatus($id,$request->status_id);
+        (new TaskDetails)->create($id,$request->status_id);
         return response()->json(['message'=>'success','status_id'=>$request->status_id],200);
     }
 
     public function assignTask(Request $request,$project_id,$id){
-        $task = Task::find($id);
-
-        $present_members = TaskHasMember::where('task_id',$id)->pluck('member_id')->toArray();
+        $present_members = (new TaskHasMember)->getMemberIds($id);
         $request_members = array_map('intval', $request->ids);
         $new_members = array_values(array_diff($request_members,$present_members));
         $remove_members = array_values(array_diff($present_members,$request_members));
@@ -148,10 +119,10 @@ class TaskService{
         }
         if(isset($inserts)){
             TaskHasMember::insert($inserts);
-            //SendEmails::dispatch($user,"assignToTask",$task);
+            SendEmails::dispatch($new_members,"assignToTask",Task::find($id));
         }
         if(isset($remove_members)){
-            $delete = TaskHasMember::where('task_id',$id)->whereIn('member_id',$remove_members)->delete();
+            (new TaskHasMember)->deleteMembers($id,$remove_members);
         }
         
         return response()->json(["message"=>"success","members"=>$request_members],200);
@@ -162,25 +133,13 @@ class TaskService{
         $pattern = Input::get('pattern');
 
         $id = auth()->id();
-        $projects = DB::table('project_has_members')
-                    ->rightJoin('projects','project_has_members.project_id','=','projects.id')
-                    ->where('project_has_members.member_id','=',auth()->id())
-                    ->where('projects.title','like','%'.$pattern.'%')
-                    ->select(['id','title'])
-                    ->get();
-
-        $tasks = DB::table('task_has_members')
-                ->rightJoin('tasks','task_has_members.task_id','=','tasks.id')
-                ->where('task_has_members.member_id','=',auth()->id())
-                ->where('tasks.title','like','%'.$pattern.'%')
-                ->select(['id','project_id','title'])
-                ->get();
+        $projects = (new ProjectHasMember)->searchProjects($pattern);
+        $tasks = (new TaskHasMember)->searchTasks($pattern);
 
         if(count($tasks)){
             foreach($tasks as $task){
-                $project_title = Project::where('id',$task->project_id)->select('title')->first();
-                //dd($project_title['title']);
-                $task->project_title = $project_title['title'];
+                $project_title = (new Project)->getProjectTitle($task->project_id);
+                $task->project_title = $project_title;
             }
         }
 
@@ -193,7 +152,6 @@ class TaskService{
         }
         return $response;
     }
-
 }
 
 ?>

@@ -24,20 +24,13 @@ class ChecklistService{
     }
 
     public function create(Request $request,$project_id,$task_id){
-        $checklist = new Checklist;
-        $checklist->task_id = $task_id;
-        $checklist->item = $request->message;
-        $checklist->completed = ($request->completed == 1)?true:false;
-        $checklist->save();
-
-        $task = Task::find($task_id);
-        $count = $task->checklist_item_count;
-        $task->checklist_item_count = ++$count;
-        if($request->completed == 1){
-            $count = $task->checklist_done;
-            $task->checklist_done = ++$count;    
+        $done = ($request->completed == 1)?true:false;
+        $checklist = $this->checklist->create($task_id,$request->message,$done);
+        
+        (new Task)->incrementCheckListCount($task_id);
+        if($done == true){
+            (new Task)->incrementCheckListComplete($task_id);
         }
-        $task->save();
 
         return response()->json(["message"=>"success","checklist"=>$checklist],201);
     }
@@ -45,21 +38,16 @@ class ChecklistService{
     public function update($request,$project_id,$task_id,$id){
         $done = ($request->completed == 1)?true:false;
         
-        $checklist = Checklist::find($id);
-        $checklist->completed = $done;
-        $checklist->save();
+        $this->checklist->setCompletion($id,$done);
         
-        $task = Task::find($task_id);
-        $task->checklist_done = $request->checklist_done;
-        $task->save();
-        
-        $response = DB::table('tasks')
-        ->join('checklists','checklists.task_id','=','tasks.id')
-        ->where('checklists.id',$id)
-        ->select('tasks.checklist_item_count','tasks.checklist_done','checklists.id','checklists.completed')
-        ->get();
+        if($done == true){
+            (new Task)->incrementCheckListComplete($task_id);
+        }
+        else{
+            (new Task)->decrementCheckListComplete($task_id);
+        }
 
-        return $response;
+        return response()->json(["message"=>"success","checklist_id"=>$id,"completed"=>$done],200);
 
     }
 

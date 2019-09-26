@@ -9,18 +9,14 @@
     <div class="card-panel white col s8 offset-s2 m6 offset-m3 l4 offset-l4 xl2 offset-xl5">
     <div class="card-body row" style="margin-left: 0px;margin-right: 0px;">
             <img id="profileDiv" src="{{Auth::user()->photo_location}}" alt=""  width="300" class="circle profile-image responsive-img">      
-            <form method="POST" class="col s12 center">
-                @csrf
-                @method('patch')
+            <form class="col s12 center">
                     <div class="btn file-field input-field">
                         <span>Change Image</span>
                         <input type="file" id="profileImage" accept=".png,.jpg,.jpeg" onchange="uploadImage()">
                     </div>
                     <span class="invalid-feedback hideMessage" id="invalidImage" role="alert"></span>
             </form>
-            <form method="POST" class="">
-                @csrf
-                @method('patch')
+            <form class="">
                 <div class="row" id="editButtonDiv">
                 <div class="input-field col s10 m10 l10 xl10 left">
                     <i class="material-icons prefix">account_circle</i>

@@ -15,4 +15,16 @@ class Checklist extends Model
     {
         return $this->belongsTo('App\Models\Task');
     }
+
+    public function create($task_id,$item,$completed){
+        $this->task_id = $task_id;
+        $this->item = $item;
+        $this->completed = $completed;
+        $this->save();
+        return $this;
+    }
+
+    public function setCompletion($id,$done){
+        Checklist::find($id)->update(['completed'=>$done]);
+    }
 }

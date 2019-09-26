@@ -63,5 +63,26 @@ class User extends Authenticatable
     public function comments(){
         return $this->hasMany('App\Models\Comment');
     }
-    
+
+    public function setName($name){
+        User::find(auth()->id())->update(['name'=>$name]);
+    }
+
+    public function setProfileImage($relative_path){
+        User::find(auth()->id())->update(['photo_location' => $relative_path]);
+    }
+
+    public function searchUser($pattern, $project_member_ids){
+        return $this->where('verified',true)
+                    ->where('name', 'like', '%' . $pattern . '%')
+                    ->whereNotIn('id',$project_member_ids)
+                    ->select('id','name','email')
+                    ->orderBy('name')
+                    ->get();
+    }
+
+    public function getUserDetails($user_ids){
+        return $this->whereIn('id',$user_ids)->select('id','name','email','photo_location')->get();
+    }
+
 }

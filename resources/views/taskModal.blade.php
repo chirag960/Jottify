@@ -5,8 +5,7 @@
                 <h5 class="text-center">Create new Task</h5>
                   
                   
-              <form method="POST" action="/project/{{$project['id']}}/task">
-                    @csrf
+              <form>
                     <div class="row">
                         <div class="input-field col s12">
                         <input id="task-title" type="text" name="title" placeholder="Title" autocomplete="off" required >
