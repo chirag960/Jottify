@@ -284,28 +284,29 @@ function displayProjects(xhttp) {
     }
 
     function updateReport(xhttp){
-        //console.log("From update report :" + xhttp.responseText);
+        console.log(xhttp.status);
         var blob = xhttp.response;
-        console.log(blob.size);
-        // var link=document.createElement('a');
-        // link.href=window.URL.createObjectURL(blob);
-        // link.download="Dossier_" + new Date() + ".csv";
-        // document.body.appendChild(link);
-        // link.click();
-
-        var disposition = xhttp.getResponseHeader('filename');
-        console.log(disposition);
-        var matches = /"([^"]*)"/.exec(disposition);
-        var filename = disposition+".csv";
-
-        // The actual download
-        var blob = new Blob([xhttp.response], { type: 'text/csv' });
-        var link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        console.log("this is response");
+        console.log(xhttp.response);
+        if(xhttp.response.message == "error"){
+            M.toast({html: response.error, classes: 'rounded'});
+        }
+        else{
+            var disposition = xhttp.getResponseHeader('filename');
+            console.log(disposition);
+            var matches = /"([^"]*)"/.exec(disposition);
+            var filename = disposition+".csv";
+    
+            // The actual download
+            var blob = new Blob([xhttp.response], { type: 'text/csv' });
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
     }
 
     function reportProject(event){

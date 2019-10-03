@@ -104,7 +104,7 @@ class Task extends Model
     public function getCheckListDetails(){}
 
     public function deleteTask($id){
-        Task::delete($id);
+        Task::find($id)->delete();
     }
 
     public function deleteByStatus($status_id){

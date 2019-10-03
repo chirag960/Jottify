@@ -152,6 +152,74 @@ class TaskService{
         }
         return $response;
     }
+
+    public function report($id){
+        $tasks = Project::find($id)->tasks;
+        
+        $timestamp = Carbon::now()->timestamp;
+        
+        $title = Project::find($id)->title;
+        $file_name = $title.$timestamp;
+        $out = fopen($file_name.'.csv', 'w');
+        $csv_headers = array("title","Members","Created at", "Updated at","Due Date","Attachment Count","Current Status","Progress");
+        fputcsv($out, $csv_headers);
+
+        foreach($tasks as $task){
+
+
+            $task->creation_date = Carbon::parse($task->created_at)->toDayDateTimeString();
+
+            $task->last_updated_date = Carbon::parse($task->updated_at)->toDayDateTimeString();
+
+            $task->current_status = Status::find($task->status_id)->title;
+
+            if(!is_null($task->due_date)){
+                $task->due_date = Carbon::parse($task->due_date)->toFormattedDateString();
+            }
+            else{
+                $task->due_date = "NA";
+            }
+            
+
+            if(is_null($task->checklist_item_count)){
+                $task->progress = "NA";
+            }
+            else if($task->checklist_item_count == 0){
+                $task->progress = "0%";
+            }
+            else{
+                $progress = ceil(($task->checklist_done/$task->checklist_item_count)*100);
+                $task->progress = $progress."%";
+            }
+            
+            $members = $task->users()->pluck('name')->toArray();
+            if(count($members) == 0){
+                $members = "NA";
+            }
+            else{
+                $members = implode(', ', $members);
+            }
+            $task->members = $members;
+
+            $line = array($task->title,$task->members,$task->creation_date,$task->last_updated_date,$task->due_date,$task->attachment_count,
+                        $task->current_status,$task->progress);
+            
+            fputcsv($out, $line);
+
+        }
+
+        fclose($out);
+
+        $headers = array(
+            'Content-Type'=> 'text/csv',
+            'Content-Disposition'=> 'attachment',
+            'filename'=>$file_name
+        );
+
+        return response()->download(public_path().'/'.$file_name.'.csv',$file_name.'.csv', $headers)->deleteFileAfterSend();;
+
+    }
+
 }
 
 ?>

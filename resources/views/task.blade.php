@@ -74,7 +74,7 @@
     <div class="col s12 m12 l4 xl4 sticky">
         <div id="task-buttons">
                 <a class="btn red text-white" onclick="deleteTask()"><i class="material-icons">delete</i></a>
-                <a class="btn light-blue modal-trigger" href="#assignMemberTaskModal"><i class="material-icons">people</i>assign members</a>
+                <a class="btn light-blue modal-trigger" href="#assignMemberTaskModal"><i class="material-icons">people</i><span>assign members</span></a>
                 <div id="status-form"></div>
                 
         </div>

@@ -16,7 +16,6 @@ class CreateTaskHasMembersTable extends Migration
         Schema::create('task_has_members', function (Blueprint $table) {
             $table->unsignedBigInteger('task_id');
             $table->unsignedBigInteger('member_id');
-            $table->boolean('role')->default(0);
 
             $table->foreign('member_id')->references('id')->on('users');
             $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');

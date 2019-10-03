@@ -14,6 +14,7 @@ use App\Jobs\SendEmails;
 use Illuminate\Support\Facades\Input;
 use Validator;
 use Carbon\Carbon;
+use App\Models\TaskDetails;
 
 class TaskController extends Controller
 {
@@ -140,69 +141,31 @@ class TaskController extends Controller
     }
 
     public function report($id){
+
         $tasks = Project::find($id)->tasks;
-        
-        $timestamp = Carbon::now()->timestamp;
-        $data = $tasks->toArray();
-        
-        $title = Project::find($id)->title;
-        $file_name = $title.$timestamp;
-        $out = fopen($file_name.'.csv', 'w');
-        $csv_headers = array("title","Members","Created at", "Updated at","Due Date","Attachment Count","Current Status","Progress");
-        fputcsv($out, $csv_headers);
-
-        foreach($tasks as $task){
-
-            $dt = new Carbon($task->created_at);
-            $dt = $dt->toDayDateTimeString();
-            $task->creation_date = $dt;
-
-            $dt = new Carbon($task->updated_at);
-            $dt = $dt->toDayDateTimeString();
-            $task->last_updated_date = $dt;
-
-            $task->current_status = Status::find($task->status_id)->title;
-
-            $date = new Carbon($task->due_date);
-            $task->due_date = $date->toFormattedDateString();
-
-            if(is_null($task->checklist_item_count)){
-                $task->progress = "NA";
-            }
-            else if($task->checklist_item_count == 0){
-                $task->progress = "0%";
-            }
-            else{
-                $progress = ceil(($task->checklist_done/$task->checklist_item_count)*100);
-                $task->progress = $progress."%";
-            }
-            $members = $task->users()->pluck('name')->toArray();
-            if(count($members) == 0){
-                $members = "NA";
-            }
-            else{
-                $members = implode(', ', $members);
-            }
-            $task->members = $members;
-
-            $line = array($task->title,$task->members,$task->creation_date,$task->last_updated_date,$task->due_date,$task->attachment_count,
-                        $task->current_status,$task->progress);
-            
-            fputcsv($out, $line);
-
+        if($tasks->isEmpty()){
+            $headers = ["Content-type"=>"application/json"];
+            return response()->json(["message"=>"No tasks Found"],200,$headers);
+        }
+        else{
+            $response = $this->taskService->report($id);
+            return $response;
         }
 
-        fclose($out);
-
-        $headers = array(
-            'Content-Type'=> 'text/csv',
-            'Content-Disposition'=> 'attachment',
-            'filename'=>$file_name
-        );
-
-        return response()->download(public_path().'/'.$file_name.'.csv',$file_name.'.csv', $headers)->deleteFileAfterSend();;
-
-
     }
+
+    // public function taskDetailsReport(){
+    //     $status_names = 
+    //     $out = fopen('report'.rand().'.csv', 'w');
+
+    //     $tasksdetails = (new TaskDetails)->where('task_id',1)->orderby('timestamp')->get();
+    //     $csv_headers = array("status name","start","end", "total time");
+    //     fputcsv($out, $csv_headers);
+    //     foreach($tasks as $task){
+
+    //         fputcsv($out, $line);
+    //     }
+    //     fclose($out);
+    // }
 
 }

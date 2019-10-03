@@ -21,15 +21,10 @@ Route::get('/avatar',function(){                        //still testing
     ->background('#8BC34A')
     ->color('#fff')
     ->generate()
-    
     ->save($path);
 });
 
-Route::get('/test','TaskController@testApi');
-
-Route::get('/project/{id}/sendmembers','ProjectController@invite'); //still testing
-
-Route::get('/project/{project_id}/task/{id}/members2','TaskController@assignTask2'); //still testing
+Route::get('/taskdetails','TaskController@taskDetailsReport');
 
 Route::get('/getRedis', function() {    //for testing
     print_r(app()->make('redis'));

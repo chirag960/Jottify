@@ -18,12 +18,12 @@ class CreateTasksTable extends Migration
             $table->unsignedBigInteger('status_id');
             $table->unsignedBigInteger('project_id');
             $table->string('title',30);
-            $table->string('description',255)->nullable();
+            $table->string('description',2048)->nullable();
             $table->date('due_date')->nullable();
             $table->unsignedInteger('attachment_count')->default(0);
             $table->unsignedInteger('comment_count')->default(0);
             $table->unsignedInteger('checklist_item_count')->nullable();
-            $table->unsignedInteger('checklist_done')->nullable();
+            $table->unsignedInteger('checklist_done')->default(0);
             $table->timestamps();
 
             $table->foreign('status_id')->references('id')->on('statuses')->onDelete('cascade');

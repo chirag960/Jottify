@@ -20,14 +20,25 @@ function makeGetRequestForCSV(url,callFunction){
     var xhttp;
     xhttp=new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
-        if (this.readyState == 4) {
+        if (this.readyState == 4 && this.status == 200){
+            
             $("#overlay").hide();
-            callFunction(this);
+            console.log(xhttp.getResponseHeader("Content-Type"));
+            var contentType = xhttp.getResponseHeader("Content-Type");
+            
+            if(contentType.includes("application/json") ){
+                var response = JSON.parse(xhttp.response);
+                M.toast({html: response.message, classes: 'rounded'});
+            }
+            else{
+                callFunction(this);
+            }
+            
         }
     };
     xhttp.open("GET", url, true);
     xhttp.setRequestHeader("Content-type", "text/csv");
-    xhttp.responseType="blob";
+    //xhttp.responseType="blob";
     xhttp.send();
 }
 

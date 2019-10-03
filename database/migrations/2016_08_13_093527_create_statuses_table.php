@@ -17,7 +17,7 @@ class CreateStatusesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('project_id');
             $table->string('title',30);
-            $table->unsignedInteger('order');
+            $table->unsignedInteger('order')->nullable();
             $table->boolean('archived')->default(false);
 
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');

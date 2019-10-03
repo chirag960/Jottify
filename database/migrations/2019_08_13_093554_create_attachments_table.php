@@ -17,6 +17,7 @@ class CreateAttachmentsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('task_id');
             $table->unsignedBigInteger('user_id');
+            $table->string('name',1024);
             $table->string('type',10);
             $table->string('location');
             $table->timestamp('created_at')->useCurrent();

@@ -16,7 +16,7 @@ class CreateProjectHasMembersTable extends Migration
         Schema::create('project_has_members', function (Blueprint $table) {
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('member_id');
-            $table->boolean('role')->default(0);
+            $table->smallInteger('role')->default(0);
             $table->boolean('star')->default(0);
 
             $table->foreign('member_id')->references('id')->on('users');

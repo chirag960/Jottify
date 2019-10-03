@@ -1,6 +1,0 @@
-id,status_id,project_id,title,description,due_date,attachment_count,comment_count,checklist_item_count,checklist_done,created_at,updated_at,creation_date,current_status,progress,members
-152,347,77,sfdgsfdg,,"Sep 30, 2019",0,0,,0,"2019-09-26 10:32:34","2019-09-26 10:33:35","Thu, Sep 26, 2019 10:32 AM",Unassigned,NA,"chirag, chirag, chirag"
-153,347,77,sfdg,,"Sep 26, 2019",0,0,,0,"2019-09-26 10:32:37","2019-09-26 10:32:37","Thu, Sep 26, 2019 10:32 AM",Unassigned,NA,NA
-154,351,77,asdf,,"Sep 26, 2019",0,0,,0,"2019-09-26 10:32:52","2019-09-26 10:32:52","Thu, Sep 26, 2019 10:32 AM","a new statsu",NA,"chirag, chirag, chirag"
-155,350,77,sdfg,,"Sep 29, 2019",0,5,,0,"2019-09-26 10:33:39","2019-09-26 10:50:09","Thu, Sep 26, 2019 10:33 AM",Completed,NA,"chirag, chirag, chirag"
-156,349,77,dfgh,,"Sep 26, 2019",0,0,1,0,"2019-09-26 11:01:36","2019-09-26 11:01:41","Thu, Sep 26, 2019 11:01 AM","Work In Progress",0,NA
