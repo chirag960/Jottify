@@ -63,7 +63,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'checkProject' => \App\Http\Middleware\CheckProject::class,
         'checkTask' => \App\Http\Middleware\CheckTask::class,
-        'checkProjectAdmin' => \App\Http\Middleware\checkProjectAdmin::class,
+        'checkProjectAdmin' => \App\Http\Middleware\CheckProjectAdmin::class,
+        'checkProjectCreator' => \App\Http\Middleware\CheckProjectCreator::class,
         'cacheControl' => \App\Http\Middleware\CacheControl::class
     ];
 

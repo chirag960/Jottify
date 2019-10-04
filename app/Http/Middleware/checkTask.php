@@ -3,9 +3,9 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Facades\DB;
+use App\Models\Task;
 
-class checkTask
+class CheckTask
 {
     /**
      * Handle an incoming request.
@@ -18,9 +18,7 @@ class checkTask
     public function handle($request, Closure $next)
     {
     
-        $existsTask = DB::table('tasks')
-        ->where([['id','=',$request->id],['project_id','=',$request->project_id]])
-        ->first();
+        $existsTask = (new Task)->checkTask($request->id,$request->project_id);
        
         if(!$existsTask){
             return response()->view('errors.404');

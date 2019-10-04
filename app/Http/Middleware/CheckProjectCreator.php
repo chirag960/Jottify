@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use App\Models\ProjectHasMember;
 
-class CheckProjectAdmin
+class CheckProjectCreator
 {
     /**
      * Handle an incoming request.
@@ -16,7 +16,7 @@ class CheckProjectAdmin
      */
     public function handle($request, Closure $next)
     {
-        $exists = (new ProjectHasMember)->checkProjectAdmin($request->id);
+        $exists = (new ProjectHasMember)->checkProjectCreator($request->id);
 
         //not an admin
         if(!$exists){

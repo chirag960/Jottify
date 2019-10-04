@@ -14,6 +14,21 @@ class ProjectHasMember extends Model
         'role','star'
     ];
 
+    public function checkProjectMember($project_id){
+        return $this->where([['member_id','=',auth()->id()],['project_id','=',$project_id]])
+                    ->first();
+    }
+
+    public function checkProjectAdmin($project_id){
+        return $this->where([['member_id','=',auth()->id()],['project_id','=',$project_id],['role','>',0]])
+                    ->first();
+    }
+
+    public function checkProjectCreator($project_id){
+        return $this->where([['member_id','=',auth()->id()],['project_id','=',$project_id],['role','=',2]])
+                    ->first();
+    }
+
     public function getProjects($member_id){
         return $this->where('member_id', $member_id)
                                     ->rightJoin('projects','project_has_members.project_id','=','projects.id')

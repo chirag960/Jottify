@@ -34,6 +34,11 @@ class Task extends Model
         return $this->hasMany('App\Models\Comment','task_id','id');
     }
 
+    public function checkTask($task_id, $project_id){
+        return $this->where([['id','=',$task_id],['project_id','=',$project_id]])
+                    ->first();
+    }
+
     public function index($id){
         $tasks = $this->where('project_id','=',$id)->orderBy('status_id')->get();
         foreach($tasks as $task){

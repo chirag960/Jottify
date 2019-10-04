@@ -101,11 +101,17 @@ Route::group(['prefix'=>'project/{id}', 'middleware' => ['auth','checkProject','
 
     Route::delete('member/{member_id}','ProjectController@deleteMember');
 
-    Route::delete('/','ProjectController@delete');  
+    Route::delete('/','ProjectController@delete')->middleware();  
     
     Route::delete('/status/{status_id}','StatusController@delete');
 
     Route::get('report','TaskController@report'); //still testing
+});
+
+Route::group(['prefix'=>'project/{id}', 'middleware' => ['auth','checkProject','checkProjectCreator']], function(){
+
+    Route::delete('/','ProjectController@delete');
+      
 });
 
 Route::group(['prefix'=>'project/{project_id}/task/{id}','middleware'=> ['auth','checkTask']], function(){

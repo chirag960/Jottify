@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Support\Facades\DB;
 use Closure;
+use App\Models\ProjectHasMember;
 
 class CheckProject
 {
@@ -17,9 +17,7 @@ class CheckProject
     public function handle($request, Closure $next)
     {
         //dd($request);
-        $exists = DB::table('project_has_members')
-                    ->where([['member_id','=',auth()->id()],['project_id','=',$request->id]])
-                    ->first();
+        $exists = (new ProjectHasMember)->checkProjectMember($request->id);
         if(!$exists){
             return response()->view('errors.404');
         }
