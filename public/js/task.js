@@ -38,7 +38,6 @@ $(document).ready(function(){
         $('.datepicker').datepicker({
             defaultDate : Date.parse(due_date),
             minDate: new Date(),
-            onClose:callFunction,
             setDate : Date.parse(due_date)
         });
 
@@ -48,15 +47,14 @@ $(document).ready(function(){
         $('.datepicker').datepicker({
             defaultDate : new Date(),
             minDate: new Date(),
-            onClose:callFunction
         });
     }
 
-        $('.datepicker').datepicker({
-            defaultDate : new Date(),
-            minDate: new Date(),
-            onClose:callFunction
-        });
+        // $('.datepicker').datepicker({
+        //     defaultDate : new Date(),
+        //     minDate: new Date(),
+        //     onClose:callFunction
+        // });
 
     $('#comment-message').keydown(function(e){
         if(e.which == 13){
@@ -65,6 +63,10 @@ $(document).ready(function(){
             validateComment();
         }
 
+    });
+
+    $('.datepicker').change(function(e){
+        callFunction();
     });
 
     
@@ -173,17 +175,16 @@ function displayUpdatedDescription(xhttp){
     //console.log(xhttp.responseText);
     var response = JSON.parse(xhttp.responseText);
     if(response.message == "success"){
-        var description = xhttp.responseText.description;
-        console.log(response);
+        description = xhttp.responseText.description;
+        console.log(description);
         var quill;
         $('.ql-toolbar').remove();
         quill = new Quill('#quill-container', {
-        modules: {
-            "toolbar": false
-        },
-        theme: 'snow'  // or 'bubble'
+            modules: {
+                "toolbar": false
+            },
+            theme: 'snow'
         });
-        //quill.setContents(JSON.parse(response.description));
         quill.enable(false);
         $('#description-button').html("mode_edit");
         M.toast({html: "Description updated", classes: 'rounded'});
@@ -202,7 +203,6 @@ function displayUpdatedDescription(xhttp){
 }
 
 function validateDescription(){
-    var description = JSON.stringify(quill.getContents());
     var ele = document.getElementById("invalidDescription");
     if(quill.getText() > 255 || quill.getText() == 0){
         ele.innerHTML = "<strong>Length of description should not be zero or more than 255</strong>";
@@ -241,13 +241,28 @@ function changeDescription(){
         quill.enable(true);
     }
     else if(element.html() == 'save'){
+        var newDescription = JSON.stringify(quill.getContents());
+        if(newDescription == JSON.stringify(description)){
+            console.log("same same desc");
+            $('.ql-toolbar').remove();
+            quill = new Quill('#quill-container', {
+            modules: {
+                "toolbar": false
+            },
+            theme: 'snow'  // or 'bubble'
+            });
+            //quill.setContents(JSON.parse(response.description));
+            quill.enable(false);
+            $('#description-button').html("mode_edit");
+            return; 
+        }
+
         var valid = validateDescription();
         if(valid == true){
-            var description = JSON.stringify(quill.getContents());
-            //console.log(description);
-            var message = JSON.stringify({"description": description});
+            
+            var message = JSON.stringify({"description": newDescription});
             console.log(message);
-            //message = 
+            
             makePatchRequest("/project/"+ project_id + "/task/" + task_id + "/description",message,displayUpdatedDescription);            
         }
     }
@@ -284,7 +299,7 @@ function validateItem(){
     
     var title = document.getElementById("newItem").value;
     var ele = document.getElementById("invalidNewItem");
-    if(title.length >= 30 || title.length < 3){
+    if(title.length > 30 || title.length < 3){
         ele.innerHTML = "<strong>The item name should not be more than 30 characters or less than 3 characters.</strong>";
         ele.style.display = "block";
     }
@@ -473,6 +488,22 @@ function handleCheck(element,id){
     makePatchRequest("/project/" + project_id + "/task/" + task_id + "/checklist/"+ id, data, patchChecklist)
 }
 
+function differenceOf2Arrays (array1, array2) {
+    const temp = [];
+    array1 = array1.toString().split(',').map(Number);
+    array2 = array2.toString().split(',').map(Number);
+    
+    for (var i in array1) {
+    if(!array2.includes(array1[i])) temp.push(array1[i]);
+    }
+    for(i in array2) {
+    if(!array1.includes(array2[i])) temp.push(array2[i]);
+    }
+    console.log("this is difference");
+    console.log(temp.sort((a,b) => a-b));
+    return temp.sort((a,b) => a-b);
+}
+
 function displayAssignMembers(xhttp){
     var response = JSON.parse(xhttp.responseText);
     if(response.message == "success"){
@@ -494,10 +525,20 @@ function assignMember(){
             members.push($(this).val());
         }
     });
-    console.log(members);
-    var message = JSON.stringify({ids:members});
-    console.log(task_id);
-    makePostRequest("/project/" + project_id + "/task/" + task_id + "/members", message, displayAssignMembers);
+    console.log(members + "this is members");
+    console.log(memberList + "this is members list");
+    var difference = differenceOf2Arrays(members,memberList);
+    if(difference.length == 0){
+        $("#member-pattern").val("");
+        $("#assignMemberTaskModal").modal('close');
+        console.log("same same");
+    }
+    else{
+        var message = JSON.stringify({ids:members});
+        console.log(task_id);
+        makePostRequest("/project/" + project_id + "/task/" + task_id + "/members", message, displayAssignMembers);
+    }
+    
 }
 
 function searchMembers(){
@@ -537,7 +578,7 @@ function displayMemberIcons(xhttp){
          else{
             var memberDiv = "<h6>Members</h6>";
             memberDiv += "<div class='row'>";
-            memberDiv += "<div id='member-avatars' class='s6 m6 l6 xl6'></div>";
+            memberDiv += "<div id='member-avatars' class='s12 m12 l6 xl6'></div>";
             memberDiv += "</div>";
 
             $("#display-member-icons").append($.parseHTML(memberDiv));
@@ -552,20 +593,21 @@ function displayMembers(xhttp) {
     var membersText = JSON.parse(xhttp.responseText);
     console.log(xhttp.responseText);
     var newDiv="";
+    memberList = [];
     membersText.forEach(function (key,index){
         newDiv += "<p><label>";
         console.log(key.present);
         if(key.present == true){
                 newDiv += "<input type='checkbox' checked='checked' value="+key.id+">";
+                memberList.push(key.id);
         }
         else{
             newDiv += "<input type='checkbox' value="+key.id+">";
         }
         newDiv += "<span>"+key.name+"</span>";
         newDiv += "</label></p>";
-        
      });
-     
+     console.log(memberList + "from inside the displayMemberes");
      document.getElementById("members-list").innerHTML = newDiv;
      displayMemberIcons(xhttp);
 }
@@ -646,19 +688,16 @@ function displayComments(xhttp) {
          newDiv += "<div class='commenter-message'>"+key.message+"</div>"
 
          var date = new Date(key.created_at);
-         var offset = date.getTimezoneOffset()
-         var new_date = new Date()
-         new_date.setTime(date.getTime() - offset*60000);
-         console.log(new_date);
-         var hrs = new_date.getHours();
-         var mins = new_date.getMinutes();
-         var sec = new_date.getSeconds();
-         var day = new_date.getDay();
-         var month = new_date.getMonth()+1;
-         var year = new_date.getFullYear();
-         var formatted_date = hrs + ":" + mins + ":" + sec + ", " + day + "-" + month + "-" + year;
+
+         console.log(date);
+         var hrs = (date.getHours()<10?'0':'') + date.getHours();
+         var mins = (date.getMinutes()<10?'0':'') + date.getMinutes();
+         var day = (date.getDate()<10?'0':'') + date.getDate();
+         console.log(day);
+         var month = date.getMonth()+1;
+         var year = date.getFullYear();
+         var formatted_date = hrs + ":" + mins + ", " + day + "-" + month + "-" + year;
          newDiv += "<div class='commenter-time'>"+formatted_date+"</div>"
-         //newDiv += "<span class='comment-time'>"+  +"</span>";
          newDiv+= "</div>";
      });
      document.getElementById("comment-list").innerHTML = newDiv;
@@ -731,6 +770,7 @@ function deleteAttachment(id){
 
 function updateAttachment(xhttp){
     console.log(xhttp.responseText);
+    $('#invalidAttachment').empty();
     var response  = JSON.parse(xhttp.responseText);
     if(response.message == "success"){
         $('#attach-pretext').remove();
@@ -759,7 +799,7 @@ function updateAttachment(xhttp){
         M.toast({html:"Successfully added attachments",classes:'rounded'});
     }
     else if(response.message == "errors"){
-        var attachmentError = response.errors.files;
+        var attachmentError = response.errors;
         var ele = document.getElementById("invalidAttachment");
         attachmentError.forEach(function(key,index){
             ele.innerHTML += "<p><strong>"+attachmentError[index]+"</strong></p>";
@@ -768,7 +808,7 @@ function updateAttachment(xhttp){
     }
     else if(response.message == "count-error"){
         var ele = document.getElementById("invalidAttachment");
-        ele.innerHTML += "<p><strong>"+attachmentError[index]+"</strong></p>";
+        ele.innerHTML += "<p><strong>"+response.errors+"</strong></p>";
         ele.style.display = "block";
     }
     else {
@@ -788,15 +828,20 @@ function displayNewComment(xhttp){
          newDiv += "</div>";
          newDiv += "<div class='commenter-message'>"+key.message+"</div>"
          var date = new Date(key.created_at);
-         var comment_date = date.toLocaleString(undefined,{
-            day : 'numeric',
-            month : 'short',
-            year : 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-         });
-         newDiv += "<div class='commenter-time'>"+date+"</div>"
+
+         var offset = date.getTimezoneOffset()
+         //var new_date = new Date()
+         //new_date.setTime(date.getTime() - offset*60000);
+         //console.log(new_date);
+         var hrs = (date.getHours()<10?'0':'') + date.getHours();
+         var mins = (date.getMinutes()<10?'0':'') + date.getMinutes();
+         var day = (date.getDate()<10?'0':'') + date.getDate();
+         var month = date.getMonth()+1;
+         var year = date.getFullYear();
+         var formatted_date = hrs + ":" + mins + ", " + day + "-" + month + "-" + year;
+         newDiv += "<div class='commenter-time'>"+formatted_date+"</div>"
          newDiv+= "</div>";
+
          var commentDiv = $.parseHTML(newDiv);
          if($("#comment-pre-text").length){
             $("#comment-pre-text").remove();
@@ -900,12 +945,13 @@ function stripHTML(dirtyString){
 function validateComment(){
     var dirtyString = document.getElementById("comment-message").value;
     var message = stripHTML(dirtyString);
+    console.log(message.length + "length");
     var ele = document.getElementById("invalidComment");
     if(message.length == 0){
         ele.innerHTML = "<strong>The comment cannot be empty.</strong>";
         ele.style.display = "block";
     }
-    if(message.length >= 255){
+    else if(message.length >= 255){
         ele.innerHTML = "<strong>The comment should not be more than 255 letters.</strong>";
         ele.style.display = "block";
     }

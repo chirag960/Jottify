@@ -31,7 +31,7 @@ class Comment extends Model
         $this->task_id = $task_id;
         $this->user_id = auth()->id();
         $this->message = $message;
-        $this->created_at = Carbon::now()->setTimezone('UTC')->format('Y-m-d H:i:s');
+        $this->created_at = Carbon::now()->format('Y-m-d H:i:s');
         $this->save();
         return $this;
     }

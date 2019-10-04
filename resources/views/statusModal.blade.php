@@ -3,7 +3,7 @@
            
         <div class="modal-body">
             <i class="material-icons modal-close close">close</i> 
-            <h5 class="text-center">Create new Status</h5>
+            <h5 class="text-center">Create New Status</h5>
                
               
           <form>

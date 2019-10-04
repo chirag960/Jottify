@@ -13,13 +13,6 @@
                         <span class="invalid-feedback" id="invalidTaskTitle" role="alert"></span>
                         </div>
                     </div>
-                    {{-- <div class="row">
-                        <div class="input-field col s12">
-                            <textarea id="task-desc" class="materialize-textarea" name="description" autocomplete="off"></textarea>
-                            <label for="description">Description (optional)</label>
-                            <span class="invalid-feedback" id="invalidTaskDesc" role="alert"></span>
-                        </div>
-                    </div> --}}
                     <div class="row">
                         <div class="input-field col s12" id="status_order_in_task">
                         </div>

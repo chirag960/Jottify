@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var instances = M.FloatingActionButton.init(elems,{});
     $('.modal').modal();
     $('#addInviteProjectModal').modal({'onCloseStart':removeInputValues});
+    $('#addTaskModal').modal({'onCloseStart':removeTaskModalValues});
     $('#taskMemberModal').modal({'onCloseStart':removeMembersValues});
     $('.tooltipped').tooltip({'outDuration':0});
 
@@ -90,6 +91,10 @@ jQuery(document).bind("keydown", function(e){
     var checkedMembers = [];
     makeGetRequest("/project/"+ project_id +"/statuses",displayStatus);
 
+    function removeTaskModalValues(){
+        $("#invalidTaskTitle").empty();
+    }
+
     function removeInputValues(){
         console.log($("#users-list").find("input"));
         checkedMembers = [];
@@ -97,7 +102,10 @@ jQuery(document).bind("keydown", function(e){
         $("#invite-members").html("");
         $("#invite-members").val("");
         $("#membersView").empty();
-
+        $("#invalidInviteMembers").empty();
+        $("#invalidInviteMessage").empty();
+        $("#invite-message").val("You have been invited to the project"+ project_title +"in Jottify!")
+        $("#invite-message").html("You have been invited to the project"+ project_title +"in Jottify!")
     }
 
     function removeMembersValues(){
@@ -174,19 +182,18 @@ jQuery(document).bind("keydown", function(e){
         }
         else if(response.message == "errors"){
             var membersError = response.errors.members;
-            var messageError = response.errors.message;
+            var messageError = response.errors.inviteMessage;
             if(membersError){
                 var ele = document.getElementById("invalidInviteMembers");
-                titleError.forEach(function(key,index){
-                    ele.innerHTML += "<p><strong>"+titleError[index]+"</strong></p>";
+                membersError.forEach(function(key,index){
+                    ele.innerHTML += "<p><strong>"+membersError[index]+"</strong></p>";
                 });
                 ele.style.display = "block";
             }
-            if(descError){
-                var ele = document.getElementById("invalidTaskDesc");
-                descError.forEach(function(key,index){
-                  
-                    ele.innerHTML += "<p><strong>"+descError[index]+"</strong></p>";
+            if(messageError){
+                var ele = document.getElementById("invalidInviteMessage");
+                messageError.forEach(function(key,index){
+                    ele.innerHTML += "<p><strong>"+messageError[index]+"</strong></p>";
                 });
                 ele.style.display = "block";
             }
@@ -361,7 +368,7 @@ function hideOps(ele){
                     }
                 }
             text+='</select>';
-            text+='<label>Select order</label>';
+            text+='<label class="light-blue-font">Select Order</label>';
             ele.innerHTML = text;
             $('select').formSelect();
         }
@@ -388,7 +395,7 @@ function hideOps(ele){
                     }
                 }
             text+='</select>';
-            text+='<label>Select Status</label>';
+            text+='<label class="light-blue-font">Select Status</label>';
             ele.innerHTML = text;
             $('select').formSelect();
         }
@@ -409,7 +416,7 @@ function hideOps(ele){
             M.toast({html: "First add a new status (Ctrl + s)",classes: 'rounded'});
         }
         else{
-            $('#addTaskModal').modal();
+            
             $('#addTaskModal').modal('open');
             $('#task-title').focus();
             addStatusToTaskMenu(status_id);
@@ -711,8 +718,10 @@ function hideOps(ele){
     
     function validateInviteMessage(){
         var message = document.getElementById("invite-message").value;
+        console.log(message + "this is message");
+        console.log(message.length + "this is length");
         var ele = document.getElementById("invalidInviteMessage");
-        if(message.length < 3 && message.length > 255){
+        if(message.length < 3 || message.length > 255){
             ele.innerHTML = "<strong>The message should not be less than 3 and more than 255 letters.</strong>";
             ele.style.display = "block";
             return false;
@@ -727,6 +736,7 @@ function hideOps(ele){
     function validateInvite(){
         var checkMembers = validateMembers();
         var checkMessage = validateInviteMessage();
+        console.log("this is checkmessage" + checkMessage);
         if(checkMembers && checkMessage){
             var inviteMessage = document.getElementById("invite-message").value;
             var message = JSON.stringify({"membersList":checkedMembers,"inviteMessage":inviteMessage});
@@ -828,6 +838,10 @@ function hideOps(ele){
 
     function checkedMember(id,name){
         $("#checkbox-"+id).prop('checked', true);
+        console.log($("#invalidInviteMembers").find("strong").length + "this is the length");
+        if($("#invalidInviteMembers").find("strong").length == 1){
+            $("#invalidInviteMembers").empty();
+        }
         var text = "<div class='chip' id='chip-"+id+"'>"+name+"<i class='close material-icons' onclick='removeCheck("+id+","+JSON.stringify(name)+")'>close</i></div>";
         $('#membersView').append(text);
         checkedMembers.push(id);

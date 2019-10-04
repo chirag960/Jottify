@@ -65,6 +65,7 @@ body{
     display: inline-block;
     vertical-align: middle;
     margin:0.05em;
+    cursor:pointer;
   }
   .all-member-icon{
       background-color: #cecece;
@@ -196,4 +197,11 @@ body{
 }
 .status-heading{
     font-weight:600;
+}
+.light-blue-font{
+    color:#0288d1 !important;
+}
+.select-dropdown + ul{
+    max-height:150px;
+    overflow-y:auto;
 }

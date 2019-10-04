@@ -163,7 +163,7 @@ class TaskService{
         $title = Project::find($id)->title;
         $file_name = $title.$timestamp;
         $out = fopen($file_name.'.csv', 'w');
-        $csv_headers = array("title","Members","Created at", "Updated at","Due Date","Attachment Count","Current Status","Progress");
+        $csv_headers = array("Title","Members","Creation Date", "Updation Date","Due Date","Attachment Count","Current Status","Progress");
         fputcsv($out, $csv_headers);
 
         foreach($tasks as $task){

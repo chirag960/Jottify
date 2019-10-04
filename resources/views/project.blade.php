@@ -143,6 +143,7 @@
 
 <script>
     var project_id = "{!! $project['id'] !!}";
+    var project_title = "{!! $project['title'] !!}";
     var memberCount = "{!! count($project['members']) !!}";
     memberCount = parseInt(memberCount);
 </script>

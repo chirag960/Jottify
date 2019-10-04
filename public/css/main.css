@@ -162,8 +162,8 @@ flex: 1 0 auto;
 #toast-container {
     top: auto !important;
     left: auto !important;
-    bottom: 10%;
-    right: 7%;
+    bottom: 0%;
+    right: 0%;
 }
 .align-logo{
     display:inline-block;

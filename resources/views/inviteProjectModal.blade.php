@@ -2,14 +2,14 @@
     <div class="modal-content">
         <div class="modal-body">
                 <i class="material-icons close modal-close">close</i>
-            <h5 class="text-center">Invite members</h5>
+            <h5 class="text-center">Invite Members</h5>
             
             <div id="membersView"></div>    
             <form>
                 @csrf
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="invite-members" type="text" name="invite-members" placeholder="Title" autocomplete="off">
+                        <input id="invite-members" type="text" name="invite-members" placeholder="Search user name" autocomplete="off">
                         <label for="invite-members">Search Members</label>
                         <span class="invalid-feedback" id="invalidInviteMembers" role="alert"></span>
                         <ul id="users-list"></ul>

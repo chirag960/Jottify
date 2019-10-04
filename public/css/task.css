@@ -1,3 +1,6 @@
+.full-content{
+    height:auto !important;
+}
 .task-bar{
     height:50px;
     width:100%;
@@ -74,6 +77,10 @@
 .error{
     color:red;
 }
+#comment-pre-text{
+    padding:1%;
+    margin:1%;
+}
 #comment-list{
     background-color: #eee;
     max-height: 50vh;
@@ -104,18 +111,17 @@
 @media only screen and (min-width: 601px) {
     #progressBar {
       display:inline-block;
-      width: 50%;
+      width: 70%;
       margin-bottom:3px;
       margin-left:10px;
       padding-top:10px;
     }
   }
   
-  /* If the screen size is 600px or less, set the font-size of <div> to 30px */
   @media only screen and (max-width: 600px) {
     #progressBar {
       display: inline-block;
-      width: 100%;
+      width: 70%;
       margin-bottom:0px;
       padding-top:10px;
       margin-left:5px;
@@ -214,4 +220,16 @@
 }
 .description-container{
     width:75%;
+}
+.right-icon-button{
+    max-width:min-content;
+    padding-left:16px !important;
+    padding-right:16px !important;
+}
+#comment-message{
+    padding:12px 0px !important;
+}
+.comment-input-div{
+    margin:10px 0px 0px 0px !important;
+    max-width:100% !important;
 }

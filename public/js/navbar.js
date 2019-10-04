@@ -31,7 +31,7 @@ $(document).on("click", function(event){
 
     function showTasks(pattern){
         pattern = $.trim(pattern);
-        if(pattern.length > 2){
+        if(pattern.length > 0){
             makeGetRequest("/projectAndTask?pattern="+pattern,showResultDropDown,false);
         }
         else{

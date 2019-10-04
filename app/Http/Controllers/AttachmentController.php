@@ -24,27 +24,26 @@ class AttachmentController extends Controller
     }
 
     public function create(Request $request, $project_id, $id){
-        dd($request->files);
         $validator = Validator::make($request->all(),[
-            "files.*" => "required|mimetypes:image/*,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document/,application/rtf|max:2048"
+            "files.*" => "required|max:2048|mimetypes:image/*,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document/,application/rtf"
         ]);
         
         if($validator->fails()){
             return response()->json(array(
                 'message' => "errors",
-                'errors' => $validator->getMessageBag()->toArray()), 400);
+                'errors' => $validator->getMessageBag()), 400);
         }else{
             $attachment_count  =Task::where('id',$id)->first()->attachment_count;
             $f = $request->file('files');
             if(count($f) == 0){
                 return response()->json(array(
                     'message' => "count-error",
-                    'errors' => "upload a "),400);
+                    'errors' => "Please add/upload Attachment"),400);
             }
             else if((count($f) + $attachment_count) > 10){
                 return response()->json(array(
                     'message' => "count-error",
-                    'errors' => "each task can have only 10 attachments"),400);
+                    'errors' => "Each task can have only 10 attachments"),400);
             }else{
                 $values = $this->attachmentService->create($request, $project_id, $id);
                 return $values;
