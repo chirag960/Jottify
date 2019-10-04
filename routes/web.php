@@ -10,19 +10,19 @@
 |
 */
 
-Route::get('/avatar',function(){                        //still testing
-    $relative_path = '/media/user_profile_photo/asdsadas.png';
-    $path = public_path().$relative_path;
-    $avatar = new LasseRafn\InitialAvatarGenerator\InitialAvatar();
-    return $avatar->name('Lasse')
-    ->length(1)
-    ->fontSize(0.5)
-    ->size(96) // 48 * 2
-    ->background('#8BC34A')
-    ->color('#fff')
-    ->generate()
-    ->save($path);
-});
+// Route::get('/avatar',function(){      
+//     $relative_path = '/media/user_profile_photo/asdsadas.png';
+//     $path = public_path().$relative_path;
+//     $avatar = new LasseRafn\InitialAvatarGenerator\InitialAvatar();
+//     return $avatar->name('Lasse')
+//     ->length(1)
+//     ->fontSize(0.5)
+//     ->size(96) // 48 * 2
+//     ->background('#8BC34A')
+//     ->color('#fff')
+//     ->generate()
+//     ->save($path);
+// });
 
 Route::get('/taskdetails','TaskController@taskDetailsReport');
 

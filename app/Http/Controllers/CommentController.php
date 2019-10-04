@@ -23,8 +23,11 @@ class CommentController extends Controller
     }
 
     public function create(Request $request,$project_id, $id){
+
+        $request->comment = strip_tags($request->comment);
+
         $validator = Validator::make($request->all(), [
-            'comment' => 'required|max:255|required',
+            'comment' => 'required|max:255',
         ]);
 
         if($validator->fails()){

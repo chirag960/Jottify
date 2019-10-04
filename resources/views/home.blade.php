@@ -20,9 +20,9 @@
                         </div>
                     
                         <div class="input-field col s12">
-                            <textarea id="description" class="materialize-textarea" name="description" autocomplete="off" rows="3"></textarea>
+                            <textarea id="description" class="materialize-textarea" name="description" autocomplete="off"></textarea>
                             <label for="description">Description (optional)</label>
-                                <span class="invalid-feedback" id="invalidDesc" role="alert"></span>
+                            <span class="invalid-feedback" id="invalidDesc" role="alert"></span>
                         </div>
                     
                         <button type="button" class="btn waves-effect waves-light light-blue" onclick="validateProject()">Create</button>   

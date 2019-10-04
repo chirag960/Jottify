@@ -134,8 +134,10 @@ class TaskService{
 
         $id = auth()->id();
         $projects = (new ProjectHasMember)->searchProjects($pattern);
-        $tasks = (new TaskHasMember)->searchTasks($pattern);
-
+        $project_ids = User::find(auth()->id())->projects()->pluck('id')->toArray();
+        //dd($project_ids);
+        //$tasks = (new TaskHasMember)->searchTasks($pattern,$project_ids);
+        $tasks = (new Task)->searchTasks($pattern,$project_ids);
         if(count($tasks)){
             foreach($tasks as $task){
                 $project_title = (new Project)->getProjectTitle($task->project_id);

@@ -25,24 +25,3 @@
     </div>
   </div>
 </div>
-
-<script>
-
-// function submit_files(){
-//     var fileList = document.getElementById("fileInput").files;
-//     var fileLength =fileList.length;
-//     var formData = new FormData();
-
-//     Array.prototype.forEach.call(fileList, file => {
-//         formData.append("files[]",file);
-//         console.log(file);
-//     });
-
-//     loadDoc("POST2","/project/" + {!! $task->project_id !!} + "/task/" +{!! $task->id !!} + "/attachment",formData,updateAttachment);
-// }
-
-// function validateLink(){
-
-// }
-
-</script>

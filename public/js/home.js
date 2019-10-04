@@ -1,5 +1,6 @@
 var newDiv="",projectsText;
-    makeGetRequest("/projects",displayProjects);
+makeGetRequest("/projects",displayProjects);
+
     $(document).ready(function(){
         //$("").dropdown();
         $(".dropdown-trigger").dropdown();
@@ -91,8 +92,8 @@ function showNewProject(xhttp){
 function validateTitle(){
     var title = document.getElementById("title").value;
     var ele = document.getElementById("invalidTitle");
-    if(title.length >= 30){
-        ele.innerHTML = "<strong>The title should not be more than 30 letters.</strong>";
+    if(title.length > 30 || title.length < 3){
+        ele.innerHTML = "<strong>The title should not be more than 30 letters or less than 3.</strong>";
         ele.style.display = "block";
         return false;
     }

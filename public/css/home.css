@@ -20,6 +20,7 @@
 .projectName{
     width:100%;
     margin-left:3%;
+    padding:2%;
 }
 .projectOps{
     bottom: 2%;
@@ -63,4 +64,8 @@ i{
 .collBody{
     border-bottom:0;
     background-color:#fff !important;
+}
+
+#description{
+    max-height:210px;
 }

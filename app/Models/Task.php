@@ -111,6 +111,13 @@ class Task extends Model
         $this->where('status_id',$status_id)->delete();
     }
 
+        public function searchTasks($pattern,$project_ids){
+        return $this->whereIn('project_id',$project_ids)
+                    ->where('tasks.title','like','%'.$pattern.'%')
+                    ->select(['id','project_id','title'])
+                    ->get();
+    }
+
     
 
 }

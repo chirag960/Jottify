@@ -54,7 +54,7 @@
                         <li>
                             <form>
                                 <div class="input-field">
-                                    <input id="searchBar" type="search" autocomplete="off" placeholder="Search...">
+                                    <input id="searchBar" type="search" autocomplete="off" placeholder="Search projects/tasks">
                                     <label class="label-icon" for="searchBar"><i class="material-icons">search</i></label>
                                     <i class="material-icons">close</i>
                                 </div>
@@ -63,8 +63,7 @@
                         </li>
                         <li>
                             <a class='dropdown-trigger' href='#' data-target='profileOptions'>
-                                <!--img src="{{asset("media/user_profile_photo/default.jpg")}}" alt="" class="circle avatar-image responsive-img"--> <!-- notice the "circle" class -->
-                            <img id="navbarProfile" src="{{Auth::user()->photo_location}}" alt="" class="circle avatar-image responsive-img"> <!-- notice the "circle" class -->
+                            <img id="navbarProfile" src="{{Auth::user()->photo_location}}" title="{{Auth::user()->name." (".Auth::user()->email.")" }}" class="circle avatar-image responsive-img">
                             </a>
                             <ul id='profileOptions' class='dropdown-content'>
                                 <li><a href="/profile" class="profileDrop">Profile Settings</a></li>

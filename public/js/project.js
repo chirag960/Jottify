@@ -208,7 +208,7 @@ jQuery(document).bind("keydown", function(e){
 
             var newDiv = "";
             newDiv += "<div class='status-panel' id='status-panel-"+response.id+"'><div class='card-panel status-name grey lighten-4'><div class='card-header' onmouseover='showOps(this)' onmouseout='hideOps(this)'>";
-            newDiv += "<span>"+response.title+"</span>";
+            newDiv += "<span class='status-heading'>"+response.title+"</span>";
             newDiv += '<span class="status-ops"><i class="material-icons right none" onclick="deleteStatus('+response.id+')">delete</i></span>';
             newDiv+= "</div>";
             newDiv += "<div class='card-content status-body' id='status-"+response.id+"'><p class='text-center addTask' onclick='openTaskModal("+response.id+")'>+ Add task</p><div class='task-list' id='status-task-"+response.id+"'></div></div>";
@@ -328,7 +328,7 @@ function hideOps(ele){
         else{
             statusText.forEach(function addToDiv(key,index){
             newDiv += "<div class='status-panel' id='status-panel-"+key.id+"'><div class='card-panel status-name grey lighten-4'><div class='card-header' onmouseover='showOps(this)' onmouseout='hideOps(this)'>";
-            newDiv += "<span>" + key.title + "</span>";
+            newDiv += "<span class='status-heading'>" + key.title + "</span>";
             newDiv += '<span class="status-ops"><i class="material-icons right none" onclick="deleteStatus('+key.id+')">delete</i></span>';
             newDiv += "</div>";
             newDiv += "<div class='card-content status-body' id='status-"+key.id+"'><p class='text-center addTask' onclick='openTaskModal("+key.id+")'>+ Add task</p><div class='task-list' id='status-task-"+key.id+"'></div></div>";
@@ -475,20 +475,20 @@ function hideOps(ele){
                             });
                 }
                 if(Date.parse(date) < Date.parse(new Date())){
-                    newDiv +="<div class='task-icons-info date-div' style='background-color:#eb5a46'><i class='material-icons task-icons text-white'>access_time</i><span class='text-white'>"+eng_date+"</span></div>";    
+                    newDiv +="<div class='task-icons-info date-div' style='background-color:#eb5a46'><i class='material-icons task-icons text-white align-logo'>access_time</i><span class='text-white align-text-logo'>"+eng_date+"</span></div>";    
                 }
                 else{
-                    newDiv +="<div class='task-icons-info date-div'><i class='material-icons task-icons'>access_time</i><span>"+eng_date+"</span></div>";    
+                    newDiv +="<div class='task-icons-info date-div'><i class='material-icons task-icons align-logo'>access_time</i><span class='align-text-logo'>"+eng_date+"</span></div>";    
                 }
             }
             if(key.description){
-                newDiv +="<div class='task-icons-info' title='this task has a description'><i class='material-icons task-icons desc-icons'>description</i></div>";
+                newDiv +="<div class='task-icons-info' title='this task has a description'><i class='material-icons task-icons desc-icons align-logo'>description</i></div>";
             }
             if(key.attachment_count != 0){
-                newDiv +="<div class='task-icons-info'><span><i class='material-icons task-icons pin-icon'>attachment</i></span><span>"+key.attachment_count+"</span></div>";
+                newDiv +="<div class='task-icons-info'><span><i class='material-icons task-icons pin-icon align-logo'>attachment</i></span><span class='align-text-logo'>"+key.attachment_count+"</span></div>";
             }
             if(key.comment_count != 0){
-                newDiv +="<div class='task-icons-info'><i class='material-icons task-icons'>mode_comment</i><span>"+key.comment_count+"</span></div>";
+                newDiv +="<div class='task-icons-info'><i class='material-icons task-icons align-logo'>mode_comment</i><span class='align-text-logo'>"+key.comment_count+"</span></div>";
             }
             newDiv+="</div>";
             newDiv+="<div class='task-members'>";
@@ -631,7 +631,7 @@ function hideOps(ele){
     function validateStatus(){
         var title = document.getElementById("status-title").value;
         var ele = document.getElementById("invalidStatusTitle");
-        if(title.length >= 30 || title.length < 3){
+        if(title.length > 30 || title.length < 3){
             ele.innerHTML = "<strong>The title should not be more than 30 letters or less than 3.</strong>";
             ele.style.display = "block";
         }

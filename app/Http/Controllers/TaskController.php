@@ -86,11 +86,6 @@ class TaskController extends Controller
                     'message' => "date-error",
                     'errors' => "date format is not correct"), 400);
             }
-            else if($timestamp > $after_two_years || $timestamp < $now){
-                return response()->json(array(
-                    'message' => "date-error",
-                    'errors' => "date should be within 2 years from today"), 400);
-            }
             else{
                 $date = $this->taskService->updateduedate($request,$project_id,$id);
                 return $date;

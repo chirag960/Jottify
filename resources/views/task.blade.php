@@ -9,15 +9,17 @@
     <div class="task-container container card-panel">
         <div class="col s12 m12 l8 xl8"> 
                 <div>
+                    <div onclick="redirectToProject()"><i id="back-arrow" class="material-icons align-logo pointer">arrow_back</i><span class="align-text-logo backlink">Back</span></div>
                     <h3 id="task-title">{{ $task->title }}  <!-- Make this remanable --></h3>
                 </div>
-                <div>
-                    <p>Members</p>
+                <div class="divider"></div>
+                <div id="display-member-icons">
+                    {{-- <p>Members</p>
                     <div class="row">
                     <div id="member-avatars" class="s6 m6 l6 xl6">
 
                     </div>
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="s12 m6 l6 xl6">
                 <a class="btn yellow datepicker"><i class="material-icons">date_range</i></a>
@@ -28,12 +30,12 @@
                 @endif
                 <span class="invalid-feedback" id="invalidDate" role="alert"></span>
                 </div>
-            <div class="s12 m12 l12 xl12 description-container" id="description">
+            <div class="s12 m9 l9 xl9 description-container" id="description">
                     <h6>Description</h6>
                 <input type="hidden" name="description">
                 <div id="quill-container"></div>
                 <span class="invalid-feedback" id="invalidDescription" role="alert"></span>
-                <button type="button" class="btn light-blue" id="description-button" onclick="changeDescription()">Update Description</button>
+                <a class="btn light-blue" onclick="changeDescription()"><i id="description-button" class="material-icons white-text">mode_edit</i></a>
             </div>
             <hr/>
             <div class="checklist-container" id="checklist">
@@ -48,12 +50,12 @@
                 </div>
                 @endif
                 <div id="checklist-items"></div>
-                <button type="button" class="btn light-blue" onclick="addItem()">Add Items</button>
+                <a class="btn light-blue" onclick="addItem()"><i class='material-icons white-text'>playlist_add</i></a>
             </div>
             <hr/>
             <div class="attachments-header" id="attachments">
                 <h6>Attachments</h6>
-                <button type="button" class="btn light-blue" onclick="openAttachmentModal()">Add Attachment</button>
+                <a class="btn light-blue" onclick="openAttachmentModal()"><i class="material-icons white-text pin-icon">attach_file</i></a>
                 <div id="attachment-list" class="row attachments"></div>
             </div>
             <hr/>
@@ -74,7 +76,7 @@
     <div class="col s12 m12 l4 xl4 sticky">
         <div id="task-buttons">
                 <a class="btn red text-white" onclick="deleteTask()"><i class="material-icons">delete</i></a>
-                <a class="btn light-blue modal-trigger" href="#assignMemberTaskModal"><i class="material-icons">people</i><span>assign members</span></a>
+                <a class="btn light-blue modal-trigger" href="#assignMemberTaskModal"><i class="material-icons white-text">group_add</i></a>
                 <div id="status-form"></div>
                 
         </div>
@@ -84,7 +86,7 @@
             <form>
                 <textarea class="materialize-textarea" id="comment-message" placeholder="Add a comment" required></textarea>
                 <span class="invalid-feedback" id="invalidComment" role="alert"></span>
-                <button type="button" onclick='validateComment()' class="btn light-blue">Send</button>
+                <a class="btn light-blue" onclick='validateComment()'><i class='material-icons white-text'>send</i></a>
             </form> 
         </div>
     </div>
@@ -106,6 +108,12 @@
         var description = {!! $task->description !!};
         @else
         var description = "";
+        @endif
+
+        @if(isset($task->due_date))
+        var due_date = "{!! $task->due_date !!}";
+        @else
+        var due_date = "";
         @endif
 
         var project_id = "{!! $task->project_id !!}";

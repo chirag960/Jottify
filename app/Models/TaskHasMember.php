@@ -29,13 +29,13 @@ class TaskHasMember extends Model
         $this->where('task_id',$task_id)->whereIn('member_id',$remove_members)->delete();
     }
 
-    public function searchTasks($pattern){
-        return $this->rightJoin('tasks','task_has_members.task_id','=','tasks.id')
-                    ->where('task_has_members.member_id','=',auth()->id())
-                    ->where('tasks.title','like','%'.$pattern.'%')
-                    ->select(['id','project_id','title'])
-                    ->get();
-    }
+    // public function searchTasks($pattern){
+    //     return $this->rightJoin('tasks','task_has_members.task_id','=','tasks.id')
+    //                 ->where('task_has_members.member_id','=',auth()->id())
+    //                 ->where('tasks.title','like','%'.$pattern.'%')
+    //                 ->select(['id','project_id','title'])
+    //                 ->get();
+    // }
 
     
 }

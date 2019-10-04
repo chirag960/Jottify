@@ -4,11 +4,6 @@ $(document).ready(function(){
     $('#assignMemberTaskModal').modal();
     document.getElementById("searchBar").addEventListener("keyup", throttleSearchTask(showTasks, 500));
 
-    var d = new Date;
-    var month = d.getMonth();
-    var day = d.getDate();
-    var year = d.getFullYear();
-    var c = new Date(year + 2, month, day)
     var quill;
     if(description == ""){
         console.log(description);
@@ -34,14 +29,32 @@ $(document).ready(function(){
         quill.setContents(description);
         quill.enable(false);
     }
-    
-   
 
     $('.datepicker').attr("autocomplete"); 
+    console.log("parsing date" + Date.parse(due_date));
+    if(due_date != ""){
+        console.log("setting due date");
+
+        $('.datepicker').datepicker({
+            defaultDate : Date.parse(due_date),
+            minDate: new Date(),
+            onClose:callFunction,
+            setDate : Date.parse(due_date)
+        });
+
+    }
+    else{
+        console.log("no due date set");
         $('.datepicker').datepicker({
             defaultDate : new Date(),
             minDate: new Date(),
-            maxDate: c,
+            onClose:callFunction
+        });
+    }
+
+        $('.datepicker').datepicker({
+            defaultDate : new Date(),
+            minDate: new Date(),
             onClose:callFunction
         });
 
@@ -74,10 +87,14 @@ function callFunction(){
     }
 }
 
+function redirectToProject(){
+    window.location.href = "/project/" + project_id ;     
+}
+
 function backToProject(xhttp){
     var response = JSON.parse(xhttp.response);
     if(response.message == "success"){
-        window.location.href = "/project/" + project_id ;     
+        redirectToProject();
     }
     else{
         M.toast({html:response.message, classes:'rounded'});
@@ -114,11 +131,6 @@ function displayDueDate(xhttp){
         });
         ele.style.display = "block";
     }
-    else if(response.message == "date-error"){
-        var ele = document.getElementById("invalidDate");
-        ele.innerHTML += "<p><strong>"+response.errors+"</strong></p>";
-        ele.style.display = "block";
-    }
     else{
         M.toast({html:response.message, classes:'rounded'});
     }
@@ -135,21 +147,19 @@ function validateDate(){
     var date_value = $(".datepicker").val();
     var date = Date.parse(date_value);
     console.log(date_value);
-    var d = new Date;
-    console.log(d);
-    var month = d.getMonth();
-    var day = d.getDate();
-    var year = d.getFullYear();
-    var c = new Date(year + 1, month, day)
+    var today = new Date();
+    var yesterday = today.setDate(today.getDate() - 1);
+    console.log("selected " + date);
+    console.log("yesterday" + yesterday);
     if(date == "" || date == null ){
         console.log("inside null");
         ele.innerHTML = "<strong>Select a valid date</strong>";
         ele.style.display = "block";
         return false;
     }
-    else if(date < new Date() || date > c){
+    else if(date <= yesterday){
         console.log("inside range");
-        ele.innerHTML = "<strong>date range not valid</strong>";
+        ele.innerHTML = "<strong>Date range not valid</strong>";
         ele.style.display = "block";
         return false;
     }
@@ -175,7 +185,7 @@ function displayUpdatedDescription(xhttp){
         });
         //quill.setContents(JSON.parse(response.description));
         quill.enable(false);
-        $('#description-button').html("Update Description");
+        $('#description-button').html("mode_edit");
         M.toast({html: "Description updated", classes: 'rounded'});
     }
     else if(response.message == "errors"){
@@ -212,7 +222,7 @@ function validateDescription(){
 
 function changeDescription(){
     var element = $('#description-button');
-    if(element.html() == 'Update Description'){
+    if(element.html() == 'mode_edit'){
         element.html('save');
         quill = new Quill('#quill-container', {
             modules: {
@@ -275,7 +285,7 @@ function validateItem(){
     var title = document.getElementById("newItem").value;
     var ele = document.getElementById("invalidNewItem");
     if(title.length >= 30 || title.length < 3){
-        ele.innerHTML = "<strong>The item should not be more than 30 letters or less than 3.</strong>";
+        ele.innerHTML = "<strong>The item name should not be more than 30 characters or less than 3 characters.</strong>";
         ele.style.display = "block";
     }
     else {
@@ -509,13 +519,31 @@ function searchMembers(){
 function displayMemberIcons(xhttp){
     var membersText = JSON.parse(xhttp.responseText);
     var newDiv = "";
+    var found = false;
     membersText.forEach(function (key,index){
         if(key.present == true){
+            found = true;
             newDiv +="<img class='avatar-image circle' src='"+key.photo_location+"' title='"+key.name+ " ("+key.email+")'>";
         }
         
      });
-     document.getElementById("member-avatars").innerHTML = newDiv;
+     if(!found){
+        $("#display-member-icons").empty();
+    }
+    else{
+        if($("#member-avatars").length){
+            document.getElementById("member-avatars").innerHTML = newDiv;
+         }
+         else{
+            var memberDiv = "<h6>Members</h6>";
+            memberDiv += "<div class='row'>";
+            memberDiv += "<div id='member-avatars' class='s6 m6 l6 xl6'></div>";
+            memberDiv += "</div>";
+
+            $("#display-member-icons").append($.parseHTML(memberDiv));
+            $("#member-avatars").append($.parseHTML(newDiv));
+        }
+    }
 
 }
 
@@ -805,7 +833,7 @@ function validateImages(){
     console.log("count is "+attachment_count);
     console.log(fileLength);
     if(filePath == ""){
-        ele.innerHTML = "<strong>Please enter a attachment</strong>";
+        ele.innerHTML = "<strong>Please add/upload a attachment</strong>";
         ele.style.display = "block";
         return false;
     }
@@ -852,7 +880,8 @@ function submit_files(){
     var filePath = document.getElementById("fileInput").value;
     var fileLength =fileList.length;
     var formData = new FormData();
-    var valid = validateImages();
+    //var valid = validateImages();
+    var valid = true;
     console.log(valid);
     if(valid == true){
         Array.prototype.forEach.call(fileList, file => {
@@ -863,8 +892,14 @@ function submit_files(){
     
 }
 
+function stripHTML(dirtyString){
+    var strippedText = $("<div/>").html(dirtyString).text();
+    return strippedText;
+}
+
 function validateComment(){
-    var message = document.getElementById("comment-message").value;
+    var dirtyString = document.getElementById("comment-message").value;
+    var message = stripHTML(dirtyString);
     var ele = document.getElementById("invalidComment");
     if(message.length == 0){
         ele.innerHTML = "<strong>The comment cannot be empty.</strong>";

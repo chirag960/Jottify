@@ -103,9 +103,9 @@ $(document).on("click", function(event){
                 });
             }
             else{
-                var lList = $("<li></li>").addClass("black-text title-list white");
-                lList.text("No tasks found");
-                ulist.append(lList);
+                // var lList = $("<li></li>").addClass("black-text title-list white");
+                // lList.text("No tasks found");
+                // ulist.append(lList);
             }
 
             $('#results').append(ulist);

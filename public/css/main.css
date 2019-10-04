@@ -11,6 +11,7 @@ html,body{
 max-height: 400px !important; 
 overflow: auto !important;
 box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+line-height:35px;
 }
 #dropTaskList li {
     width:100% !important;
@@ -58,6 +59,9 @@ flex: 1 0 auto;
 
 .home-icon{
     color:white;
+}
+.invalid-feedback{
+    font-size:16px;
 }
 .full-content{
     margin:0;
@@ -132,8 +136,8 @@ flex: 1 0 auto;
 
 @media only screen and (min-width: 600px) {
     .avatar-image{
-        width:40px;
-        height:40px;
+        width:35px;
+        height:35px;
     }
 } 
 
@@ -160,4 +164,25 @@ flex: 1 0 auto;
     left: auto !important;
     bottom: 10%;
     right: 7%;
+}
+.align-logo{
+    display:inline-block;
+    vertical-align: middle;
+}
+.align-text-logo{
+    display:inline-block;
+    vertical-align: middle;
+    margin-left:2px;
+}
+#searchBar::-webkit-input-placeholder {
+    /* WebKit, Blink, Edge */
+    font-size: 14px;
+}
+#searchBar::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    font-size: 14px;
+}
+#searchBar:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    font-size: 14px;
 }

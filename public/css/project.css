@@ -164,6 +164,7 @@ body{
 }
 .project-title{
     font-size:1.5rem;
+    font-weight: 600;
 }
 .modal-container{
     bottom:auto;
@@ -192,4 +193,7 @@ body{
 }
 .min-height-auto{
     min-height:auto !important;
+}
+.status-heading{
+    font-weight:600;
 }
