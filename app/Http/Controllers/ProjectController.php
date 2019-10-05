@@ -37,7 +37,7 @@ class ProjectController extends Controller
         if($validator->fails()){
             return response()->json(array(
                 'message' => "errors",
-                'errors' => $validator->getMessageBag()->toArray()), 400);
+                'errors' => $validator->getMessageBag()->toArray()), 200);
         }
         else{
             $response = $this->projectService->create($request);
@@ -115,7 +115,7 @@ class ProjectController extends Controller
         if($validator->fails()){
             return response()->json(array(
                 'message' => "errors",
-                'errors' => $validator->getMessageBag()->toArray()), 400);
+                'errors' => $validator->getMessageBag()->toArray()), 200);
         }
         else{
         $response = $this->projectService->invite($request, $id);

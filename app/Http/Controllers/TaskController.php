@@ -39,7 +39,7 @@ class TaskController extends Controller
         if($validator->fails()){
             return response()->json(array(
                 'message' => "errors",
-                'errors' => $validator->getMessageBag()->toArray()), 400);
+                'errors' => $validator->getMessageBag()->toArray()), 200);
         }
         else{
             $values = $this->taskService->create($request, $id);
@@ -75,7 +75,7 @@ class TaskController extends Controller
         if($validator->fails()){
             return response()->json(array(
                 'message' => "errors",
-                'errors' => $validator->getMessageBag()->toArray()), 400);
+                'errors' => $validator->getMessageBag()->toArray()), 200);
         }
         else{
             $timestamp = new Carbon($request->date);
@@ -84,7 +84,7 @@ class TaskController extends Controller
             if($timestamp == false){
                 return response()->json(array(
                     'message' => "date-error",
-                    'errors' => "date format is not correct"), 400);
+                    'errors' => "date format is not correct"), 200);
             }
             else{
                 $date = $this->taskService->updateduedate($request,$project_id,$id);
@@ -102,7 +102,7 @@ class TaskController extends Controller
         if($validator->fails()){
             return response()->json(array(
                 'message' => "errors",
-                'errors' => $validator->getMessageBag()->toArray()), 400);
+                'errors' => $validator->getMessageBag()->toArray()), 200);
         }
         else{
             $desc = $this->taskService->updateDescription($request,$project_id,$id);
@@ -116,7 +116,7 @@ class TaskController extends Controller
         if(!isset($status)){
             return response()->json(array(
                 'message' => "status-error",
-                'errors' => "No such status found"), 400);
+                'errors' => "No such status found"), 200);
         }
         else{
             $status = $this->taskService->updateStatus($request,$project_id,$id);

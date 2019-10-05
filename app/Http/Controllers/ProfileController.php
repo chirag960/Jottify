@@ -22,7 +22,7 @@ class ProfileController extends Controller
         if($validator->fails()){
             return response()->json(array(
                 'message' => "errors",
-                'errors' => $validator->getMessageBag()->toArray()), 400);
+                'errors' => $validator->getMessageBag()->toArray()), 200);
         }
         else{
             $response = $this->profileService->update($request);
@@ -39,7 +39,7 @@ class ProfileController extends Controller
         if($validator->fails()){
             return response()->json(array(
                 'message' => "errors",
-                'errors' => $validator->getMessageBag()->toArray()), 400);
+                'errors' => $validator->getMessageBag()->toArray()), 200);
         }
         else{
             $image = $this->profileService->updateImage($request);

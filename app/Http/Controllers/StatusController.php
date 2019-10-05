@@ -29,7 +29,7 @@ class StatusController extends Controller
       if($validator->fails()){
           return response()->json(array(
               'message' => "errors",
-              'errors' => $validator->getMessageBag()->toArray()), 400);
+              'errors' => $validator->getMessageBag()->toArray()), 200);
       }
       else{
         $status= $this->statusService->create($request, $id);

@@ -31,7 +31,7 @@ class ChecklistController extends Controller
         if($validator->fails()){
             return response()->json(array(
                 'message' => "errors",
-                'errors' => $validator->getMessageBag()->toArray()), 400);
+                'errors' => $validator->getMessageBag()->toArray()), 200);
         }
         else{
             $response = $this->checklistService->create($request,$project_id,$task_id);

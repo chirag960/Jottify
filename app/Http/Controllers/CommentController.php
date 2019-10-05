@@ -33,7 +33,7 @@ class CommentController extends Controller
         if($validator->fails()){
             return response()->json(array(
                 'message' => "errors",
-                'errors' => $validator->getMessageBag()->toArray()), 400);
+                'errors' => $validator->getMessageBag()->toArray()), 200);
         }
         else{
             $values = $this->commentService->create($request,$project_id, $id);

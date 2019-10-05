@@ -75,7 +75,7 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+            return response()->json(['error' => 'Unauthenticated.'], 200);
         }
  
         return redirect()->guest(route('login'));
@@ -90,7 +90,7 @@ class Handler extends ExceptionHandler
         Mail::to('tellodotcom@gmail.com')->send(new ExceptionMail($html));
         }
         catch(Exception $e){
-            dd($e);
+            return;
         }
     }
 }
