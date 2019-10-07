@@ -1,7 +1,7 @@
 $(document).ready(function(){
     $('.dropdown-trigger').dropdown();
-    $('#addAttachmentModal').modal();
-    $('#assignMemberTaskModal').modal();
+    $('#addAttachmentModal').modal({'onCloseStart':resetAttachmentModal});
+    $('#assignMemberTaskModal').modal({'onOpenStart': resetAssignMemberModal,'onOpenEnd' : focusInAssignModal});
     document.getElementById("searchBar").addEventListener("keyup", throttleSearchTask(showTasks, 500));
 
     var quill;
@@ -31,9 +31,9 @@ $(document).ready(function(){
     }
 
     $('.datepicker').attr("autocomplete"); 
-    console.log("parsing date" + Date.parse(due_date));
+
     if(due_date != ""){
-        console.log("setting due date");
+
 
         $('.datepicker').datepicker({
             defaultDate : new Date(due_date),
@@ -45,7 +45,7 @@ $(document).ready(function(){
 
     }
     else{
-        console.log("no due date set");
+
         $('.datepicker').datepicker({
             defaultDate : new Date(),
             setDefaultDate:true,
@@ -54,11 +54,6 @@ $(document).ready(function(){
         });
     }
 
-        // $('.datepicker').datepicker({
-        //     defaultDate : new Date(),
-        //     minDate: new Date(),
-        //     onClose:callFunction
-        // });
 
     $('#comment-message').keydown(function(e){
         if(e.which == 13){
@@ -82,24 +77,45 @@ $(document).on('keypress', 'input,select', function (e) {
     }
 });
 
+function resetAttachmentModal(){
+    $("#invalidAttachment").empty();
+}
+
+function resetAssignMemberModal(){
+    console.log("opening modal");
+    $("#member-pattern").val("");
+    //$("#member-pattern").html("");
+    var allParas = $("#members-list").find("p");
+    allParas.each(function(){
+            $(this).show();
+    });
+}
+
+function focusInAssignModal(){
+    $("#member-pattern").focus();
+}
+
 function callFunction(){
     var date = $('.datepicker').val();
-    var valid = validateDate();
-    $('.datepicker').datepicker('close');
-    if(valid == true){
-        console.log("sending the request");
-        var message = JSON.stringify({"date":date});
-        makePostRequest("/project/" + project_id + "/task/" +task_id+ "/duedate",message,displayDueDate);
+    if(!(date == due_date)){
+        var valid = validateDate();
+        $('.datepicker').datepicker('close');
+        if(valid == true){
+            
+            var message = JSON.stringify({"date":date});
+            makePostRequest("/project/" + project_id + "/task/" +task_id+ "/duedate",message,displayDueDate);
+        }
     }
+    
 }
 
 function setDefaultDate(){
     if(due_date != ""){
-        console.log("setting due date");
+        
         $('.datepicker').datepicker('setDate', new Date(due_date));
     }
     else{
-        console.log("no due date set");
+        
         $('.datepicker').datepicker('setDate', new Date());
     }
 }
@@ -119,6 +135,7 @@ function backToProject(xhttp){
    
 }
 
+
 function updateProgressInfo(){
     if(!checklist_done){
         checklist_done = 0;
@@ -134,7 +151,7 @@ function deleteTask(){
 }
 
 function displayDueDate(xhttp){
-    console.log(xhttp.responseText);
+    
     var response = JSON.parse(xhttp.responseText);
     if (response.message == "success"){
         $('#date_text').html(response.date);
@@ -159,24 +176,22 @@ function openDatePicker(){
 }
 
 function validateDate(){
-    console.log("inside valid");
-    //console.log(date > new Date());
+
     var ele = document.getElementById("invalidDate");
     var date_value = $(".datepicker").val();
     var date = Date.parse(date_value);
-    console.log(date_value);
+   
     var today = new Date();
     var yesterday = today.setDate(today.getDate() - 1);
-    console.log("selected " + date);
-    console.log("yesterday" + yesterday);
+    
     if(date == "" || date == null ){
-        console.log("inside null");
+       
         ele.innerHTML = "<strong>Select a valid date</strong>";
         ele.style.display = "block";
         return false;
     }
     else if(date <= yesterday){
-        console.log("inside range");
+      
         ele.innerHTML = "<strong>Date range not valid</strong>";
         ele.style.display = "block";
         return false;
@@ -188,7 +203,7 @@ function validateDate(){
 }
 
 function displayUpdatedDescription(xhttp){
-    //console.log(xhttp.responseText);
+   
     var response = JSON.parse(xhttp.responseText);
     if(response.message == "success"){
         description = xhttp.responseText.description;
@@ -259,7 +274,7 @@ function changeDescription(){
     else if(element.html() == 'save'){
         var newDescription = JSON.stringify(quill.getContents());
         if(newDescription == JSON.stringify(description)){
-            console.log("same same desc");
+           
             $('.ql-toolbar').remove();
             quill = new Quill('#quill-container', {
             modules: {
@@ -286,18 +301,13 @@ function changeDescription(){
 
 makeGetRequest("/project/"+ project_id + "/statuses",displayStatus);
 
-makeGetRequest("/project/"+ project_id + "/task/" + task_id  +"/members",displayMembers);
+makeGetRequest("/project/"+ project_id + "/task/" + task_id  +"/members",displayMemberIcons);
 
 makeGetRequest("/project/" + project_id + "/task/" + task_id + "/checklist",displayChecklist);
 
 makeGetRequest("/project/" + project_id + "/task/" + task_id + "/attachments",displayAttachments);
 
 makeGetRequest("/project/" + project_id + "/task/" + task_id + "/comments",displayComments);
-
-function assignMembers(){
-    
-}
-
 
 function openAttachmentModal(){
     if(attachment_count >= 10){
@@ -349,7 +359,9 @@ function displayChecklist(xhttp) {
                 newDiv += "<label for='checklist-"+key.id+"'><input type='checkbox' onclick='handleCheck(this,"+ key.id +")'  id='checklist-"+key.id+"' name='checklist-"+key.id+"' checked><span>";
             }
         newDiv += key.item; 
-        newDiv += "</span></label></div>";
+        newDiv += "</span></label>";
+        //newDiv += "<i class='material-icons checklist-delete-icon right'>delete</i>";
+        newDiv +="</div>";
     });
     }
     document.getElementById("checklist-items").innerHTML = newDiv;
@@ -388,8 +400,8 @@ label.appendChild(spanEle);
 ele.appendChild(label);
 document.getElementById("checklist-items").insertBefore(ele,document.getElementById("newItemDiv"));
 $('#newItemBox').prop('checked',false);
-$('#newItem').val(" ");
-$('#newItem').html(" ");
+$('#newItem').val("");
+//$('#newItem').html(" ");
 if($('#progressBarDiv').length){
     checklist_item_count++;
     if(itemText.completed == true){
@@ -466,12 +478,12 @@ $('#invalidNewItem').remove();
 }
 
 function patchChecklist(xhttp){
-    console.log(JSON.parse(xhttp.responseText));
+    
     var response = JSON.parse(xhttp.responseText);
     var check;
     if(response.message == "success"){
     if(response.completed == 1){
-        console.log("it is true");
+        
         checklist_done++;
         check = true;
     }
@@ -515,8 +527,8 @@ function differenceOf2Arrays (array1, array2) {
     for(i in array2) {
     if(!array1.includes(array2[i])) temp.push(array2[i]);
     }
-    console.log("this is difference");
-    console.log(temp.sort((a,b) => a-b));
+   
+   
     return temp.sort((a,b) => a-b);
 }
 
@@ -525,7 +537,7 @@ function displayAssignMembers(xhttp){
     if(response.message == "success"){
         $("#member-pattern").val("");
         $("#assignMemberTaskModal").modal('close');
-        makeGetRequest("/project/"+ project_id + "/task/" + task_id  +"/members",displayMembers);
+        makeGetRequest("/project/"+ project_id + "/task/" + task_id  +"/members",displayMemberIcons);
         M.toast({html:"Updated members of this task",classes:'rounded'});
     }
     else{
@@ -541,24 +553,23 @@ function assignMember(){
             members.push($(this).val());
         }
     });
-    console.log(members + "this is members");
-    console.log(memberList + "this is members list");
+   
     var difference = differenceOf2Arrays(members,memberList);
     if(difference.length == 0){
         $("#member-pattern").val("");
         $("#assignMemberTaskModal").modal('close');
-        console.log("same same");
+      
     }
     else{
         var message = JSON.stringify({ids:members});
-        console.log(task_id);
+     
         makePostRequest("/project/" + project_id + "/task/" + task_id + "/members", message, displayAssignMembers);
     }
     
 }
 
 function searchMembers(){
-    var pattern = $("#member_pattern").val().toUpperCase();
+    var pattern = $("#member-pattern").val().toUpperCase();
     var allParas = $("#members-list").find("p");
     var length = allParas.length;
     allParas.each(function(){
@@ -601,18 +612,19 @@ function displayMemberIcons(xhttp){
             $("#member-avatars").append($.parseHTML(newDiv));
         }
     }
+    displayMembers(xhttp);
 
 }
 
 
 function displayMembers(xhttp) {
     var membersText = JSON.parse(xhttp.responseText);
-    console.log(xhttp.responseText);
+   
     var newDiv="";
     memberList = [];
     membersText.forEach(function (key,index){
         newDiv += "<p><label>";
-        console.log(key.present);
+      
         if(key.present == true){
                 newDiv += "<input type='checkbox' checked='checked' value="+key.id+">";
                 memberList.push(key.id);
@@ -623,9 +635,9 @@ function displayMembers(xhttp) {
         newDiv += "<span>"+key.name+"</span>";
         newDiv += "</label></p>";
      });
-     console.log(memberList + "from inside the displayMemberes");
+   
      document.getElementById("members-list").innerHTML = newDiv;
-     displayMemberIcons(xhttp);
+     
 }
 
 function displayNewStatus(xhttp){
@@ -659,7 +671,7 @@ function setAtt(element,att,val){
 
 function displayAttachments(xhttp) {
     var attachmentText = JSON.parse(xhttp.responseText);
-    console.log(xhttp.responseText);
+   
     var newDiv = "";
     if(attachmentText.length != 0){
     attachmentText.forEach(function(key,index){
@@ -705,11 +717,9 @@ function displayComments(xhttp) {
 
          var date = new Date(key.created_at);
 
-         console.log(date);
          var hrs = (date.getHours()<10?'0':'') + date.getHours();
          var mins = (date.getMinutes()<10?'0':'') + date.getMinutes();
          var day = (date.getDate()<10?'0':'') + date.getDate();
-         console.log(day);
          var month = date.getMonth()+1;
          var year = date.getFullYear();
          var formatted_date = hrs + ":" + mins + ", " + day + "-" + month + "-" + year;
@@ -736,7 +746,7 @@ function displayStatus(xhttp){
                 newDiv += "<option value="+key.id+">"+key.title+"</option>";
             }
         });
-            newDiv +="</select><label>Select Status</label></div>";
+            newDiv +="</select><label>Update Status</label></div>";
             document.getElementById("status-form").innerHTML = newDiv;
     }
     $('select').formSelect();
@@ -814,17 +824,17 @@ function updateAttachment(xhttp){
         attachment_count = parseInt(attachment_count) + parseInt(response.attachments.length);
         M.toast({html:"Successfully added attachments",classes:'rounded'});
     }
-    else if(response.message == "errors"){
-        var attachmentError = response.errors;
+    // else if(response.message == "errors"){
+    //     var attachmentError = response.errors;
+    //     var ele = document.getElementById("invalidAttachment");
+    //     attachmentError.forEach(function(key,index){
+    //         ele.innerHTML += "<p><strong>"+attachmentError[index]+"</strong></p>";
+    //     });
+    //     ele.style.display = "block";
+    // }
+    else if(response.message == "error"){
         var ele = document.getElementById("invalidAttachment");
-        attachmentError.forEach(function(key,index){
-            ele.innerHTML += "<p><strong>"+attachmentError[index]+"</strong></p>";
-        });
-        ele.style.display = "block";
-    }
-    else if(response.message == "count-error"){
-        var ele = document.getElementById("invalidAttachment");
-        ele.innerHTML += "<p><strong>"+response.errors+"</strong></p>";
+        ele.innerHTML += "<p><strong>"+response.error+"</strong></p>";
         ele.style.display = "block";
     }
     else {

@@ -27,7 +27,11 @@ class ProjectService{
         
         $id = auth()->id();
         //$projects = new ProjectHasMember;
-        return (new ProjectHasMember)->getProjects($id);
+        $projects = (new ProjectHasMember)->getProjects($id);
+        foreach($projects as $project){
+            $project->title = htmlentities($project->title);
+        }
+        return $projects;
     
     }
 
@@ -44,7 +48,7 @@ class ProjectService{
         $statuses = new Status;
         $statuses->createDefaultStatuses($project_id);
 
-        return response()->json(["message"=>"success","id"=>$project_id,"title"=>$project->title,"background"=>$project->background],201);
+        return response()->json(["message"=>"success","id"=>$project_id,"title"=>htmlentities($project->title),"background"=>$project->background],201);
 
     }
 
@@ -100,13 +104,6 @@ class ProjectService{
         (new TaskHasMember)->deleteMember($task_ids,$member_id);
         (new ProjectHasMember)->deleteMember($id,$member_id);
         return response()->json(['message'=>'success','id'=>$member_id],200);
-    }
-
-
-    public function generateReport($id){
-        $data = ['title' => 'A pdf is generated'];
-        $pdf = PDF::loadView('reportPDF', $data);
-        return $pdf;
     }
 
     public function allUsers($id){

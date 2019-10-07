@@ -1,5 +1,5 @@
 function uploadImage(){
-        
+    var Max_Size = 2097152;
     var image = document.getElementById("profileImage").files;
     var fileLength =image.length;
     var filePath = document.getElementById("profileImage").value;
@@ -21,7 +21,7 @@ function uploadImage(){
         else{
             var size = image[0].size;
             console.log(size);
-            if(size >= 2097152){
+            if(size >= Max_Size){
                 ele.innerHTML = "<strong>Image size should not be more than 2MB</strong>";
                 ele.style.display = "block";
                 valid = false;

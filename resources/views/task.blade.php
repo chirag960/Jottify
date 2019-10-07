@@ -16,7 +16,7 @@
                 <div id="display-member-icons">
                 </div>
                 <div class="s12 m6 l6 xl6" style="margin-top:10px">
-                <a class="btn yellow datepicker"><i class="material-icons">date_range</i></a>
+                <a class="btn yellow datepicker" title="Update due date"><i class="material-icons">date_range</i></a>
                 @if (isset($task->due_date))
                     <span id="date_text">{{$task->due_date}}</span>
                 @else
@@ -29,7 +29,7 @@
                 <input type="hidden" name="description">
                 <div id="quill-container"></div>
                 <span class="invalid-feedback" id="invalidDescription" role="alert"></span>
-                <a class="btn light-blue" style="margin-top:5px" onclick="changeDescription()"><i id="description-button" class="material-icons white-text">mode_edit</i></a>
+                <a class="btn light-blue" style="margin-top:5px" onclick="changeDescription()" title="Update description"><i id="description-button" class="material-icons white-text">mode_edit</i></a>
             </div>
             <hr/>
             <div class="checklist-container" id="checklist">
@@ -44,13 +44,13 @@
                 </div>
                 @endif
                 <div id="checklist-items"></div>
-                <a class="btn light-blue" onclick="addItem()"><i class='material-icons white-text'>playlist_add</i></a>
+                <a class="btn light-blue" onclick="addItem()" title="Add items to your checklist"><i class='material-icons white-text'>playlist_add</i></a>
             </div>
             <hr/>
             <div class="attachments-header" id="attachments">
                 <div class="row" style="margin-right:0">
                 <h6 class="col s9 m9 l9 xl9">Attachments</h6>
-                <a class="btn light-blue col right right-icon-button" onclick="openAttachmentModal()" id=""><i class="material-icons white-text pin-icon">attach_file</i></a>
+                <a class="btn light-blue col right right-icon-button" onclick="openAttachmentModal()" id="" title="Add/Upload an attachment"><i class="material-icons white-text pin-icon">attach_file</i></a>
                 </div>
                 <div id="attachment-list" class="row attachments"></div>
             </div>
@@ -58,8 +58,8 @@
         </div>
     <div class="col s12 m12 l4 xl4 sticky">
         <div id="task-buttons">
-                <a class="btn red text-white" onclick="deleteTask()"><i class="material-icons">delete</i></a>
-                <a class="btn light-blue modal-trigger" href="#assignMemberTaskModal"><i class="material-icons white-text">group_add</i></a>
+                <a class="btn red text-white" onclick="deleteTask()" title="Delete task"><i class="material-icons">delete</i></a>
+                <a class="btn light-blue modal-trigger" href="#assignMemberTaskModal" title="Add or remove member from this task"><i class="material-icons white-text">group_add</i></a>
                 <div id="status-form"></div>
                 
         </div>
@@ -69,7 +69,7 @@
             <form>
                 <div class="row comment-input-div">
                 <textarea class="materialize-textarea col s9 m9 l9 xl9" id="comment-message" placeholder="Add a comment" required></textarea>
-                <a class="btn light-blue col right-icon-button" onclick='validateComment()'><i class='material-icons white-text'>send</i></a>
+                <a class="btn light-blue col right-icon-button" onclick='validateComment()' title="Send comment"><i class='material-icons white-text'>send</i></a>
                 </div>
 
                 <p class="invalid-feedback" id="invalidComment" role="alert"></p>
@@ -96,7 +96,7 @@
         @else
         var description = "";
         @endif
-        console.log("this is desc from php" + JSON.stringify(description));
+
         @if(isset($task->due_date))
         var due_date = "{!! $task->due_date !!}";
         @else

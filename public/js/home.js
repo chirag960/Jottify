@@ -55,9 +55,9 @@ function showNewProject(xhttp){
         text+='<img src="'+key.background+'">';
         text+='<div class="card-title projectTitle">';
         text+='<span class="projectName">'+key.title+'</span>';
-        text+='<div class="projectOps"><i class="material-icons right none" id="unstar-'+key.id+'" onclick="starProject(event)">star_border</i>';
-        text+='<i class="material-icons right none" id="report-'+key.id+'" onclick="reportProject(event)">file_download</i>';
-        text+='<i class="material-icons right none" id="delete-'+key.id+'" onclick="deleteProject(event)">delete</i></div>';
+        text+='<div class="projectOps"><i class="material-icons right none" id="unstar-'+key.id+'" onclick="starProject(event)" title="star mark your project">star_border</i>';
+        text+='<i class="material-icons right none" id="report-'+key.id+'" onclick="reportProject(event)" title="download project report">file_download</i>';
+        text+='<i class="material-icons right none" id="delete-'+key.id+'" onclick="deleteProject(event)" title="delete project">delete</i></div>';
         text+='</div></div></div></div></div>';
         htmlElement = $.parseHTML(text);
         if($("#projectList").length){
@@ -157,13 +157,13 @@ function displayProjects(xhttp) {
             text+='<img src="'+key.background+'">';
             text+='<div class="card-title projectTitle">';
             text+='<span class="projectName">'+key.title+'</span>';
-            text+='<div class="projectOps"><i class="material-icons right none" id="unstar-'+key.id+'" onclick="starProject(event)">star_border</i>';
+            text+='<div class="projectOps"><i class="material-icons right none" id="unstar-'+key.id+'" onclick="starProject(event)" title="star mark your project">star_border</i>';
             if(key.star == 1){
                 starProjects.push(key.id);
             }
             if(key.role == 2){
-                text+='<i class="material-icons right none" id="report-'+key.id+'" onclick="reportProject(event)">file_download</i>';
-                text+='<i class="material-icons right none" id="delete-'+key.id+'" onclick="deleteProject(event)">delete</i>';
+                text+='<i class="material-icons right none" id="report-'+key.id+'" onclick="reportProject(event)" title="download project report">file_download</i>';
+                text+='<i class="material-icons right none" id="delete-'+key.id+'" onclick="deleteProject(event)" title="delete project">delete</i>';
             }
             text+='</div>';
             text+='</div></div></div></div>';
@@ -187,6 +187,7 @@ function displayProjects(xhttp) {
             var project = document.getElementById("project-"+starProjects[i]).cloneNode(true);
             var starredStar = project.querySelector("#unstar-"+starProjects[i]);
             starredStar.id = "starred-"+starProjects[i];
+            starredStar.title = "Unstar your project";
             project.id = "starProject-"+starProjects[i];
             document.getElementById("star-list").appendChild(project);
         }
@@ -209,6 +210,7 @@ function displayProjects(xhttp) {
             var project = project.cloneNode(true);
             var starredStar = project.querySelector("#unstar-"+response.id);
             starredStar.id = "starred-"+response.id;
+            starredStar.title = "Unstar your project";
             project.id = "starProject-"+response.id;
             if($('#star-text').length){
                 $('#star-text').remove();
@@ -224,6 +226,7 @@ function displayProjects(xhttp) {
                 star.classList.add("none");
                 star.classList.remove("yellow-text");
                 star.style.display = "none";
+                star.title = "star mark your project";
                 var spid = "starProject-"+response.id;
                 var starProject = document.getElementById(spid);
                 starProject.parentNode.removeChild(starProject);

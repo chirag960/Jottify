@@ -25,28 +25,46 @@ class AttachmentController extends Controller
 
     public function create(Request $request, $project_id, $id){
         $validator = Validator::make($request->all(),[
-            "files.*" => "required|max:2048|mimetypes:image/*,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document/,application/rtf"
+            "files.*" => "max:2048"
         ]);
         
         if($validator->fails()){
+            // return response()->json(array(
+            //     'message' => "errors",
+            //     'errors' => $validator->getMessageBag()), 200);
+
             return response()->json(array(
-                'message' => "errors",
-                'errors' => $validator->getMessageBag()), 200);
-        }else{
-            $attachment_count  =Task::where('id',$id)->first()->attachment_count;
-            $f = $request->file('files');
-            if(count($f) == 0){
+                'message' => "error",
+                'error' => "Each file size should not be more than 2MB"
+            ),200);
+        }
+        else{
+            $validator = Validator::make($request->all(),[
+                "files.*" => "mimetypes:image/*,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document/,application/rtf"
+            ]);
+
+            if($validator->fails()){
                 return response()->json(array(
-                    'message' => "count-error",
-                    'errors' => "Please add/upload Attachment"),200);
+                    'message' => "error",
+                    'error' => "Please attach image, text or pdf only."
+                ),200);
             }
-            else if((count($f) + $attachment_count) > 10){
-                return response()->json(array(
-                    'message' => "count-error",
-                    'errors' => "Each task can have only 10 attachments"),200);
-            }else{
-                $values = $this->attachmentService->create($request, $project_id, $id);
-                return $values;
+            else{
+                $attachment_count  =Task::where('id',$id)->first()->attachment_count;
+                $f = $request->file('files');
+                if(count($f) == 0){
+                    return response()->json(array(
+                        'message' => "error",
+                        'error' => "Please add/upload Attachment"),200);
+                }
+                else if((count($f) + $attachment_count) > 10){
+                    return response()->json(array(
+                        'message' => "error",
+                        'error' => "Each task can have only 10 attachments"),200);
+                }else{
+                    $values = $this->attachmentService->create($request, $project_id, $id);
+                    return $values;
+                }
             }
         }
         

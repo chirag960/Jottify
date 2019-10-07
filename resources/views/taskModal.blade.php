@@ -17,7 +17,7 @@
                         <div class="input-field col s12" id="status_order_in_task">
                         </div>
                     </div>
-                    <button type="button" class="btn waves-effect waves-light light-blue" onclick="validateTask()">Create</button>
+                    <button type="button" class="btn waves-effect waves-light light-blue" onclick="createTask()">Create</button>
               </form>
               </div>              
             </div>  

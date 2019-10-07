@@ -14,11 +14,10 @@
                       </div>
                       <div class="file-path-wrapper">
                           <input class="file-path validate" type="text" placeholder="Upload one or more files" autocomplete="off">
-                        </div>
-                        
+                      </div>
+                      <span class="invalid-feedback" id="invalidAttachment" role="alert"></span>
                     </div>
                       <button type="button" class="btn light-blue" id="submit_button" onclick="submit_files()">Submit</button>
-                      <span class="invalid-feedback" id="invalidAttachment" role="alert"></span>
                   </form>
               </div>
           </div>

@@ -44,7 +44,7 @@ class StatusService{
             $status = $this->status->create($id,$request->title,$order);
         }
         return response()->json(
-            ['message'=>'success','id'=>$status->id,'beforeStatusId'=>$beforeStatusId,'title'=>$request->title,'order'=>$order]
+            ['message'=>'success','id'=>$status->id,'beforeStatusId'=>$beforeStatusId,'title'=>htmlentites($request->title),'order'=>$order]
             ,201);
     }
 
@@ -78,6 +78,6 @@ class StatusService{
         }
 
         $status->archiveStatus();
-        return response()->json(["message"=>"success","id"=>$id,"title"=>$status->title],200);
+        return response()->json(["message"=>"success","id"=>$id],200);
     }
 }

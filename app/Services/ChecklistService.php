@@ -51,4 +51,15 @@ class ChecklistService{
 
     }
 
+    public function delete($project_id, $task_id, $checklist_id){
+        $done = $this->checklist->getCompletion($checklist_id);
+        if($done == true){
+            (new Task)->decrementCheckListComplete($task_id);
+        }
+        (new Task)->decrementChecklistCount($id);
+        Checklist::destroy($checklist_id);
+        $task = Task::find($task_id)->get();
+        return response()->json(["message"=>"success","id"=>$checklist_id,"checklist_item_count"=>$task->checklist_item_count,"checklist_done"=>$task->checklist_done],200);
+    }
+
 }

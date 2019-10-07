@@ -41,4 +41,10 @@ class CommentController extends Controller
         }
         
     }
+
+    public function delete($project_id,$id,$comment_id){
+
+        $response = $this->commentService->delete($project_id,$id,$comment_id);
+        return $response;
+    }
 }

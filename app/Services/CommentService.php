@@ -29,6 +29,12 @@ class CommentService{
         
         return response()->json(["message"=>"success","comment"=>$comment],201);
     }
+
+    public function delete($project_id, $id, $comment_id){
+        (new Task)->decrementCommentCount($id);
+        Comment::destroy($comment_id);
+        return response()->json(["message"=>"success","id"=>$comment_id],200);
+    }
 }
 
 ?>

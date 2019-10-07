@@ -24,6 +24,10 @@ class Checklist extends Model
         return $this;
     }
 
+    public function getCompletion($id){
+        return Checklist::find($id)->completed;
+    }
+
     public function setCompletion($id,$done){
         Checklist::find($id)->update(['completed'=>$done]);
     }

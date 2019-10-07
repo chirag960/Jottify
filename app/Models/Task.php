@@ -80,6 +80,10 @@ class Task extends Model
         Task::find($task_id)->increment('comment_count');
     }
 
+    public function decrementCommentCount($task_id){
+        Task::find($task_id)->decrement('comment_count');
+    }
+
     public function incrementAttachmentCount($task_id,$count){
         Task::find($task_id)->increment('attachment_count',$count);
     }
@@ -95,6 +99,16 @@ class Task extends Model
         }
         else{
             Task::find($task_id)->increment('checklist_item_count');
+        }
+    }
+
+    public function decrementChecklistCount($task_id){
+        $checklist_count = Task::find($task_id)->select('checklist_item_count')->get();
+        if($checklist_count > 1){
+            Task::find($task_id)->decrement('checklist_item_count');
+        }
+        else{
+            Task::find($task_id)->update(['checklist_item_count'=>null]);
         }
     }
 

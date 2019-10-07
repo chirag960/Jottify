@@ -132,6 +132,10 @@ Route::group(['prefix'=>'project/{project_id}/task/{id}','middleware'=> ['auth',
 
     Route::post('comment','CommentController@create');
 
+    Route::delete('checklist/{checklist_id}','ChecklistController@delete');
+
+    Route::delete('comment/{comment_id}','CommentController@delete');
+
     Route::post('checklist','ChecklistController@create');
 
     Route::post('duedate','TaskController@updateduedate');

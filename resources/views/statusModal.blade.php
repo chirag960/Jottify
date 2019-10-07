@@ -18,7 +18,7 @@
                     <div class="input-field col s12" id="status_order">
                     </div>
                 </div>
-                <button type="button" class="btn waves-effect waves-light light-blue" onclick="validateStatus()">Create</button>
+                <button type="button" class="btn waves-effect waves-light light-blue" onclick="createStatus()">Create</button>
           </form>
           </div>
           

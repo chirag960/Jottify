@@ -38,7 +38,7 @@ class TaskService{
         (new TaskDetails)->create($task->id,$request->status_id);
         
         return response()->json(
-            ['message'=>'success','id' => $task->id,'title'=> $request->title, 'status_id'=> $request->status_id]
+            ['message'=>'success','id' => $task->id,'title'=> htmlentities($request->title), 'status_id'=> $request->status_id]
         ,201);
 
     }
@@ -138,12 +138,6 @@ class TaskService{
         //dd($project_ids);
         //$tasks = (new TaskHasMember)->searchTasks($pattern,$project_ids);
         $tasks = (new Task)->searchTasks($pattern,$project_ids);
-        if(count($tasks)){
-            foreach($tasks as $task){
-                $project_title = (new Project)->getProjectTitle($task->project_id);
-                $task->project_title = $project_title;
-            }
-        }
 
         $response = array();
         if(count($projects)){

@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById("searchBar").addEventListener("keyup", throttleSearchTask(showTasks, 500));
     var elems = document.querySelectorAll('.fixed-action-btn');
     var instances = M.FloatingActionButton.init(elems,{});
-    $('#addInviteProjectModal').modal({'onCloseStart':removeInputValues});
+    $('#addInviteProjectModal').modal({'onCloseStart':removeInputValues,'onOpenEnd': focusInInviteModal});
     $('#addStatusModal').modal({'onCloseStart':removeStatusModalValues});
     $('#addTaskModal').modal({'onCloseStart':removeTaskModalValues});
     $('#taskMemberModal').modal({'onCloseStart':removeMembersValues});
@@ -64,7 +64,6 @@ jQuery(document).bind("keydown", function(e){
         else{
             $('.modal').modal('close');
             $('#addInviteProjectModal').modal('open');
-            $('#invite-members').focus();
         }
     }
     else if(e.ctrlKey && e.keyCode == 80){  //ctrl + p
@@ -93,14 +92,14 @@ jQuery(document).bind("keydown", function(e){
     makeGetRequest("/project/"+ project_id +"/statuses",displayStatus);
 
     function removeTaskModalValues(){
-        $("#task-title").html("");
+        //$("#task-title").html("");
         $("#task-title").val("");
         $("#invalidTaskTitle").empty();
     }
 
     function removeStatusModalValues(){
         $("#status-title").val("");
-        $("#status-title").html("");
+        //$("#status-title").html("");
         $("#invalidStatusTitle").empty();
     }
 
@@ -108,14 +107,18 @@ jQuery(document).bind("keydown", function(e){
         console.log($("#users-list").find("input"));
         checkedMembers = [];
         $("#users-list").empty();
-        $("#invite-members").html("");
+        //$("#invite-members").html("");
         $("#invite-members").val("");
         $("#membersView").empty();
         $("#invalidInviteMembers").empty();
         $("#invalidInviteMessage").empty();
+        //$("#invite-message").html("You have been invited to the project '"+ project_title +"' in Jottify!")
         $("#invite-message").val("You have been invited to the project '"+ project_title +"' in Jottify!")
-        $("#invite-message").html("You have been invited to the project '"+ project_title +"' in Jottify!")
         $('#invite-message').css('height','46px');
+    }
+
+    function focusInInviteModal(){
+        $('#invite-members').focus();
     }
 
     function removeMembersValues(){
@@ -226,7 +229,7 @@ jQuery(document).bind("keydown", function(e){
             var newDiv = "";
             newDiv += "<div class='status-panel' id='status-panel-"+response.id+"'><div class='card-panel status-name grey lighten-4'><div class='card-header' onmouseover='showOps(this)' onmouseout='hideOps(this)'>";
             newDiv += "<span class='status-heading'>"+response.title+"</span>";
-            newDiv += '<span class="status-ops"><i class="material-icons right none" onclick="deleteStatus('+response.id+')">delete</i></span>';
+            newDiv += '<span class="status-ops"><i class="material-icons right none" onclick="deleteStatus('+response.id+')" title="delete status">delete</i></span>';
             newDiv+= "</div>";
             newDiv += "<div class='card-content status-body' id='status-"+response.id+"'><p class='text-center addTask' onclick='openTaskModal("+response.id+")'>+ Add task</p><div class='task-list' id='status-task-"+response.id+"'></div></div>";
             newDiv += "</div></div>";
@@ -270,7 +273,7 @@ jQuery(document).bind("keydown", function(e){
             var newDiv = "";
             newDiv += "<div id='task-"+response.id+"' onclick='goToTask("+response.id+")' class='card task-card card-body' onmouseover='showOps(this)' onmouseout='hideOps(this)'>";
             newDiv += "<div><p>"+response.title+"</p></div>";
-            newDiv += "<span class='task-ops'><i id='deleteTask-"+response.id+"' class='material-icons right none' onclick='deleteTask(event)'>delete</i></span>";
+            newDiv += "<span class='task-ops'><i id='deleteTask-"+response.id+"' class='material-icons right none' onclick='deleteTask(event)' title='delete task'>delete</i></span>";
             newDiv +="</div>";
             var taskDiv = $.parseHTML(newDiv);
             $("#"+id).append(taskDiv);
@@ -346,7 +349,7 @@ function hideOps(ele){
             statusText.forEach(function addToDiv(key,index){
             newDiv += "<div class='status-panel' id='status-panel-"+key.id+"'><div class='card-panel status-name grey lighten-4'><div class='card-header' onmouseover='showOps(this)' onmouseout='hideOps(this)'>";
             newDiv += "<span class='status-heading'>" + key.title + "</span>";
-            newDiv += '<span class="status-ops"><i class="material-icons right none" onclick="deleteStatus('+key.id+')">delete</i></span>';
+            newDiv += '<span class="status-ops"><i class="material-icons right none" onclick="deleteStatus('+key.id+')" title="delete status">delete</i></span>';
             newDiv += "</div>";
             newDiv += "<div class='card-content status-body' id='status-"+key.id+"'><p class='text-center addTask' onclick='openTaskModal("+key.id+")'>+ Add task</p><div class='task-list' id='status-task-"+key.id+"'></div></div>";
             newDiv += "</div></div>";
@@ -468,7 +471,7 @@ function hideOps(ele){
             var status_div = document.getElementById(id);
             newDiv += "<div id='task-"+key.id+"' onclick='goToTask("+key.id+")' class='card task-card card-body' onmouseover='showOps(this)' onmouseout='hideOps(this)'>";
             newDiv += "<div><p>"+key.title+"</p></div>";
-            newDiv += "<span class='task-ops'><i id='deleteTask-"+key.id+"' class='material-icons right none' onclick='deleteTask(event)'>delete</i></span>";
+            newDiv += "<span class='task-ops'><i id='deleteTask-"+key.id+"' class='material-icons right none' onclick='deleteTask(event)' title='delete task'>delete</i></span>";
             if(key.checklist_item_count != null){
                 var width = Math.ceil((key.checklist_done/key.checklist_item_count)*100) + "%";
                 newDiv+="<div><span class='progress-info'>"+key.checklist_done + " / " +key.checklist_item_count+"</span>";
@@ -492,20 +495,20 @@ function hideOps(ele){
                             });
                 }
                 if(Date.parse(date) < Date.parse(new Date())){
-                    newDiv +="<div class='task-icons-info date-div' style='background-color:#eb5a46'><i class='material-icons task-icons text-white align-logo'>access_time</i><span class='text-white align-text-logo'>"+eng_date+"</span></div>";    
+                    newDiv +="<div class='task-icons-info date-div' style='background-color:#eb5a46' title='due date'><i class='material-icons task-icons text-white align-logo' title='due date'>access_time</i><span class='text-white align-text-logo'>"+eng_date+"</span></div>";    
                 }
                 else{
-                    newDiv +="<div class='task-icons-info date-div'><i class='material-icons task-icons align-logo'>access_time</i><span class='align-text-logo'>"+eng_date+"</span></div>";    
+                    newDiv +="<div class='task-icons-info date-div' title='due date'><i class='material-icons task-icons align-logo'>access_time</i><span class='align-text-logo'>"+eng_date+"</span></div>";    
                 }
             }
             if(key.description){
                 newDiv +="<div class='task-icons-info' title='this task has a description'><i class='material-icons task-icons desc-icons align-logo'>description</i></div>";
             }
             if(key.attachment_count != 0){
-                newDiv +="<div class='task-icons-info'><span><i class='material-icons task-icons pin-icon align-logo'>attachment</i></span><span class='align-text-logo'>"+key.attachment_count+"</span></div>";
+                newDiv +="<div class='task-icons-info' title='total count of attachments'><span><i class='material-icons task-icons pin-icon align-logo'>attachment</i></span><span class='align-text-logo'>"+key.attachment_count+"</span></div>";
             }
             if(key.comment_count != 0){
-                newDiv +="<div class='task-icons-info'><i class='material-icons task-icons align-logo'>mode_comment</i><span class='align-text-logo'>"+key.comment_count+"</span></div>";
+                newDiv +="<div class='task-icons-info' title='total count of comments'><i class='material-icons task-icons align-logo' title='total count of comments'>mode_comment</i><span class='align-text-logo'>"+key.comment_count+"</span></div>";
             }
             newDiv+="</div>";
             newDiv+="<div class='task-members'>";
@@ -645,7 +648,7 @@ function hideOps(ele){
         makeDeleteRequest("/project/"+project_id+"/member/"+id,showDeleteMember);
     }
 
-    function validateStatus(){
+    function createStatus(){
         var title = document.getElementById("status-title").value;
         var ele = document.getElementById("invalidStatusTitle");
         if(title.length > 30 || title.length < 3){
@@ -677,39 +680,13 @@ function hideOps(ele){
             }
     }
     
-    // function validateTaskDesc(){
-    //     var desc = document.getElementById("task-desc").value;
-    //     var ele = document.getElementById("invalidTaskDesc");
-    //     if(desc.length != 0 && desc.length > 255){
-    //         ele.innerHTML = "<strong>The description should not be more than 255 letters.</strong>";
-    //         ele.style.display = "block";
-    //         return false;
-    //     }
-    //     else {
-    //         ele.innerHTML = "";
-    //         ele.style.display = "none";
-    //         return true;
-    //     }
-    // }
     
-    
-    function validateTask(){
+    function createTask(){
         var title = validateTaskTitle();
-        //var desc = validateTaskDesc();
-        var desc = true;
-    
-        if(title && desc){
+        if(title){
             var title = document.getElementById("task-title").value;
-            //var desc = document.getElementById("task-desc").value;
             var status = document.getElementById("select-task-options").value;
-            var message;
-            // if(desc.length != 0){
-            //     message = JSON.stringify({"title":title,"description":desc,"status_id":status});
-            // }
-            // else{
-            //     message = JSON.stringify({"title":title,"status_id":status});
-            // }
-            message = JSON.stringify({"title":title,"status_id":status});
+            var message = JSON.stringify({"title":title,"status_id":status});
             makePostRequest("/project/"+project_id+"/task",message,displayNewTask);
         }
     }
@@ -721,9 +698,7 @@ function hideOps(ele){
             ele.style.display = "block";
             return false;
         }
-        else{
-            return true;
-        }
+        return true;
     }
     
     function validateInviteMessage(){

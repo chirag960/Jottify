@@ -46,4 +46,10 @@ class ChecklistController extends Controller
         return $response;
     }
 
+    public function delete($project_id,$id,$checklist_id){
+
+        $response = $this->checklistService->delete($project_id,$id,$checklist_id);
+        return $response;
+    }
+
 }
