@@ -2,8 +2,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById("searchBar").addEventListener("keyup", throttleSearchTask(showTasks, 500));
     var elems = document.querySelectorAll('.fixed-action-btn');
     var instances = M.FloatingActionButton.init(elems,{});
-    $('.modal').modal();
     $('#addInviteProjectModal').modal({'onCloseStart':removeInputValues});
+    $('#addStatusModal').modal({'onCloseStart':removeStatusModalValues});
     $('#addTaskModal').modal({'onCloseStart':removeTaskModalValues});
     $('#taskMemberModal').modal({'onCloseStart':removeMembersValues});
     $('.tooltipped').tooltip({'outDuration':0});
@@ -27,11 +27,12 @@ $(document).on('keypress', 'input,select', function (e) {
 });
 
 jQuery(document).bind("keydown", function(e){
-    if(e.ctrlKey && e.keyCode == 70){
+    if(e.ctrlKey && e.keyCode == 70){ //ctrl + f
         e.preventDefault();
         $('#searchBar').focus();
     }
-    if(e.ctrlKey && e.keyCode == 65){
+    else if(e.ctrlKey && e.keyCode == 68){  //ctrl + d
+        console.log("t is pressed");
         e.preventDefault();
         var opened = $('#addTaskModal').hasClass('open');
         if(opened == true){
@@ -42,7 +43,7 @@ jQuery(document).bind("keydown", function(e){
             openTaskModal();
         }
     }
-    if(e.ctrlKey && e.keyCode == 83){
+    else if(e.ctrlKey && e.keyCode == 83){  //ctrl + s
         e.preventDefault();
 
         if($('#addStatusModal').hasClass('open')){
@@ -54,7 +55,7 @@ jQuery(document).bind("keydown", function(e){
             $('#status-title').focus();
         }
     }
-    if(e.ctrlKey && e.keyCode == 73){
+    else if(e.ctrlKey && e.keyCode == 73){  //ctrl + i
         e.preventDefault();
 
         if($('#addInviteProjectModal').hasClass('open')){
@@ -66,7 +67,7 @@ jQuery(document).bind("keydown", function(e){
             $('#invite-members').focus();
         }
     }
-    if(e.ctrlKey && e.keyCode == 80){
+    else if(e.ctrlKey && e.keyCode == 80){  //ctrl + p
         e.preventDefault();
 
         if($('.sidenav').isOpen){
@@ -92,7 +93,15 @@ jQuery(document).bind("keydown", function(e){
     makeGetRequest("/project/"+ project_id +"/statuses",displayStatus);
 
     function removeTaskModalValues(){
+        $("#task-title").html("");
+        $("#task-title").val("");
         $("#invalidTaskTitle").empty();
+    }
+
+    function removeStatusModalValues(){
+        $("#status-title").val("");
+        $("#status-title").html("");
+        $("#invalidStatusTitle").empty();
     }
 
     function removeInputValues(){
@@ -104,8 +113,9 @@ jQuery(document).bind("keydown", function(e){
         $("#membersView").empty();
         $("#invalidInviteMembers").empty();
         $("#invalidInviteMessage").empty();
-        $("#invite-message").val("You have been invited to the project"+ project_title +"in Jottify!")
-        $("#invite-message").html("You have been invited to the project"+ project_title +"in Jottify!")
+        $("#invite-message").val("You have been invited to the project '"+ project_title +"' in Jottify!")
+        $("#invite-message").html("You have been invited to the project '"+ project_title +"' in Jottify!")
+        $('#invite-message').css('height','46px');
     }
 
     function removeMembersValues(){

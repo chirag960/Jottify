@@ -14,12 +14,6 @@
                 </div>
                 <div class="divider"></div>
                 <div id="display-member-icons">
-                    {{-- <p>Members</p>
-                    <div class="row">
-                    <div id="member-avatars" class="s6 m6 l6 xl6">
-
-                    </div>
-                    </div> --}}
                 </div>
                 <div class="s12 m6 l6 xl6" style="margin-top:10px">
                 <a class="btn yellow datepicker"><i class="material-icons">date_range</i></a>
@@ -61,19 +55,6 @@
                 <div id="attachment-list" class="row attachments"></div>
             </div>
             <hr/>
-
-            <!--div class="right-side">
-                <p>Move to another status</p>
-                <form method="POST">
-                    @csrf
-                    @method('patch')
-                    <div class="form-group">
-                        <select name="status" id="statusList">
-                        </select>
-                    </div>
-                    <button type="button" class="btn light-blue" onclick="validateStatus();">Submit</button>
-                </form>
-            </div-->
         </div>
     <div class="col s12 m12 l4 xl4 sticky">
         <div id="task-buttons">

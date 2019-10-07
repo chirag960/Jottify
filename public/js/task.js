@@ -36,9 +36,11 @@ $(document).ready(function(){
         console.log("setting due date");
 
         $('.datepicker').datepicker({
-            defaultDate : Date.parse(due_date),
+            defaultDate : new Date(due_date),
+            setDefaultDate:true,
             minDate: new Date(),
-            setDate : Date.parse(due_date)
+            setDate : Date.parse(due_date),
+            onOpen : setDefaultDate
         });
 
     }
@@ -46,7 +48,9 @@ $(document).ready(function(){
         console.log("no due date set");
         $('.datepicker').datepicker({
             defaultDate : new Date(),
+            setDefaultDate:true,
             minDate: new Date(),
+            onOpen : setDefaultDate
         });
     }
 
@@ -89,6 +93,17 @@ function callFunction(){
     }
 }
 
+function setDefaultDate(){
+    if(due_date != ""){
+        console.log("setting due date");
+        $('.datepicker').datepicker('setDate', new Date(due_date));
+    }
+    else{
+        console.log("no due date set");
+        $('.datepicker').datepicker('setDate', new Date());
+    }
+}
+
 function redirectToProject(){
     window.location.href = "/project/" + project_id ;     
 }
@@ -123,6 +138,7 @@ function displayDueDate(xhttp){
     var response = JSON.parse(xhttp.responseText);
     if (response.message == "success"){
         $('#date_text').html(response.date);
+        due_date = response.date;
         M.toast({html:"Due date updated successfully", classes:'rounded'});
     }
     else if(response.message == "errors"){
@@ -848,6 +864,8 @@ function displayNewComment(xhttp){
          }
          $("#comment-list").prepend(commentDiv);
          $("#comment-list").scrollTop = $("#comment-list")[0].scrollHeight;
+         $("#comment-message").val("");
+         $("#comment-message").css('height','46px');
          M.toast({html:"Successfully added comment",classes:'rounded'});
     }
     else if(response.message == "errors"){
@@ -961,6 +979,5 @@ function validateComment(){
 
         var message_json = JSON.stringify({"comment":message});
         makePostRequest("/project/" + project_id + "/task/" +task_id  + "/comment",message_json,displayNewComment);
-        document.getElementById("comment-message").value = null;
     }
 }

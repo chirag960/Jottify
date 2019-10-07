@@ -163,19 +163,41 @@ body{
 .hideMessage{
     display:none;
 }
+.user-view{
+    line-height: 25px !important;
+    margin-bottom:0px !important;
+}
+.project-heading{
+    font-size:1.5rem;
+    font-weight: 600;
+    overflow-wrap:break-word;
+}
 .project-title{
     font-size:1.5rem;
     font-weight: 600;
+    overflow-wrap:break-word;
+    line-height:25px !important;
 }
 .modal-container{
     bottom:auto;
     width:30%;
+}
+#creation-time-heading{
+    text-align: center;
+}
+#creation-time-heading + li div{
+    margin-top:0px;
 }
 #members-heading{
     text-align: center;
     line-height: 5px;
     padding: 20px;
     font-size: large;
+}
+#description-heading{
+    overflow-wrap:break-word;
+    padding: 0% 5%;
+    line-height: 25px !important;
 }
 #members-list{
     margin-top:0px;
@@ -204,4 +226,7 @@ body{
 .select-dropdown + ul{
     max-height:150px;
     overflow-y:auto;
+}
+#invite-message{
+    max-height:200px;
 }

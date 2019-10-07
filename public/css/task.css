@@ -205,6 +205,7 @@
   }
   .commenter-message{
     font-size: 15px;
+    overflow-wrap:break-word;
   }
   .commenter-time{
     font-size: 10px;
@@ -228,8 +229,13 @@
 }
 #comment-message{
     padding:12px 0px !important;
+    max-height:200px;
 }
 .comment-input-div{
     margin:10px 0px 0px 0px !important;
     max-width:100% !important;
+}
+.select-dropdown + ul{
+    max-height:150px;
+    overflow:auto;
 }

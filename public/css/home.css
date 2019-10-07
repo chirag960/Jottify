@@ -12,15 +12,14 @@
 }
 
 .projectTitle{
-    padding: 0px !important;
+    padding: 0 2% 0 2% !important;
     margin: 0px !important;
     top: 0px !important;
     right: 0px !important;
 }
 .projectName{
     width:100%;
-    margin-left:3%;
-    padding:2%;
+    overflow-wrap: break-word;
 }
 .projectOps{
     bottom: 2%;

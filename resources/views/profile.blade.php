@@ -6,9 +6,11 @@
 
 @section('full-content')
 <div class="row">
-    <div class="card-panel white col s8 offset-s2 m6 offset-m3 l4 offset-l4 xl2 offset-xl5">
+    <div class="card-panel white col s10 offset-s1 m8 offset-m2 l4 offset-l4 xl4 offset-xl4">
     <div class="card-body row" style="margin-left: 0px;margin-right: 0px;">
-            <img id="profileDiv" src="{{Auth::user()->photo_location}}" alt=""  width="300" class="circle profile-image responsive-img">      
+        <div id="image-container">    
+        <img id="profileDiv" src="{{Auth::user()->photo_location}}" alt=""  width="300" class="circle profile-image">      
+        </div>
             <form class="col s12 center">
                     <div class="btn file-field input-field">
                         <span>Change Image</span>
@@ -47,7 +49,6 @@
         var username = "{{ Auth::user()->name }}" ;
     
         $(document).ready(function(){
-            $('.profile-image').materialbox();
             $('.dropdown-trigger').dropdown();
             document.getElementById("searchBar").addEventListener("keyup", throttleSearchTask(showTasks, 500));
         });

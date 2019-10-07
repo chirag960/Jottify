@@ -13,3 +13,6 @@
     bottom: 10%;
     right: 7%;
 }
+nav a:hover{
+    text-decoration:none !important;
+}

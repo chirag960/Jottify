@@ -4,7 +4,7 @@ makeGetRequest("/projects",displayProjects);
     $(document).ready(function(){
         //$("").dropdown();
         $(".dropdown-trigger").dropdown();
-        $('.collapsible').collapsible({'onOpenEnd': focusInput});
+        $('.collapsible').collapsible({'onOpenEnd': focusInput,'onCloseEnd': removeCollapsevalues});
         document.getElementById("searchBar").addEventListener("keyup", throttleSearchTask(showTasks, 500));
 
     });
@@ -32,6 +32,14 @@ function focusInput(){
     $('#title').focus();
 }
 
+function removeCollapsevalues(){
+    $('#title').val("");
+    $('#description').val("");
+    $('textarea.materialize-textarea').css('height','46px');
+    $('#invalidTitle').empty();
+    $('#invalidDesc').empty();
+}
+
 function closeValidationMessage(){
     document.getElementById("alertMessage").style.display = "none";
 }
@@ -46,7 +54,7 @@ function showNewProject(xhttp){
         text+='<div class="card-image">';
         text+='<img src="'+key.background+'">';
         text+='<div class="card-title projectTitle">';
-        text+='<span class="projectName truncate">'+key.title+'</span>';
+        text+='<span class="projectName">'+key.title+'</span>';
         text+='<div class="projectOps"><i class="material-icons right none" id="unstar-'+key.id+'" onclick="starProject(event)">star_border</i>';
         text+='<i class="material-icons right none" id="report-'+key.id+'" onclick="reportProject(event)">file_download</i>';
         text+='<i class="material-icons right none" id="delete-'+key.id+'" onclick="deleteProject(event)">delete</i></div>';
@@ -148,7 +156,7 @@ function displayProjects(xhttp) {
             text+='<div class="card-image">';
             text+='<img src="'+key.background+'">';
             text+='<div class="card-title projectTitle">';
-            text+='<span class="projectName truncate">'+key.title+'</span>';
+            text+='<span class="projectName">'+key.title+'</span>';
             text+='<div class="projectOps"><i class="material-icons right none" id="unstar-'+key.id+'" onclick="starProject(event)">star_border</i>';
             if(key.star == 1){
                 starProjects.push(key.id);

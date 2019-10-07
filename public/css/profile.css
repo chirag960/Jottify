@@ -11,3 +11,17 @@
     position:relative;
     top:10px;
 }
+#image-container{
+ text-align: center;
+}
+@media only screen and (max-width: 600px) {
+    #profileDiv{
+        width:250px
+    }
+} 
+
+@media only screen and (min-width: 600px) {
+    #profileDiv{
+        width:300px;
+    }
+}

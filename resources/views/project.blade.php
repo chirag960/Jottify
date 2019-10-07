@@ -23,7 +23,7 @@
 <div class="project-bar row">
     <!-- Left Side Of Navbar -->
     <div class="col s12 m6 l6 xl6">
-            <span class="project-title">{{ $project['title'] }}</span>  <!-- Make this remanable -->
+            <span class="project-heading">{{ $project['title'] }}</span>  <!-- Make this remanable -->
             <!--
             @if ($project['star'] == 1)
             <i class="material-icons yellow-text" onclick="toggleStar(this)">star</i>
@@ -72,11 +72,11 @@
             </div>
             <a class="center-align"><span class="white-text project-title">{{$project['title']}}</span></a>
         </div>
-                <!--input value="{{$project['title']}}" type="Text" class="form-control" name="title" onblur="changeTitle(this)" placeholder="Title" required-->
     </li>
-    <li><a><i class="material-icons">access_time</i>Created on {{ $project['created_at'] }}</a></li>
+    <li id="creation-time-heading"><i class="material-icons align-logo">access_time</i><span class="align-text-logo">Created on {{ $project['created_at'] }}</span></li>
     @isset($project['description'])
-    <li><a>{{$project['description']}}</a></li>
+    <li><div class="divider"></div></li>
+    <li id="description-heading">{{$project['description']}}</li>
     @endisset
     <li><div class="divider"></div></li>
     <li id="members-heading">All Members</li>
