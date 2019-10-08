@@ -1,8 +1,8 @@
-#Jottify
+# Jottify
 
 A task management tool which allows users to create tasks, assign users who will work on them, monitor and update status of tasks.
 
-##Technology used : 
+## Technology used : 
 - [MySQL](https://www.mysql.com/)
 - [PHP 7.1.30](https://www.php.net/)
 - [Laravel 5.8](https://laravel.com/)
@@ -12,7 +12,7 @@ A task management tool which allows users to create tasks, assign users who will
 - [Carbon](https://carbon.nesbot.com/)
 - [Intervention](http://image.intervention.io/getting_started/introduction)
 
-##Features : 
+## Features : 
 - Register/ Login
 - Upload and update profile image
 - Create, update and delete Projects.
