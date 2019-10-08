@@ -236,6 +236,11 @@
     max-width:100% !important;
 }
 .select-dropdown + ul{
-    max-height:150px;
+    max-height:250px;
+    overflow:auto;
+}
+
+body > ul{
+    max-height:250px;
     overflow:auto;
 }

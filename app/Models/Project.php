@@ -20,6 +20,10 @@ class Project extends Model
         return $this->hasMany('App\Models\Task','project_id','id');
     }
 
+    public function status(){
+        return $this->hasMany('App\Models\Status','project_id','id');
+    }
+
 
     public function create($title, $description){
         $this->user_id = auth()->id();

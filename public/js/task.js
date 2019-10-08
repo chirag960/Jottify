@@ -59,7 +59,7 @@ $(document).ready(function(){
         if(e.which == 13){
             e.preventDefault();
             console.log('key is pressed');
-            validateComment();
+            sendComment();
         }
 
     });
@@ -970,23 +970,35 @@ function stripHTML(dirtyString){
     return strippedText;
 }
 
-function validateComment(){
-    var dirtyString = document.getElementById("comment-message").value;
-    var message = stripHTML(dirtyString);
-    console.log(message.length + "length");
+function validateComment(message){
+    var processedMessage = stripHTML(message);
     var ele = document.getElementById("invalidComment");
     if(message.length == 0){
         ele.innerHTML = "<strong>The comment cannot be empty.</strong>";
         ele.style.display = "block";
+        return false;
     }
     else if(message.length >= 255){
         ele.innerHTML = "<strong>The comment should not be more than 255 letters.</strong>";
         ele.style.display = "block";
+        return false;
+    }
+    else if(message.length != processedMessage.length){
+        ele.innerHTML = "<strong>HTML tags are not allowed.</strong>";
+        ele.style.display = "block";
+        return false;
     }
     else {
         ele.innerHTML = "";
         ele.style.display = "none";
+        return true;
+    }
+}
 
+function sendComment(){
+    var message = document.getElementById("comment-message").value.trim();
+    var valid = validateComment(message);
+    if(valid == true){
         var message_json = JSON.stringify({"comment":message});
         makePostRequest("/project/" + project_id + "/task/" +task_id  + "/comment",message_json,displayNewComment);
     }

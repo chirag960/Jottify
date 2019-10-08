@@ -2,7 +2,7 @@
 
 {{ $message}}
 
-@component('mail::button', ['url' => 'http://site.test/project/'.$id])
+@component('mail::button', ['url' => 'http://jottify.test/project/'.$id])
 Go to Project
 @endcomponent
 

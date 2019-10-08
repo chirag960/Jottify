@@ -2,7 +2,7 @@
         <div class="modal-content">
             <div class="modal-body">
                 <i class="material-icons close modal-close">close</i>  
-                <h5 class="text-center">Create new Task</h5>
+                <h5 class="text-center">Create New Task</h5>
                   
                   
               <form>

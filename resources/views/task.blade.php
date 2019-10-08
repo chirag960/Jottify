@@ -69,7 +69,7 @@
             <form>
                 <div class="row comment-input-div">
                 <textarea class="materialize-textarea col s9 m9 l9 xl9" id="comment-message" placeholder="Add a comment" required></textarea>
-                <a class="btn light-blue col right-icon-button" onclick='validateComment()' title="Send comment"><i class='material-icons white-text'>send</i></a>
+                <a class="btn light-blue col right-icon-button" onclick='sendComment()' title="Send comment"><i class='material-icons white-text'>send</i></a>
                 </div>
 
                 <p class="invalid-feedback" id="invalidComment" role="alert"></p>

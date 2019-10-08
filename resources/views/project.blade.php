@@ -13,9 +13,9 @@
     </a>
     <ul>
         <li><a class="btn-floating red tooltipped" data-position="left" data-tooltip="project settings"><i href="#" data-target="slide-out" class="material-icons sidenav-trigger show-on-large right">settings</i></a></li>
-        @if($project['role'] > 0)
+        {{-- @if($project['role'] > 0) --}}
         <li><a class="btn-floating yellow darken-1 tooltipped" data-position="left" data-tooltip="invite members"><i class="material-icons modal-trigger" href="#addInviteProjectModal" >person_add</i></a></li>
-        @endif
+        {{-- @endif --}}
         <li><a class="btn-floating green tooltipped" data-position="left" data-tooltip="add task" ><i class="material-icons" onclick="openTaskModal()">playlist_add</i></a></li>
         <li><a class="btn-floating blue tooltipped" data-position="left" data-tooltip="add status"><i class="material-icons" onclick="openStatusModal()">label_outline</i></a></li>
     </ul>

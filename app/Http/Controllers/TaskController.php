@@ -149,18 +149,4 @@ class TaskController extends Controller
 
     }
 
-    // public function taskDetailsReport(){
-    //     $status_names = 
-    //     $out = fopen('report'.rand().'.csv', 'w');
-
-    //     $tasksdetails = (new TaskDetails)->where('task_id',1)->orderby('timestamp')->get();
-    //     $csv_headers = array("status name","start","end", "total time");
-    //     fputcsv($out, $csv_headers);
-    //     foreach($tasks as $task){
-
-    //         fputcsv($out, $line);
-    //     }
-    //     fclose($out);
-    // }
-
 }

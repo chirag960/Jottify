@@ -12,6 +12,10 @@ class Status extends Model
 
     protected $fillable = ['order','title','archived'];
 
+    public function project(){
+        return $this->belongsTo('App\Models\Project','project_id','id');
+    }
+
     public function index($project_id){
         return $this->where('project_id',$project_id)->where('archived',false)->orderBy('order')->get();
     }

@@ -10,22 +10,6 @@
 |
 */
 
-// Route::get('/avatar',function(){      
-//     $relative_path = '/media/user_profile_photo/asdsadas.png';
-//     $path = public_path().$relative_path;
-//     $avatar = new LasseRafn\InitialAvatarGenerator\InitialAvatar();
-//     return $avatar->name('Lasse')
-//     ->length(1)
-//     ->fontSize(0.5)
-//     ->size(96) // 48 * 2
-//     ->background('#8BC34A')
-//     ->color('#fff')
-//     ->generate()
-//     ->save($path);
-// });
-
-Route::get('/taskdetails','TaskController@taskDetailsReport');
-
 Route::get('/getRedis', function() {    //for testing
     print_r(app()->make('redis'));
 });
@@ -53,7 +37,7 @@ Route::group(['middleware'=>'auth'], function(){
     
     Route::post('/profile/image', 'ProfileController@updateImage');
     
-    Route::get('/projects', 'ProjectController@index');
+    Route::get('/projects', 'ProjectController@index')->middleware('cacheControl');
     
     Route::post('/projects', 'ProjectController@create');
 
@@ -69,10 +53,6 @@ Route::group(['prefix'=>'project/{id}','middleware'=> ['auth','checkProject']], 
     Route::get('tasks','TaskController@index');
 
     Route::get('allMembers','ProjectController@allUsers');
-
-    //Route::get('member/{member_id}','ProjectController@memberDetails');
-
-
 
     Route::patch('/', 'ProjectController@update');
 
@@ -105,7 +85,7 @@ Route::group(['prefix'=>'project/{id}', 'middleware' => ['auth','checkProject','
     
     Route::delete('/status/{status_id}','StatusController@delete');
 
-    Route::get('report','TaskController@report'); //still testing
+    Route::get('report','TaskController@report');
 });
 
 Route::group(['prefix'=>'project/{id}', 'middleware' => ['auth','checkProject','checkProjectCreator']], function(){

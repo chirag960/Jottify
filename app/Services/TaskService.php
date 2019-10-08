@@ -151,13 +151,16 @@ class TaskService{
 
     public function report($id){
         $tasks = Project::find($id)->tasks;
-        
+        $status = Project::find($id)->status()->pluck('title','id')->toArray();
+
         $timestamp = Carbon::now()->timestamp;
         
         $title = Project::find($id)->title;
         $file_name = $title.$timestamp;
         $out = fopen($file_name.'.csv', 'w');
-        $csv_headers = array("Title","Members","Creation Date", "Updation Date","Due Date","Attachment Count","Current Status","Progress");
+        $csv_headers = array("Title","Members","Creation Date", "Updation Date","Due Date","Attachment Count","Current Status","Progress","Status Title","Start","End", "Total Duration");
+        $emp_string_arr = array_pad([],8,"");
+        
         fputcsv($out, $csv_headers);
 
         foreach($tasks as $task){
@@ -202,6 +205,49 @@ class TaskService{
             
             fputcsv($out, $line);
 
+            $tasksdetails = (new TaskDetails)->where('task_id',$task->id)->orderby('timestamp')->select('status_id','timestamp')->get()->toArray();
+            //dd(count($tasksdetails));
+            //fputcsv($out, []);
+            $csv_headers = array("","Status Title","Start","End", "Total Duration");
+            //fputcsv($out, $csv_headers);
+            $new_arr = array();
+            for($i=0;$i<count($tasksdetails);$i++){
+                $status_title = $status[$tasksdetails[$i]['status_id']];
+                $startDate = Carbon::parse($tasksdetails[$i]['timestamp']);
+                $startString = $startDate->toDayDateTimeString();
+                if($i == count($tasksdetails)-1){
+                    $endString = "Current Status";
+                    $difference = $startDate->diffInHours();
+                }
+                else{
+                    $endDate = Carbon::parse($tasksdetails[($i + 1)]['timestamp']);
+                    $endString = $endDate->toDayDateTimeString();
+                    $difference = $startDate->diffInHours($endDate);
+                }
+
+                if($difference == 0){
+                    $duration = "Less than an hour";
+                }
+                else if($difference < 24){
+                    $duration = $difference." hours";
+                }
+                else{
+                    $days = intdiv($difference,24);
+                    $hours = $difference%24;
+
+                    $duration = $days." days";
+                    if($hours > 0){
+                    $duration .=" and ".$hours." hours";    
+                    }
+                    
+                }
+                
+                $line = array($status_title, $startString, $endString, $duration);
+                fputcsv($out, array_merge($emp_string_arr,$line));
+            }
+            fputcsv($out, []);
+            //dd($new_arr);
+
         }
 
         fclose($out);
@@ -213,7 +259,7 @@ class TaskService{
         );
 
         return response()->download(public_path().'/'.$file_name.'.csv',$file_name.'.csv', $headers)->deleteFileAfterSend();;
-
+        
     }
 
 }
